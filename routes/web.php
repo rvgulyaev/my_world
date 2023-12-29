@@ -32,11 +32,10 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/', function () { return Inertia::render('Dashboard'); })->name('dashboard');
-    Route::get('/clients', [ClientController::class, 'index'])->name('clients.index');
+    Route::resource('/clients', ClientController::class);
 });
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('/users', UserController::class);
-    Route::resource('/clients', ClientController::class);
 });
 
 require __DIR__.'/auth.php';

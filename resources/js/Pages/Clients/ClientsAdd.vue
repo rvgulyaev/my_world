@@ -47,8 +47,11 @@ function addWish () {
 
 // Удалить пожелание
 function delWish(wish) {
-    wishes_list = wishes_list.filter((item) => item.id !== wish.id)
-    form.wishes = form.wishes.filter((item) => item.id !== wish.id)
+    const objIndex = wishes_list.findIndex((obj) => obj.id === wish.id);
+    if (objIndex > -1) {
+        wishes_list.splice(objIndex, 1);
+        form.wishes.splice(objIndex, 1);
+    }
 }
 
 // Add User Modal
@@ -127,7 +130,6 @@ const submit = () => {
                                 class="mt-1 block w-full"
                                 v-model="form.burndate"
                                 required
-                                autofocus
                                 autocomplete="burndate"
                             />
 
@@ -143,7 +145,6 @@ const submit = () => {
                                 class="mt-1 block w-full"
                                 v-model="form.diagnos"
                                 required
-                                autofocus
                                 autocomplete="diagnos"
                             />
 
@@ -237,9 +238,12 @@ const submit = () => {
                             <InputLabel for="wishes" value="Пожелания по занятиям" />
                             <div class="grid xl:grid-cols-4 2xl:grid-cols-4 gap-4 mt-3 mb-3">
                                 <div>
-                                    <InputLabel for="checkedClass" value="Список занятий" />
-                                        <select class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" v-model="checkedClass">
-                                            <option
+                                        <select
+                                        id="checkedClass"
+                                        required
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" v-model="checkedClass">
+                                        <option :value="null" disabled>Занятие</option> 
+                                        <option
                                                     v-for="(classItem, index) in classes"
                                                     :key="index"
                                                     :value="classItem.id"
@@ -249,20 +253,22 @@ const submit = () => {
                                         </select>
                                 </div>
                                 <div>
-                                    <InputLabel for="classesAmount" value="Кол-во" />
                                     <TextInput
                                             id="classesAmount"
                                             type="text"
+                                            placeholder="Кол-во занятий"
                                             class="mt-1 block w-full"
                                             v-model="classesAmount"
                                             required
-                                            autofocus
                                         />
                                 </div>
                                 <div>
-                                    <InputLabel for="checkedClass" value="предпочитаемое время" />
-                                        <select class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                                        <select 
+                                        id="preferTime"
+                                        required
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
                                         v-model="preferTime">
+                                        <option :value="null" disabled>Время</option>
                                             <option
                                                     v-for="(time, index) in timeRanges"
                                                     :key="index"
@@ -272,8 +278,8 @@ const submit = () => {
                                             </option>
                                         </select>
                                 </div>
-                                <div class="relative h-15">
-                                    <button type="button" class="absolute inset-x-0 bottom-0 bg-blue-100 text-blue-800 text-lg me-2 p-2 rounded dark:bg-indigo-500 dark:text-indigo-900 dark:hover:bg-indigo-400 hover:bg-blue-300 "
+                                <div >
+                                    <button type="button" class="block w-full bg-blue-100 text-blue-800 mt-1 px-4 py-2.5 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest dark:bg-indigo-500 dark:text-indigo-900 dark:hover:bg-indigo-400 hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
                                     @click="addWish">Добавить</button>
                                 </div>
                             </div>
@@ -294,7 +300,7 @@ const submit = () => {
                                         <TableDataCell>{{ wish.prefer_time }}</TableDataCell>
                                         <TableDataCell>
                                             <button @click="delWish(wish)" type="button"
-                                            class="bg-red-100 text-red-800 text-xs font-medium me-2 px-3.5 py-1.5 rounded dark:bg-pink-900 dark:text-pink-500 hover:bg-pink-800 "
+                                            class="bg-red-100 text-red-800 text-xs font-medium me-2 px-3.5 py-1.5 rounded dark:bg-pink-500 dark:text-pink-900 hover:bg-pink-400"
                                             >
                                             Удалить
                                             </button>
@@ -309,9 +315,9 @@ const submit = () => {
                 </div>
                 <div class="mt-6 space-x-4">
                     <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                        Добавить
+                        Добавить клиента
                     </PrimaryButton>
-                    <Link :href="route('users.index')"
+                    <Link :href="route('clients.index')"
                         class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">
                         Отмена
                     </Link>

@@ -40,7 +40,40 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'fio' => 'required|string|max:255|' . Rule::unique('clients', 'fio'),
+            'burndate' => 'required|date',
+            'diagnos' => 'required|string|max:255',
+            'contras' => 'required|string|max:255',
+            'mother' => 'string|max:255',
+            'mother_phone' => 'string|max:255',
+            'father' => 'string|max:255',
+            'father_phone' => 'string|max:255',
+            'adress' => 'string|max:255',
+            'wishes' => ['sometimes', 'array'],
+        ]);
+        $client = Client::create([
+            'fio' => $request->fio,
+            'burndate' => $request->burndate,
+            'diagnos' => $request->diagnos,
+            'contras' => $request->contras,
+            'mother' => $request->mother,
+            'mother_phone' => $request->mother_phone,
+            'father' => $request->father,
+            'father_phone' => $request->father_phone,
+            'adress' => $request->adress,
+        ]);
+        if (isset($request->wishes) && count($request->wishes)>0) {
+            foreach ($request->wishes as $wish) {
+                Wish::create([
+                    'class_id' => $wish->class_id,
+                    'client_id' => $client->id,
+                    'prefer_amount_of_classes' => $wish->prefer_amount_of_classes,
+                    'prefer_time' => $wish->prefer_time
+                ]);
+            }
+        }
+        return to_route('clients.index');
     }
 
     /**

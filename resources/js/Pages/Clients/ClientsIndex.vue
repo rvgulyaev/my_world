@@ -9,6 +9,8 @@ import TableDataCell from '@/Components/TableDataCell.vue';
 import Modal from '@/Components/Modal.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import PrimaryLink from '@/Components/PrimaryLink.vue';
+import PinkButton from '@/Components/PinkButton.vue';
 
 const props  = defineProps({
     clients: {
@@ -43,17 +45,16 @@ const deleteClient = (id) => {
     </template>
 
            <div class="mb-4">
-              <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
+              <div class="bg-white dark:bg-gray-700 shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
                  <div class="mb-4 flex items-center justify-between">
                     <div>
                        <h3 class="text-xl font-bold text-gray-900 mb-2">Список клиентов</h3>
                        <span class="text-base font-normal text-gray-500">Раздел предназначен для ведения списка клиентов.</span>
                     </div>
                     <div class="flex-shrink-0">
-                        <Link :href="route('clients.create')"
-                        class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-3.5 py-2.5 rounded dark:bg-blue-900 dark:text-blue-300 hover:bg-blue-300 ">
-                        Добавить
-                    </Link>
+                        <PrimaryLink :href="route('clients.create')">
+                        Добавить клиента
+                        </PrimaryLink>
                     </div>
                  </div>
                  <div class="flex flex-col mt-8">
@@ -85,10 +86,7 @@ const deleteClient = (id) => {
                                         <TableDataCell>{{ client.created_by }}<br><span>{{ client.created_at }}</span></TableDataCell>
                                         <TableDataCell>{{ client.updated_by }}<br><span>{{ client.updated_at }}</span></TableDataCell>
                                         <TableDataCell>
-                                            <button @click="confirmDelete" type="button"
-                                            class="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300 hover:bg-red-300 ">
-                                            Удалить
-                                            </button>
+                                            <PinkButton @click="confirmDelete">Удалить</PinkButton>
                                             <Modal :show="showConfirmDeleteModal" @close="closeModal" :maxWidth="'sm'">
                                                 <div class="p-6">
                                                     <h2 class="text-lg font-semibold text-slate-800">
