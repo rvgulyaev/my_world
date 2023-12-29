@@ -8,7 +8,9 @@ use App\Http\Resources\TimeRangeResource;
 use App\Models\Classes;
 use App\Models\Client;
 use App\Models\TimeRange;
+use App\Models\Wish;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -66,10 +68,10 @@ class ClientController extends Controller
         if (isset($request->wishes) && count($request->wishes)>0) {
             foreach ($request->wishes as $wish) {
                 Wish::create([
-                    'class_id' => $wish->class_id,
+                    'class_id' => $wish['class_id'],
                     'client_id' => $client->id,
-                    'prefer_amount_of_classes' => $wish->prefer_amount_of_classes,
-                    'prefer_time' => $wish->prefer_time
+                    'prefer_amount_of_classes' => $wish['prefer_amount_of_classes'],
+                    'prefer_time' => $wish['prefer_time']
                 ]);
             }
         }
@@ -89,7 +91,11 @@ class ClientController extends Controller
      */
     public function edit(Client $client)
     {
-        //
+        $client->load(['roles']);
+        return Inertia::render('Clients/ClientsEdit', [
+            'user' => new UserSharedResource($user),
+            'roles' => RoleResource::collection(Role::all()),
+        ]);
     }
 
     /**
@@ -103,8 +109,11 @@ class ClientController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Client $client)
+    public function destroy(string $id)
     {
-        //
+        $client = Client::find($id);
+        Wish::where('client_id', $id)->delete();
+        $client->delete();
+        return to_route('clients.index');
     }
 }

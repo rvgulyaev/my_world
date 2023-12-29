@@ -49,7 +49,7 @@ const deleteUser = (id) => {
                  <div class="mb-4 flex items-center justify-between">
                     <div>
                        <h3 class="text-xl font-bold text-gray-900 mb-2">Список пользователей</h3>
-                       <span class="text-base font-normal text-gray-500">* Пользователи помеченые галочкой "Специалист" используются при составлении расписания занатий</span>
+                       <span class="text-base font-normal text-gray-500">* Пользователи помеченные галочкой "Специалист" используются при составлении расписания занятий</span>
                     </div>
                     <div class="flex-shrink-0">
                         <PrimaryLink :href="route('users.create')">Добавить пользователя</PrimaryLink>

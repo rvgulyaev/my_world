@@ -11,39 +11,45 @@ import Switch from '@/Components/Switch.vue';
 
 
 const props  = defineProps({
-    user: {
+    client: {
         type: Object,
         required: true
     },
-    roles: Array,
+    classes: Array,
+    timeRanges: Array,
 })
 
 // Add User Modal
 const form = useForm({
-    name: props.user?.name,
-    username: props.user?.username,
-    specialist: props.user?.specialist,
-    phone: props.user?.phone,
-    password: '',
-    password_confirmation: '',
-    roles: [],
+    fio: props.client?.fio,
+    burndate: props.client?.burndate,
+    diagnos: props.client?.diagnos,
+    contras: props.client?.contras,
+    mother: props.client?.mother,
+    mother_phone: props.client?.mother_phone,
+    father: props.client?.father,
+    father_phone: props.client?.father_phone,
+    adress: props.client?.adress,
+    wishes: props.client?.wishes,
 });
 const submit = () => {
-    form.put(route('users.update', props.user?.id), {
+    form.put(route('clients.update', props.client?.id), {
         onSuccess: () => {
-            form.reset('name', 'username', 'specialist', 'phone', 'password', 'password_confirmation', 'roles');
+            this.$notify({
+                title: "Успех!!!",
+                text: "Данные о клиенте успешно сохранены!",
+                type: "success",
+            });
+        },
+        onError: (e) => {
+            this.$notify({
+                title: "Ошибка!!!",
+                text: "Ошибка при сохранении данных о клиенте!",
+                type: "error",
+            });
         },
     });
 };
-onMounted(() => {
-  form.roles = props.user?.roles;
-});
-watch(
-  () => props.user,
-  () => {
-    form.roles = props.user?.roles
-  }
-);
 </script>
 
 <template>
@@ -61,111 +67,300 @@ watch(
             </div>
             <div class="mt-6">
                 <form @submit.prevent="submit">
-                    <div class="mb-4">
-                        <InputLabel for="name" value="ФИО" />
+                    <div class="grid xl:grid-cols-2 2xl:grid-cols-2 gap-4">
+                    <div>
+                        <div class="mb-4">
+                            <InputLabel for="fio" value="* ФИО клиента" />
 
-                        <TextInput
-                            id="name"
-                            type="text"
-                            class="mt-1 block w-full"
-                            v-model="form.name"
-                            required
-                            autofocus
-                            autocomplete="name"
-                        />
-
-                        <InputError class="mt-2" :message="form.errors.name" />
-                    </div>
-
-                    <div class="mb-4">
-                        <InputLabel for="username" value="Имя пользователя" />
-
-                        <TextInput
-                            id="username"
-                            type="text"
-                            class="mt-1 block w-full"
-                            v-model="form.username"
-                            required
-                            autofocus
-                            autocomplete="username"
-                        />
-
-                        <InputError class="mt-2" :message="form.errors.username" />
-                    </div>
-
-                    <div class="mb-4">
-                        <InputLabel for="phone" value="Телефон" />
-
-                        <TextInput
-                            id="phone"
-                            type="text"
-                            v-mask="'+7(###)-###-##-##'"
-                            class="mt-1 block w-full"
-                            v-model="form.phone"
-                            required
-                            autofocus
-                            autocomplete="phone"
-                        />
-
-                        <InputError class="mt-2" :message="form.errors.phone" />
-                    </div>
-
-                    <div class="mb-4">
-                        <InputLabel for="password" value="Пароль" />
-
-                        <TextInput
-                            id="password"
-                            type="password"
-                            class="mt-1 block w-full"
-                            v-model="form.password"
-                            autocomplete="new-password"
-                        />
-
-                        <InputError class="mt-2" :message="form.errors.password" />
-                    </div>
-
-                    <div class="mb-4">
-                        <InputLabel for="password_confirmation" value="Подтверждение пароля" />
-
-                        <TextInput
-                            id="password_confirmation"
-                            type="password"
-                            class="mt-1 block w-full"
-                            v-model="form.password_confirmation"
-                            autocomplete="new-password"
-                        />
-
-                        <InputError class="mt-2" :message="form.errors.password_confirmation" />
-                    </div>
-
-                    <div class="mb-4">
-                        <InputLabel for="roles" value="Права пользователя" />
-                        <VueMultiselect
-                            v-model="form.roles"
-                            :options="roles"
-                            :multiple="true"
-                            :close-on-select="true"
-                            placeholder="Выберите права"
-                            label="name"
-                            track-by="id"
+                            <TextInput
+                                id="fio"
+                                type="text"
+                                class="mt-1 block w-full"
+                                v-model="form.fio"
+                                required
+                                autofocus
+                                autocomplete="fio"
                             />
-                            <InputError class="mt-2" :message="form.errors.roles" />
+
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.fio"
+                            />
+                        </div>
+
+                        <div class="mb-4">
+                            <InputLabel
+                                for="burndate"
+                                value="* Дата рождения"
+                            />
+
+                            <TextInput
+                                id="burndate"
+                                type="date"
+                                class="mt-1 block w-full"
+                                v-model="form.burndate"
+                                required
+                                autocomplete="burndate"
+                            />
+
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.burndate"
+                            />
+                        </div>
+
+                        <div class="mb-4">
+                            <InputLabel for="diagnos" value="* Диагноз" />
+
+                            <TextInput
+                                id="diagnos"
+                                type="text"
+                                class="mt-1 block w-full"
+                                v-model="form.diagnos"
+                                required
+                                autocomplete="diagnos"
+                            />
+
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.diagnos"
+                            />
+                        </div>
+
+                        <div class="mb-4">
+                            <InputLabel
+                                for="contras"
+                                value="* Противопоказания"
+                            />
+
+                            <TextInput
+                                id="contras"
+                                type="text"
+                                class="mt-1 block w-full"
+                                v-model="form.contras"
+                                required
+                                autocomplete="new-contras"
+                            />
+
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.contras"
+                            />
+                        </div>
+
+                        <div class="mb-4">
+                            <InputLabel for="mother" value="Мама клиента" />
+
+                            <TextInput
+                                id="mother"
+                                type="text"
+                                class="mt-1 block w-full"
+                                v-model="form.mother"
+                            />
+
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.mother"
+                            />
+                        </div>
+
+                        <div class="mb-4">
+                            <InputLabel
+                                for="mother_phone"
+                                value="Телефон мамы"
+                            />
+
+                            <TextInput
+                                id="mother_phone"
+                                type="text"
+                                v-mask="'+7(###)-###-##-##'"
+                                class="mt-1 block w-full"
+                                v-model="form.mother_phone"
+                            />
+
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.mother_phone"
+                            />
+                        </div>
+
+                        <div class="mb-4">
+                            <InputLabel for="father" value="Папа клиента" />
+
+                            <TextInput
+                                id="father"
+                                type="text"
+                                class="mt-1 block w-full"
+                                v-model="form.father"
+                            />
+
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.father"
+                            />
+                        </div>
+
+                        <div class="mb-4">
+                            <InputLabel
+                                for="father_phone"
+                                value="Телефон папы"
+                            />
+
+                            <TextInput
+                                id="father_phone"
+                                type="text"
+                                v-mask="'+7(###)-###-##-##'"
+                                class="mt-1 block w-full"
+                                v-model="form.father_phone"
+                            />
+
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.father_phone"
+                            />
+                        </div>
+
+                        <div class="mb-4">
+                            <InputLabel for="adress" value="Адрес проживания" />
+
+                            <TextInput
+                                id="adress"
+                                type="text"
+                                class="mt-1 block w-full"
+                                v-model="form.adress"
+                            />
+
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.adress"
+                            />
+                        </div>
                     </div>
+                    <div>
+                        <div class="mb-4">
+                            <InputLabel
+                                for="wishes"
+                                value="Пожелания по занятиям"
+                            />
+                            <div
+                                class="grid xl:grid-cols-4 2xl:grid-cols-4 gap-4 mt-3 mb-3"
+                            >
+                                <div>
+                                    <select
+                                        id="checkedClass"
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                                        v-model="checkedClass"
+                                    >
+                                        <option :value="null" disabled>
+                                            Занятие
+                                        </option>
+                                        <option
+                                            v-for="(
+                                                classItem, index
+                                            ) in classes"
+                                            :key="index"
+                                            :value="classItem.id"
+                                        >
+                                            {{ classItem.name }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <TextInput
+                                        id="classesAmount"
+                                        type="text"
+                                        placeholder="Кол-во занятий"
+                                        class="mt-1 block w-full"
+                                        v-model="classesAmount"
+                                    />
+                                </div>
+                                <div>
+                                    <select
+                                        id="preferTime"
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                                        v-model="preferTime"
+                                    >
+                                        <option :value="null" disabled>
+                                            Время
+                                        </option>
+                                        <option
+                                            v-for="(time, index) in timeRanges"
+                                            :key="index"
+                                            :value="time.id"
+                                        >
+                                            {{ time.name }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <button
+                                        type="button"
+                                        class="block w-full bg-blue-100 text-blue-800 mt-1 px-4 py-2.5 border border-transparent rounded-md font-semibold text-xs uppercase tracking-widest dark:bg-indigo-500 dark:text-indigo-900 dark:hover:bg-indigo-400 hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
+                                        @click="addWish"
+                                    >
+                                        Добавить
+                                    </button>
+                                </div>
+                            </div>
 
-                    <div class="mb-4">
-                        <Switch
-                        v-model:checked="form.specialist" label="Пользователь является специалистом?"
-                        />
-
-                        <InputError class="mt-2" :message="form.errors.specialist" />
+                            <Table>
+                                <template #header>
+                                    <TableRow>
+                                        <TableHeaderCell
+                                            >Занятие</TableHeaderCell
+                                        >
+                                        <TableHeaderCell
+                                            >Желаемое кол-во</TableHeaderCell
+                                        >
+                                        <TableHeaderCell
+                                            >Желаемое время</TableHeaderCell
+                                        >
+                                        <TableHeaderCell
+                                            >Действия</TableHeaderCell
+                                        >
+                                    </TableRow>
+                                </template>
+                                <template #default>
+                                    <TableRow
+                                        v-for="wish in wishes_list"
+                                        :key="wish.id"
+                                    >
+                                        <TableDataCell>{{
+                                            wish.class_name
+                                        }}</TableDataCell>
+                                        <TableDataCell>{{
+                                            wish.prefer_amount_of_classes
+                                        }}</TableDataCell>
+                                        <TableDataCell>{{
+                                            wish.prefer_time
+                                        }}</TableDataCell>
+                                        <TableDataCell>
+                                            <button
+                                                @click="delWish(wish)"
+                                                type="button"
+                                                class="bg-red-100 text-red-800 text-xs font-medium me-2 px-3.5 py-1.5 rounded dark:bg-pink-500 dark:text-pink-900 hover:bg-pink-400"
+                                            >
+                                                Удалить
+                                            </button>
+                                        </TableDataCell>
+                                    </TableRow>
+                                </template>
+                            </Table>
+                        </div>
                     </div>
-
-                <div class="mt-6 flex space-x-4">
-                    <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                        Обновить
+                </div>
+                <div class="mt-6 space-x-4">
+                    <PrimaryButton
+                        class="ms-4"
+                        :class="{ 'opacity-25': form.processing }"
+                        :disabled="form.processing"
+                    >
+                        Добавить клиента
                     </PrimaryButton>
-                    <Link :href="route('users.index')" 
-                        class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">
+                    <Link
+                        :href="route('clients.index')"
+                        class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
+                    >
                         Отмена
                     </Link>
                 </div>
