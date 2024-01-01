@@ -7,7 +7,8 @@ import { createPinia } from 'pinia'
 import mask from 'vue-the-mask';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
-import Notifications from '@kyvg/vue3-notification'
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
 import axios from 'axios';
 
 // проверка авторизации пользователя - если статус 401 - перенаправляем на страницу авторизации
@@ -32,8 +33,7 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue, Ziggy)
             .use(mask)
-            .use(Notifications)
-            .use(pinia)
+            .use(Toast)
             .mount(el);
     },
     progress: {

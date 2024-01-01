@@ -75,7 +75,7 @@ const deleteUser = (id) => {
                                     <TableRow v-for="user in users" :key="user.id">
                                         <TableDataCell>{{ user.id }}</TableDataCell>
                                         <TableDataCell>
-                                            <Link :href="route('users.edit', user.id)" class="text-blue-400 font-semibold hover:underline">{{ user.name }}</Link>    
+                                            <Link :href="route('users.edit', user.id)" class="ml-3 text-xm leading-5 font-bold text-indigo-600 dark:text-indigo-500 hover:text-indigo-300">{{ user.name }}</Link>    
                                         </TableDataCell>
                                         <TableDataCell>{{ user.username }}</TableDataCell>
                                         <TableDataCell>{{ user.phone }}</TableDataCell>
@@ -89,7 +89,7 @@ const deleteUser = (id) => {
                                         </TableDataCell>
                                         <TableDataCell>
                                             <span v-for="(role, index) in user.roles" :key="index" 
-                                            class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
+                                            class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-500 dark:text-indigo-900">
                                                 {{ role }}
                                             </span>
                                         </TableDataCell>

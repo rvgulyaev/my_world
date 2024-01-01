@@ -12,7 +12,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(TimeRangesSeed::class);
+        $this->call(TaskSeeder::class);
+        //$this->call(TimeRangesSeed::class);
         //$this->call(ClassesSeed::class);
         // $this->call(RoleSeeder::class);
         // $this->call(UserSeeder::class);

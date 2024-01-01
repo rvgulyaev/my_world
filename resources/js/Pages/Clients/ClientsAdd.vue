@@ -10,6 +10,9 @@ import TableRow from "@/Components/TableRow.vue";
 import TableHeaderCell from "@/Components/TableHeaderCell.vue";
 import TableDataCell from "@/Components/TableDataCell.vue";
 import { reactive, ref } from "vue";
+import { useToast } from "vue-toastification";
+
+const toast = useToast();
 
 const props = defineProps({
     classes: Array,
@@ -39,7 +42,7 @@ function addWish() {
     form.wishes.push({
         class_id: checkedClass.value,
         prefer_amount_of_classes: classesAmount.value,
-        prefer_time: preferTime.value,
+        prefer_time_id: preferTime.value,
     });
     checkedClass.value = null;
     classesAmount.value = null;
@@ -72,17 +75,13 @@ const form = useForm({
 const submit = () => {
     form.post(route("clients.store"), {
         onSuccess: () => {
-            this.$notify({
-                title: "Успех!!!",
-                text: "Данные о клиенте успешно сохранены!",
-                type: "success",
+            toast.success("Данные о клиенте успешно сохранены!", {
+                timeout: 2000
             });
         },
         onError: (e) => {
-            this.$notify({
-                title: "Ошибка!!!",
-                text: "Ошибка при сохранении данных о клиенте!",
-                type: "error",
+            toast.error("Ошибка при сохранении данных о клиенте!", {
+                timeout: 2000
             });
         },
     });
@@ -99,16 +98,12 @@ const submit = () => {
             </h2>
         </template>
 
-        <div
-            class="ml-3 mt-3 p-6 bg-white dark:bg-gray-700 rounded-md shadow-md"
-        >
+        <div class="ml-3 mt-3 p-6 bg-white dark:bg-gray-700 rounded-md shadow-md">
             <div>
                 <h3 class="text-xl font-bold text-gray-900 mb-2">
                     Форма добавления клиента
                 </h3>
-                <span class="text-base font-normal text-gray-500"
-                    >Поля помеченные * обязательны для заполнения.</span
-                >
+                <span class="text-base font-normal text-gray-500">Поля помеченные * обязательны для заполнения.</span>
             </div>
             <form @submit.prevent="submit">
                 <div class="grid xl:grid-cols-2 2xl:grid-cols-2 gap-4">
@@ -393,7 +388,7 @@ const submit = () => {
                         </div>
                     </div>
                 </div>
-                <div class="mt-6 space-x-4">
+                <div class="mt-6 pt-6 space-x-4 border-t border-gray-500">
                     <PrimaryButton
                         class="ms-4"
                         :class="{ 'opacity-25': form.processing }"

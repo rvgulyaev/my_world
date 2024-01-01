@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\FingerPrint;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Client extends Model
 {
@@ -27,6 +28,9 @@ class Client extends Model
         'adress',
     ];
 
+    function wishes(): HasMany {
+        return $this->hasMany(Wish::class);
+    }
     
     public function created_by_user()
     {

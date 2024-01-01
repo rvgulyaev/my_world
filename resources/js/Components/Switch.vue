@@ -29,6 +29,7 @@ export default {
 </script>
 
 <style scoped>
+
 .container {
   cursor: pointer;
   display: flex;
@@ -110,5 +111,27 @@ export default {
 .input:disabled + .switch::before {
   background-color: var(--dark-gray);
   border-color: var(--dark-gray);
+}
+
+@media(prefers-color-scheme: dark) {
+  .switch {
+  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+  }
+  .switch::before {
+  background-color: rgb(99 102 241 / var(--tw-bg-opacity));
+  border: 2px solid rgb(99 102 241 / var(--tw-bg-opacity));
+  }
+  .input:checked + .switch {
+  background-color: rgb(129 140 248 / var(--tw-bg-opacity));
+  }
+  .input:checked + .switch::before {
+    border-color: rgb(99 102 241 / var(--tw-bg-opacity));
+  }
+  .input:focus + .switch::before {
+  border-color: rgb(99 102 241 / var(--tw-bg-opacity));
+  }
+  .input:focus:checked + .switch::before {
+  border-color: rgb(99 102 241 / var(--tw-bg-opacity));
+  }
 }
 </style>

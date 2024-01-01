@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
@@ -33,7 +34,9 @@ Route::get('/dashboard', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/', function () { return Inertia::render('Dashboard'); })->name('dashboard');
     Route::resource('/clients', ClientController::class);
+    Route::resource('/tasks', TaskController::class);
 });
+
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('/users', UserController::class);
 });

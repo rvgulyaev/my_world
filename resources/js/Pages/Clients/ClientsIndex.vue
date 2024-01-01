@@ -43,7 +43,7 @@ const deleteClient = () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-gray-800 dark:text-gray-200 leading-tight">
+            <h2 class="text-gray-800 leading-tight">
                 Список клиентов
             </h2>
         </template>
@@ -54,7 +54,7 @@ const deleteClient = () => {
             >
                 <div class="mb-4 flex items-center justify-between">
                     <div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">
+                        <h3 class="text-xl font-bold text-gray-900 dark:text-indigo-500 mb-2">
                             Список клиентов
                         </h3>
                         <span class="text-base font-normal text-gray-500"
@@ -90,7 +90,7 @@ const deleteClient = () => {
                                             <TableDataCell>{{ client.id }}</TableDataCell>
                                             <TableDataCell>
                                                 <Link :href="route('clients.edit',client.id)"
-                                                    class="text-blue-400 dark:text-indigo-300 font-semibold hover:underline"
+                                                    class="ml-3 text-xm leading-5 font-bold text-indigo-600 dark:text-indigo-500 hover:text-indigo-300"
                                                 >{{ client.fio }}
                                                 </Link>
                                             </TableDataCell>
