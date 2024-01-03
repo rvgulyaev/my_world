@@ -12,11 +12,11 @@ const sessionTimeOut = ref(0);
 onMounted(async ()=>{
    // интервальный запрос раз в два часа
    try {
-      const response = await axios.get('/getSessionTimeOut');
+      const response = await axios.get('/api/getSessionTimeOut');
       sessionTimeOut.value = response.data.session_time_out;
 
       setInterval(async () => {
-         await axios.get('/zeroRequest');
+         await axios.get('/api/zeroRequest');
       }, sessionTimeOut.value)
    } catch (e) {
       console.log('Ошибка инициализации интервального запроса для отслеживания активности пользователя - ' + e.content)
