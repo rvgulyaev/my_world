@@ -1,7 +1,6 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, useForm } from "@inertiajs/vue3";
-import { Inertia } from "@inertiajs/inertia";
+import { Head, useForm, Link } from "@inertiajs/vue3";
 import { ref } from "vue";
 import Table from "@/Components/Table.vue";
 import TableRow from "@/Components/TableRow.vue";
@@ -17,39 +16,30 @@ import PinkButton from "@/Components/PinkButton.vue";
 import { useToast } from "vue-toastification";
 import InputLabel from '@/Components/InputLabel.vue';
 import { usePermissions } from "@/Composables/permissions";
-import ButtonIndigo from "@/Components/ButtonIndigo.vue";
-import TextInput from "@/Components/TextInput.vue";
-import ButtonPink from "@/Components/ButtonPink.vue";
-import Spinner from '@/Components/Spinner.vue';
-import { watch } from "vue";
+
 
 const { hasRole } = usePermissions();
 
-const showSpinner = ref(false);
-
 const toast = useToast();
 const props = defineProps({
-    users: {
-        type: Object,
-        required: true,
-    },
     records: {
         type: Object,
         required: true,
     },
-    filters: {
+    time_ranges: {
         type: Object,
-        default: () => ({}),
+        required: true
     },
+    users: {
+        type: Object,
+        required: true
+    }
 });
 
 // Delete User Modal
 const deleteForm = useForm({
     record_id: null
 });
-let education_date = ref(props.filters.education_date)
-let user_id = ref(Number(props.filters.user_id))
-
 const showConfirmDeleteModal = ref(false);
 const confirmDelete = (record_id) => {
     showConfirmDeleteModal.value = true;
@@ -75,18 +65,6 @@ const deleteRecord = () => {
     });
 };
 
-function checkUser(userid) {
-    user_id.value = userid
-    getRecords();
-}
-
-watch(education_date, (value) => {
-    getRecords();
-});
-
-function getRecords() {
-    Inertia.get('/records', { education_date: education_date.value, user_id: user_id.value }, { preserveState: true, replace:true });
-}
 
 </script>
 
@@ -117,21 +95,6 @@ function getRecords() {
                         </PrimaryLink>
                     </div>
                 </div>
-                <div class="mb-4 flex items-center justify-between">
-                    <div>
-                        <h3 class="text-gray-900 dark:text-gray-300 mb-2">
-                            Выбор дату и специалиста для отображения расписания
-                        </h3>
-                        <div class="mb-5">                            
-                        <TextInput type="date" v-model="education_date"/>
-                        </div>
-                        <template v-for="user in users" :key="user.id">
-                            <ButtonPink v-if="user.id === user_id">{{ user.name }}</ButtonPink>
-                            <ButtonIndigo v-else @click="checkUser(user.id)">{{ user.name }}</ButtonIndigo>
-                        </template>
-                        
-                    </div>
-                </div>
                 <div class="flex flex-col mt-8">
                     <div class="overflow-x-auto rounded-lg">
                         <div class="align-middle inline-block min-w-full">
@@ -139,20 +102,17 @@ function getRecords() {
                                 <Table>
                                     <template #header>
                                         <TableRow>
-                                            <TableHeaderCell>Время</TableHeaderCell>
-                                            <TableHeaderCell>Клиент</TableHeaderCell>
-                                            <TableHeaderCell>Направление</TableHeaderCell>
-                                            <TableHeaderCell>Отметка о посещении</TableHeaderCell>
-                                            <TableHeaderCell>Действие</TableHeaderCell>
+                                            <TableHeaderCell rowspan="2" class="text-center border-r border-gray-500 dark:border-gray-700 bg-gray-300 dark:bg-gray-800">Время</TableHeaderCell>
+                                            <TableHeaderCell :colspan="4" class="text-center border-r border-gray-500 dark:border-gray-700 bg-gray-300 dark:bg-gray-800"  v-for="user in users" :key="user.id">{{ user.name }}</TableHeaderCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <RecordsHeaderCell v-for="user in users" :key="user.id" />
                                         </TableRow>
                                     </template>
                                     <template #default>
-                                        <TableRow v-for="record in records" :key="record.id">
-                                            <TableDataCell>{{ record.time_range_name }}</TableDataCell>
-                                            <TableDataCell>{{ record.client_name }}</TableDataCell>
-                                            <TableDataCell>{{ record.class_name }}</TableDataCell>
-                                            <TableDataCell>{{ record.is_present }}</TableDataCell>
-                                            <TableDataCell></TableDataCell>        
+                                        <TableRow v-for="time in time_ranges" :key="time.id">
+                                            <TableDataCell class="dark:border-gray-700">{{ time.name }}</TableDataCell>
+                                            <RecordsDataCell v-for="record in records[time.id]" :key="record.index" :record="record" />
                                         </TableRow>
                                     </template>
                                 </Table>

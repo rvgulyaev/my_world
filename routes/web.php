@@ -20,20 +20,12 @@ use Inertia\Inertia;
 |
 */
 
-
-Route::get('getSessionTimeOut', function () {
-    return response(['session_time_out' => config('session.lifetime', 120) * 60 * 1000]);
-})->middleware(['auth'])->name('timeout');
-
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
 Route::middleware('auth')->group(function () {
     Route::get('/', function () { return Inertia::render('Dashboard'); })->name('dashboard');
     Route::resource('/clients', ClientController::class);
     Route::resource('/tasks', TaskController::class);
     Route::resource('/records', RecordController::class);
+    Route::post('/records/index', [RecordController::class, 'index'])->name('record.filter');
 });
 
 Route::prefix('api')->group(function(){
@@ -45,6 +37,8 @@ Route::prefix('api')->group(function(){
     })->name('timeout');  
     Route::post('/get_free_time_ranges', [RecordController::class, 'getFreeTimeRanges'])->name('get_free_time_ranges');
     Route::post('/get_free_rooms', [RecordController::class, 'getFreeRooms'])->name('get_free_rooms');
+    Route::post('/get_client_info', [RecordController::class, 'getClientInfo'])->name('get_client_info');
+    Route::post('/set_record_present', [RecordController::class, 'setPresent'])->name('set_record_present');
 })->middleware('auth');
 
 Route::middleware(['auth', 'role:admin'])->group(function () {

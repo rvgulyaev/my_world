@@ -72,7 +72,6 @@ const submit = () => {
                             class="mt-1 block w-full"
                             v-model="form.username"
                             required
-                            autofocus
                             autocomplete="username"
                         />
 
@@ -89,7 +88,6 @@ const submit = () => {
                             class="mt-1 block w-full"
                             v-model="form.phone"
                             required
-                            autofocus
                             autocomplete="phone"
                         />
 

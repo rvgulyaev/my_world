@@ -13,7 +13,7 @@ import PrimaryLink from "@/Components/PrimaryLink.vue";
 import PinkButton from "@/Components/PinkButton.vue";
 import { useToast } from "vue-toastification";
 import InputLabel from '@/Components/InputLabel.vue';
-import { usePermissions } from "@/composables/permissions";
+import { usePermissions } from "@/Composables/permissions";
 
 
 const { hasRole } = usePermissions();
