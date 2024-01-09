@@ -23,7 +23,7 @@ class UserController extends Controller
     public function index(): Response
     {
         return Inertia::render('Users/UsersIndex', [
-            'users' => UserResource::collection(User::all())
+            'users' => UserResource::collection(User::all()->sortBy('name'))
         ]);
     }
 

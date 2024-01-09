@@ -8,8 +8,8 @@ const props =defineProps({
 })
 const clas = computed(() =>
     props.classes == '' ?
-    "p-4 whitespace-nowrap text-sm font-normal text-gray-900 dark:text-gray-400 border-b dark:border-gray-500 " + props.classes :
-    "p-4 whitespace-nowrap text-sm font-normal text-gray-900 dark:text-gray-400 border-b dark:border-gray-500 "
+    "p-3 whitespace-nowrap text-sm font-normal text-gray-900 dark:text-gray-400 border-b dark:border-gray-500 " + props.classes :
+    "p-3 whitespace-nowrap text-sm font-normal text-gray-900 dark:text-gray-400 border-b dark:border-gray-500 "
 );
 </script>
 <template>

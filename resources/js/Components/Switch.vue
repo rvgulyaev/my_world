@@ -5,7 +5,7 @@
       class="input"
       type="checkbox"
       :checked="checked"
-      @change="$emit('update:checked', $event.target.checked)"
+                        @change="$emit(switchSpecialist())"
     />
     <span class="switch"></span>
     <span class="label">{{ label }}</span>
@@ -21,7 +21,7 @@ export default {
       required: true,
     },
     checked: {
-      type: Boolean,
+      type: Number,
       required: true,
     },
   },

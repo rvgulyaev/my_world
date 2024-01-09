@@ -11,7 +11,9 @@ import DangerButton from '@/Components/DangerButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import PinkButton from '@/Components/PinkButton.vue';
 import PrimaryLink from '@/Components/PrimaryLink.vue';
+import { useToast } from "vue-toastification";
 
+const toast = useToast();
 const props  = defineProps({
     users: {
         type: Object,
@@ -20,18 +22,31 @@ const props  = defineProps({
 })
 
 // Delete User Modal
-const deleteForm = useForm({})
+const deleteForm = useForm({
+    user_id: -1
+})
 const showConfirmDeleteUserModal = ref(false)
-const confirmDeleteUser = () => {
+const confirmDeleteUser = (id) => {
+    deleteForm.user_id = id;
     showConfirmDeleteUserModal.value = true;
 }
 const closeModal = () => {
     showConfirmDeleteUserModal.value = false;
-    showAddUserFormModal.value = false;
 }
-const deleteUser = (id) => {
-    deleteForm.delete(route('users.destroy', id), {
-        onSuccess: () => closeModal()
+const deleteUser = () => {
+    deleteForm.delete(route('users.destroy', deleteForm.user_id), {
+        onSuccess: () => { 
+            closeModal(); 
+            toast.success("Пользователь успешно удален!", {
+                timeout: 2000
+            });
+        },
+        onError: () => {
+            closeModal(); 
+            toast.error("Ошибка при удалении пользователя!", {
+                timeout: 2000
+            });
+        }
     })
 }
 </script>
@@ -94,18 +109,7 @@ const deleteUser = (id) => {
                                             </span>
                                         </TableDataCell>
                                         <TableDataCell>
-                                            <PinkButton @click="confirmDeleteUser">Удалить</PinkButton>
-                                            <Modal :show="showConfirmDeleteUserModal" @close="closeModal" :maxWidth="'sm'">
-                                                <div class="p-6">
-                                                    <h2 class="text-lg font-semibold text-slate-800">
-                                                        Подтвердите удаление пользователя!
-                                                    </h2>
-                                                    <div class="mt-6 flex space-x-4">
-                                                        <DangerButton @click="deleteUser(user.id)">Удалить</DangerButton>
-                                                        <SecondaryButton @click="closeModal">Отмена</SecondaryButton>
-                                                    </div>
-                                                </div>
-                                            </Modal>
+                                            <PinkButton @click="confirmDeleteUser(user.id)">Удалить</PinkButton>                                            
                                         </TableDataCell>
                                     </TableRow>
                                 </template>
@@ -116,6 +120,19 @@ const deleteUser = (id) => {
                  </div>
               </div>
            </div>
+           <Modal :show="showConfirmDeleteUserModal" @close="closeModal" :maxWidth="'sm'">
+                <div class="p-6">
+                    <div class="flex items-center justify-center">
+                        <h2 class="text-lg font-semibold text-slate-800 dark:text-gray-500">
+                            Подтвердите удаление пользователя!
+                        </h2>
+                    </div>
+                    <div class="mt-6 border-t-2 pt-5 border-gray-700 space-x-2 flex items-center justify-center">
+                        <DangerButton @click="deleteUser">Удалить</DangerButton>
+                        <SecondaryButton @click="closeModal">Отмена</SecondaryButton>
+                    </div>
+                </div>
+            </Modal>
 </AuthenticatedLayout>
 </template>
 

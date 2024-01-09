@@ -122,7 +122,7 @@ const deleteClient = () => {
                     </h2>
                 </div>
                 <div class="mt-6 border-t-2 pt-5 border-gray-700 space-x-2 flex items-center justify-center">
-                    <PinkButton @click="deleteClient">Удалить</PinkButton>
+                    <DangerButton @click="deleteClient">Удалить</DangerButton>
                     <SecondaryButton @click="closeModal">Отмена</SecondaryButton>
                 </div>
             </div>

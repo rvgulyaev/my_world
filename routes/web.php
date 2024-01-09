@@ -39,6 +39,10 @@ Route::prefix('api')->group(function(){
     Route::post('/get_free_rooms', [RecordController::class, 'getFreeRooms'])->name('get_free_rooms');
     Route::post('/get_client_info', [RecordController::class, 'getClientInfo'])->name('get_client_info');
     Route::post('/set_record_present', [RecordController::class, 'setPresent'])->name('set_record_present');
+
+    Route::post('/get_records', [RecordController::class, 'get_records'])->name('get_records');
+    Route::post('/set_is_present', [RecordController::class, 'set_is_present'])->name('set_is_present');
+    Route::post('/delete_record', [RecordController::class, 'delete_record'])->name('delete_record');
 })->middleware('auth');
 
 Route::middleware(['auth', 'role:admin'])->group(function () {

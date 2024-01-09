@@ -1,78 +1,69 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, useForm } from "@inertiajs/vue3";
-import { Inertia } from "@inertiajs/inertia";
+import { Head} from "@inertiajs/vue3";
 import { ref } from "vue";
 import Table from "@/Components/Table.vue";
 import TableRow from "@/Components/TableRow.vue";
 import TableHeaderCell from "@/Components/TableHeaderCell.vue";
-import RecordsHeaderCell from "@/Components/RecordsHeaderCell.vue";
 import TableDataCell from "@/Components/TableDataCell.vue";
-import RecordsDataCell from "@/Components/RecordsDataCell.vue";
 import Modal from "@/Components/Modal.vue";
-import DangerButton from "@/Components/DangerButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryLink from "@/Components/PrimaryLink.vue";
 import PinkButton from "@/Components/PinkButton.vue";
+import EmeraldButton from "@/Components/EmeraldButton.vue";
 import { useToast } from "vue-toastification";
-import InputLabel from '@/Components/InputLabel.vue';
 import { usePermissions } from "@/Composables/permissions";
-import ButtonIndigo from "@/Components/ButtonIndigo.vue";
+import ButtonInActive from "@/Components/ButtonInActive.vue";
 import TextInput from "@/Components/TextInput.vue";
-import ButtonPink from "@/Components/ButtonPink.vue";
-import Spinner from '@/Components/Spinner.vue';
+import ButtonActive from "@/Components/ButtonActive.vue";
 import { watch } from "vue";
+import { onMounted } from "vue";
+import Spinner from '@/Components/Spinner.vue';
+import DangerButton from "@/Components/DangerButton.vue";
 
 const { hasRole } = usePermissions();
 
 const showSpinner = ref(false);
 
 const toast = useToast();
-const props = defineProps({
-    users: {
-        type: Object,
-        required: true,
-    },
-    records: {
-        type: Object,
-        required: true,
-    },
-    filters: {
-        type: Object,
-        default: () => ({}),
-    },
-});
 
-// Delete User Modal
-const deleteForm = useForm({
-    record_id: null
-});
-let education_date = ref(props.filters.education_date)
-let user_id = ref(Number(props.filters.user_id))
+let education_date = ref(new Date().toISOString().split('T')[0])
+let user_id = ref(-1)
+let users = ref({})
+let records = ref({})
+let record_to_delete = ref(-1)
 
 const showConfirmDeleteModal = ref(false);
-const confirmDelete = (record_id) => {
+function confirmDeleteRecord (record_id) {
     showConfirmDeleteModal.value = true;
-    deleteForm.record_id = record_id;
+    record_to_delete.value = record_id;
+    console.log(record_to_delete)
 };
 const closeModal = () => {
     showConfirmDeleteModal.value = false;
 };
-const deleteRecord = () => {
-    deleteForm.delete(route("records.destroy", deleteForm.task_id), {
-        onSuccess: () => {
-            closeModal();
-            toast.success("Задача успешно удалена!", {
+async function deleteRecord () {
+    closeModal();
+    showSpinner.value = true;
+    await axios.post('/api/delete_record', { 'record_id': record_to_delete.value })
+    .then((response) => {
+        showSpinner.value = false;
+        let index = records.value.findIndex((x) => x.id === record_to_delete.value);
+        records.value[index].class_name = null;
+        records.value[index].client_name = null;
+        records.value[index].id = null;
+        records.value[index].room_name = null;
+        records.value[index].is_present = null;
+        toast.success("Отметка о посещении клиента успешно обновлена!", {
                 timeout: 2000
             });
-        },
-        onError: (e) => {
-            closeModal();
-            toast.error("Ошибка при удалении задачи!", {
+    })
+    .catch((e) => {
+        showSpinner.value = false;
+        toast.error("Ошибка при удалении записи из расписания! - ", {
                 timeout: 2000
             });
-        },
-    });
+    })
 };
 
 function checkUser(userid) {
@@ -84,9 +75,49 @@ watch(education_date, (value) => {
     getRecords();
 });
 
-function getRecords() {
-    Inertia.get('/records', { education_date: education_date.value, user_id: user_id.value }, { preserveState: true, replace:true });
+async function getRecords() {
+    showSpinner.value = true;
+    let filters = {};
+    if (user_id.value > 0) {
+        filters = { 'education_date':education_date.value, 'user_id': user_id.value }
+         } else {
+        filters = { 'education_date':education_date.value }
+        }
+    await axios.post('/api/get_records', filters)
+    .then((response) => {
+        showSpinner.value=false;
+        users.value = response.data.users
+        records.value = response.data.records
+        user_id.value = response.data.user_id
+    })
+    .catch((e) => {
+        showSpinner.value = false;
+    })
 }
+
+async function setPresent(id) {
+    showSpinner.value = true;
+    console.log(id);
+    await axios.post('/api/set_is_present', { 'record_id': id })
+    .then((response) => {
+            showSpinner.value = false;
+            let index = records.value.findIndex((x) => x.id === id);
+            records.value[index].is_present = response.data.is_present;
+            toast.success("Отметка о посещении клиента успешно обновлена!", {
+                timeout: 2000
+            });
+        })
+    .catch((e) =>{
+            showSpinner.value = false;
+            toast.error("Ошибка при обновлении отметки о посещении клиента! - ", {
+                timeout: 2000
+            });
+    });
+}
+
+onMounted(() => {
+    getRecords();
+})
 
 </script>
 
@@ -120,16 +151,16 @@ function getRecords() {
                 <div class="mb-4 flex items-center justify-between">
                     <div>
                         <h3 class="text-gray-900 dark:text-gray-300 mb-2">
-                            Выбор дату и специалиста для отображения расписания
+                            Выберите дату и специалиста для отображения расписания
                         </h3>
-                        <div class="mb-5">                            
-                        <TextInput type="date" v-model="education_date"/>
-                        </div>
-                        <template v-for="user in users" :key="user.id">
-                            <ButtonPink v-if="user.id === user_id">{{ user.name }}</ButtonPink>
-                            <ButtonIndigo v-else @click="checkUser(user.id)">{{ user.name }}</ButtonIndigo>
-                        </template>
+                        <div>                            
+                        <TextInput type="date" v-model="education_date" class="mr-7"/>
                         
+                        <template v-for="user in users" :key="user.id">
+                            <ButtonActive v-if="user.id === user_id">{{ user.name }}</ButtonActive>
+                            <ButtonInActive v-else @click="checkUser(user.id)">{{ user.name }}</ButtonInActive>
+                        </template>
+                        </div>                        
                     </div>
                 </div>
                 <div class="flex flex-col mt-8">
@@ -142,8 +173,9 @@ function getRecords() {
                                             <TableHeaderCell>Время</TableHeaderCell>
                                             <TableHeaderCell>Клиент</TableHeaderCell>
                                             <TableHeaderCell>Направление</TableHeaderCell>
+                                            <TableHeaderCell>Кабинет</TableHeaderCell>
                                             <TableHeaderCell>Отметка о посещении</TableHeaderCell>
-                                            <TableHeaderCell>Действие</TableHeaderCell>
+                                            <TableHeaderCell v-if="hasRole('moderator')|hasRole('admin')">Действие</TableHeaderCell>
                                         </TableRow>
                                     </template>
                                     <template #default>
@@ -151,8 +183,20 @@ function getRecords() {
                                             <TableDataCell>{{ record.time_range_name }}</TableDataCell>
                                             <TableDataCell>{{ record.client_name }}</TableDataCell>
                                             <TableDataCell>{{ record.class_name }}</TableDataCell>
-                                            <TableDataCell>{{ record.is_present }}</TableDataCell>
-                                            <TableDataCell></TableDataCell>        
+                                            <TableDataCell>{{ record.room_name }}</TableDataCell>
+                                            <TableDataCell>
+                                                <PinkButton v-if="record.is_present === 0" @click="setPresent(record.id)">
+                                                    Не был
+                                                </PinkButton>
+                                                <EmeraldButton v-else-if="record.is_present === 1" @click="setPresent(record.id)">
+                                                    Был
+                                                </EmeraldButton>
+                                            </TableDataCell>
+                                            <TableDataCell>
+                                                <PinkButton v-if="record.id > 0&&hasRole('moderator')|hasRole('admin')" @click="confirmDeleteRecord(record.id)">
+                                                    Удалить
+                                                </PinkButton>
+                                            </TableDataCell>        
                                         </TableRow>
                                     </template>
                                 </Table>
@@ -171,10 +215,11 @@ function getRecords() {
                     </h2>
                 </div>
                 <div class="mt-6 border-t-2 pt-5 border-gray-700 space-x-2 flex items-center justify-center">
-                    <PinkButton @click="deleteTask">Удалить</PinkButton>
+                    <DangerButton @click="deleteRecord">Удалить</DangerButton>
                     <SecondaryButton @click="closeModal">Отмена</SecondaryButton>
                 </div>
             </div>
         </Modal>
+        <Spinner :showSpinner="showSpinner" />    
     </AuthenticatedLayout>
 </template>

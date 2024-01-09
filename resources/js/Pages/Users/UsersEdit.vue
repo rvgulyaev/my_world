@@ -44,6 +44,9 @@ watch(
     form.roles = props.user?.roles
   }
 );
+function switchSpecialist() {
+    form.specialist = 1 - form.specialist
+}
 </script>
 
 <template>
@@ -86,7 +89,6 @@ watch(
                             class="mt-1 block w-full"
                             v-model="form.username"
                             required
-                            autofocus
                             autocomplete="username"
                         />
 
@@ -103,7 +105,6 @@ watch(
                             class="mt-1 block w-full"
                             v-model="form.phone"
                             required
-                            autofocus
                             autocomplete="phone"
                         />
 

@@ -11,6 +11,7 @@ import TableHeaderCell from "@/Components/TableHeaderCell.vue";
 import TableDataCell from "@/Components/TableDataCell.vue";
 import { reactive, ref } from "vue";
 import { useToast } from "vue-toastification";
+import PinkButton from "@/Components/PinkButton.vue";
 
 const toast = useToast();
 
@@ -374,13 +375,9 @@ const submit = () => {
                                             wish.prefer_time
                                         }}</TableDataCell>
                                         <TableDataCell>
-                                            <button
-                                                @click="delWish(wish)"
-                                                type="button"
-                                                class="bg-red-100 text-red-800 text-xs font-medium me-2 px-3.5 py-1.5 rounded dark:bg-pink-500 dark:text-pink-900 hover:bg-pink-400"
-                                            >
+                                            <PinkButton @click="delWish(wish)">
                                                 Удалить
-                                            </button>
+                                            </PinkButton>
                                         </TableDataCell>
                                     </TableRow>
                                 </template>

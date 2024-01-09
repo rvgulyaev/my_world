@@ -30,6 +30,10 @@ const submit = () => {
         },
     });
 }
+
+function switchSpecialist() {
+    form.specialist = 1 - form.specialist
+}
 </script>
 
 <template>
@@ -141,6 +145,7 @@ const submit = () => {
                     <div class="mb-4">
                         <Switch
                         v-model:checked="form.specialist" label="Пользователь является специалистом?"
+                        @change="switchSpecialist()"
                         />
 
                         <InputError class="mt-2" :message="form.errors.specialist" />

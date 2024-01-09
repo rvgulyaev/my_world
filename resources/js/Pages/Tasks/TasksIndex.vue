@@ -14,6 +14,7 @@ import PinkButton from "@/Components/PinkButton.vue";
 import { useToast } from "vue-toastification";
 import InputLabel from '@/Components/InputLabel.vue';
 import { usePermissions } from "@/Composables/permissions";
+import EmeraldButton from "@/Components/EmeraldButton.vue";
 
 
 const { hasRole } = usePermissions();
@@ -135,27 +136,18 @@ function executeTask() {
                                         <TableRow v-for="task in tasks" :key="task.id">
                                             <TableDataCell>{{ task.id }}</TableDataCell>
                                             <TableDataCell>{{ task.created_by }}<br /><span>{{ task.created_at }}</span></TableDataCell>
-                                            <TableDataCell>{{ task.task }}</TableDataCell>
+                                            <TableDataCell class="max-w-md overflow-hidden">{{ task.task }}</TableDataCell>
                                             <TableDataCell>{{ task.executeDate }}</TableDataCell>
                                             <TableDataCell>
-                                                <span v-if="task.executed === 1"  class="bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded me-2 dark:bg-cyan-500 dark:text-cyan-900">
-                                                    <svg class="w-2.5 h-2.5 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
-                                                    </svg>
+                                                <EmeraldButton v-if="task.executed === 1" enabled="false" class="cursor-not-allowed">
                                                     Выполнено
-                                                </span> 
-                                                <button v-else-if="task.executed !== 1 && hasRole('admin') | hasRole('moderator')" @click="confirmExecuteTask(task.id)" class="bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded me-2 dark:bg-pink-500 dark:text-pink-900">
-                                                    <svg class="w-2.5 h-2.5 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z"/>
-                                                    </svg>
+                                                </EmeraldButton>
+                                                <PinkButton v-else-if="task.executed !== 1 && hasRole('admin') | hasRole('moderator')" @click="confirmExecuteTask(task.id)">
                                                     Не выполнено
-                                                </button>  
-                                                <span v-else-if="task.executed !== 1" class="bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded me-2 dark:bg-pink-500 dark:text-pink-900">
-                                                    <svg class="w-2.5 h-2.5 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z"/>
-                                                    </svg>
+                                                </PinkButton>  
+                                                <PinkButton v-else-if="task.executed !== 1" enabled="false" class="cursor-not-allowed">
                                                     Не выполнено
-                                                </span>                                              
+                                                </PinkButton>                                             
                                             </TableDataCell>
                                             <TableDataCell>{{ task.comments }}</TableDataCell>
                                             <TableDataCell v-if="hasRole('admin')">
@@ -181,7 +173,7 @@ function executeTask() {
                     </h2>
                 </div>
                 <div class="mt-6 border-t-2 pt-5 border-gray-700 space-x-2 flex items-center justify-center">
-                    <PinkButton @click="deleteTask">Удалить</PinkButton>
+                    <DangerButton @click="deleteTask">Удалить</DangerButton>
                     <SecondaryButton @click="closeModal">Отмена</SecondaryButton>
                 </div>
             </div>
@@ -202,7 +194,7 @@ function executeTask() {
                         </div>
                 </div>
                 <div class="mt-6 border-t-2 pt-5 border-gray-700 space-x-2 flex items-center justify-center">
-                    <PinkButton @click="executeTask">Выполнить задачу</PinkButton>
+                    <DangerButton @click="executeTask">Выполнить задачу</DangerButton>
                     <SecondaryButton @click="closeModal">Отмена</SecondaryButton>
                 </div>
             </div>
