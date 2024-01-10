@@ -6,8 +6,10 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import { usePermissions } from '@/Composables/permissions';
 import axios from 'axios';
 import Sidebar from '@/Components/Sidebar.vue';
+import moment from 'moment/min/moment-with-locales';
 
 const sessionTimeOut = ref(0);
+let currentTime =ref();
 
 onMounted(async ()=>{
    // интервальный запрос раз в два часа
@@ -20,7 +22,11 @@ onMounted(async ()=>{
       }, sessionTimeOut.value)
    } catch (e) {
       console.log('Ошибка инициализации интервального запроса для отслеживания активности пользователя - ' + e.content)
-   }
+   }   
+   moment.locale('ru');
+   setInterval(() => {
+      currentTime.value = moment().format('DD.MM.YYYY dddd h:mm:ss')
+   })
 });
 </script>
 
@@ -48,6 +54,7 @@ onMounted(async ()=>{
             <div class="flex items-center">
                <div class="hidden lg:flex items-center">
                   <div class="hidden sm:flex sm:items-center sm:ms-6">
+                  {{ currentTime }}
                             <!-- Settings Dropdown -->
                             <div class="ms-3 relative">
                                 <Dropdown align="right" width="48">

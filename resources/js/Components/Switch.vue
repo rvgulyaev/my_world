@@ -5,7 +5,7 @@
       class="input"
       type="checkbox"
       :checked="checked"
-                        @change="$emit(switchSpecialist())"
+      @change="$emit('update:checked', $event.target.checked)"
     />
     <span class="switch"></span>
     <span class="label">{{ label }}</span>
