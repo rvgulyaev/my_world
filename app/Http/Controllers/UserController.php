@@ -46,7 +46,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255|' . Rule::unique('users', 'name'),
             'username' => 'required|string|max:255|' . Rule::unique('users', 'username'),
             'phone' => 'required',
-            'specialist' => 'required|integer',
+            'specialist' => 'required',
             'password' => 'required|min:8|confirmed',
             'roles' => ['sometimes', 'array'],
         ]);
@@ -90,7 +90,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255|' . Rule::unique('users')->ignore($user),
             'username' => 'required|string|max:255|' . Rule::unique('users')->ignore($user),
             'phone' => 'required',
-            'specialist' => 'required|integer',
+            'specialist' => 'required',
             'password' => 'nullable|min:8|confirmed',
             'roles' => ['sometimes', 'array'],
         ]);

@@ -30,10 +30,6 @@ const submit = () => {
         },
     });
 }
-
-function switchSpecialist() {
-    form.specialist = 1 - form.specialist
-}
 </script>
 
 <template>
@@ -44,9 +40,9 @@ function switchSpecialist() {
             <h2 class="text-gray-800 dark:text-gray-200 leading-tight">Форма добавления пользователя</h2>
         </template>
 
-        <div class="ml-3 mt-3 p-6 bg-white dark:bg-gray-700 rounded-md shadow-md">
+        <div class="max-w-lg ml-6 mt-6 p-6 bg-white dark:bg-gray-700 rounded-md shadow-md">
             <div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Форма добавления пользователя</h3>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-indigo-400 mb-2">Форма добавления пользователя</h3>
                 <span class="text-base font-normal text-gray-500">Заполните все поля и нажмите кнопку "Добавить" для сохранения данных.</span>
             </div>
             <div class="mt-6">
@@ -145,7 +141,6 @@ function switchSpecialist() {
                     <div class="mb-4">
                         <Switch
                         v-model:checked="form.specialist" label="Пользователь является специалистом?"
-                        @change="switchSpecialist()"
                         />
 
                         <InputError class="mt-2" :message="form.errors.specialist" />

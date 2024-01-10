@@ -44,9 +44,6 @@ watch(
     form.roles = props.user?.roles
   }
 );
-function switchSpecialist() {
-    form.specialist = 1 - form.specialist
-}
 </script>
 
 <template>
@@ -57,9 +54,9 @@ function switchSpecialist() {
             <h2 class="text-gray-800 dark:text-gray-200 leading-tight">Форма редактирования пользователя</h2>
         </template>
 
-        <div class="max-w-lg ml-6 mt-6 p-6 bg-white rounded-md shadow-md">
+        <div class="max-w-lg ml-6 mt-6 p-6 bg-white dark:bg-gray-700 rounded-md shadow-md">
             <div>
-                <h3 class="text-xl font-bold text-gray-900 mb-2">Форма редактирования пользователя</h3>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-indigo-400 mb-2">Форма редактирования пользователя</h3>
                 <span class="text-base font-normal text-gray-500">Заполните все поля и нажмите кнопку "Изменить" для сохранения данных.</span>
             </div>
             <div class="mt-6">
@@ -175,3 +172,29 @@ function switchSpecialist() {
         </div>
     </AuthenticatedLayout>
 </template>
+
+<style>
+@media(prefers-color-scheme: dark) {
+    .multiselect__spinner {
+        background: rgb(31 41 55 / var(--tw-bg-opacity));
+      }
+      .multiselect--disabled {
+        background: rgb(31 41 55 / var(--tw-bg-opacity));
+      }
+      .multiselect__input,
+        .multiselect__single {
+            background: rgb(31 41 55 / var(--tw-bg-opacity));
+        }
+      .multiselect__tags {
+        border: 1px solid rgb(55 65 81 / var(--tw-border-opacity));
+        background: rgb(31 41 55 / var(--tw-bg-opacity));
+      }
+      .multiselect__content-wrapper {
+      background: rgb(31 41 55 / var(--tw-bg-opacity));
+      border: 1px solid rgb(55 65 81 / var(--tw-border-opacity));
+    }
+    .multiselect--above .multiselect__content-wrapper {
+      border-top: 1px solid rgb(55 65 81 / var(--tw-border-opacity));
+    }
+  }
+</style>
