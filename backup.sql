@@ -31,8 +31,7 @@ CREATE TABLE IF NOT EXISTS `classes` (
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Дамп данных таблицы my_world.classes: ~14 rows (приблизительно)
-DELETE FROM `classes`;
-INSERT INTO `classes` (`id`, `name`, `created_at`, `updated_at`) VALUES
+REPLACE INTO `classes` (`id`, `name`, `created_at`, `updated_at`) VALUES
 	(1, 'АВА', '2023-12-22 02:12:36', '2023-12-22 02:12:36'),
 	(2, 'Дефектолог', '2023-12-22 02:12:36', '2023-12-22 02:12:36'),
 	(3, 'Логопед', '2023-12-22 02:12:36', '2023-12-22 02:12:36'),
@@ -68,9 +67,8 @@ CREATE TABLE IF NOT EXISTS `clients` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Дамп данных таблицы my_world.clients: ~15 rows (приблизительно)
-DELETE FROM `clients`;
-INSERT INTO `clients` (`id`, `fio`, `burndate`, `diagnos`, `contras`, `mother`, `mother_phone`, `father`, `father_phone`, `adress`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+-- Дамп данных таблицы my_world.clients: ~16 rows (приблизительно)
+REPLACE INTO `clients` (`id`, `fio`, `burndate`, `diagnos`, `contras`, `mother`, `mother_phone`, `father`, `father_phone`, `adress`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
 	(3, 'Титов А.К.', '2020-10-20', 'Диагноз 3', 'Противопоказания 3', 'Степанова В.В.', '+79222222222', '-', '-', '-', 1, 1, NULL, '2023-10-13 04:58:50'),
 	(4, 'Иванов Иван Иванович', '2023-10-12', 'Диагноз 5', 'Противопоказания 5', 'Иванова Анна Ивановна', '-', 'Иванов Петр Петрович', '-', '-', 1, 1, NULL, NULL),
 	(5, 'Петров Петр', '2008-11-20', 'Д 3', 'П 3', NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2023-11-08 11:39:33', '2023-11-08 11:39:33'),
@@ -103,7 +101,6 @@ CREATE TABLE IF NOT EXISTS `failed_jobs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Дамп данных таблицы my_world.failed_jobs: ~0 rows (приблизительно)
-DELETE FROM `failed_jobs`;
 
 -- Дамп структуры для таблица my_world.migrations
 DROP TABLE IF EXISTS `migrations`;
@@ -115,8 +112,7 @@ CREATE TABLE IF NOT EXISTS `migrations` (
 ) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Дамп данных таблицы my_world.migrations: ~14 rows (приблизительно)
-DELETE FROM `migrations`;
-INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
+REPLACE INTO `migrations` (`id`, `migration`, `batch`) VALUES
 	(1, '2014_10_12_000000_create_users_table', 1),
 	(2, '2014_10_12_100000_create_password_reset_tokens_table', 1),
 	(3, '2019_08_19_000000_create_failed_jobs_table', 1),
@@ -144,7 +140,6 @@ CREATE TABLE IF NOT EXISTS `model_has_permissions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Дамп данных таблицы my_world.model_has_permissions: ~0 rows (приблизительно)
-DELETE FROM `model_has_permissions`;
 
 -- Дамп структуры для таблица my_world.model_has_roles
 DROP TABLE IF EXISTS `model_has_roles`;
@@ -158,8 +153,7 @@ CREATE TABLE IF NOT EXISTS `model_has_roles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Дамп данных таблицы my_world.model_has_roles: ~6 rows (приблизительно)
-DELETE FROM `model_has_roles`;
-INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
+REPLACE INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
 	(1, 'App\\Models\\User', 1),
 	(2, 'App\\Models\\User', 2),
 	(3, 'App\\Models\\User', 3),
@@ -177,7 +171,6 @@ CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Дамп данных таблицы my_world.password_reset_tokens: ~0 rows (приблизительно)
-DELETE FROM `password_reset_tokens`;
 
 -- Дамп структуры для таблица my_world.permissions
 DROP TABLE IF EXISTS `permissions`;
@@ -192,7 +185,6 @@ CREATE TABLE IF NOT EXISTS `permissions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Дамп данных таблицы my_world.permissions: ~0 rows (приблизительно)
-DELETE FROM `permissions`;
 
 -- Дамп структуры для таблица my_world.personal_access_tokens
 DROP TABLE IF EXISTS `personal_access_tokens`;
@@ -213,7 +205,6 @@ CREATE TABLE IF NOT EXISTS `personal_access_tokens` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Дамп данных таблицы my_world.personal_access_tokens: ~0 rows (приблизительно)
-DELETE FROM `personal_access_tokens`;
 
 -- Дамп структуры для таблица my_world.record
 DROP TABLE IF EXISTS `record`;
@@ -231,18 +222,19 @@ CREATE TABLE IF NOT EXISTS `record` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Дамп данных таблицы my_world.record: ~6 rows (приблизительно)
-DELETE FROM `record`;
-INSERT INTO `record` (`id`, `educationDate`, `time_range`, `user_id`, `client_id`, `class_id`, `room_id`, `is_present`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-	(1, '2024-01-07', 4, 3, 3, 12, 2, 0, 1, 1, '2024-01-04 02:21:01', '2024-01-05 05:44:09'),
-	(2, '2024-01-07', 3, 20, 4, 12, 1, 1, 1, 1, '2024-01-04 03:44:14', '2024-01-05 05:18:50'),
-	(3, '2024-01-07', 3, 3, 7, 10, 2, 0, 1, 1, '2024-01-05 05:44:44', '2024-01-05 05:44:44'),
+-- Дамп данных таблицы my_world.record: ~8 rows (приблизительно)
+REPLACE INTO `record` (`id`, `educationDate`, `time_range`, `user_id`, `client_id`, `class_id`, `room_id`, `is_present`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+	(2, '2024-01-07', 3, 3, 4, 12, 1, 1, 1, 1, '2024-01-04 03:44:14', '2024-01-05 05:18:50'),
 	(4, '2024-01-07', 11, 20, 10, 9, 1, 0, 1, 1, '2024-01-05 05:46:45', '2024-01-05 05:46:45'),
 	(5, '2024-01-07', 1, 21, 16, 10, 2, 0, 1, 1, '2024-01-05 05:54:20', '2024-01-05 05:54:20'),
 	(6, '2024-01-07', 4, 21, 16, 13, 3, 0, 1, 1, '2024-01-05 06:04:55', '2024-01-05 06:04:55'),
-	(7, '2024-01-07', 2, 22, 9, 8, 1, 0, 1, 1, '2024-01-05 07:09:28', '2024-01-05 07:09:28');
+	(7, '2024-01-07', 2, 22, 9, 8, 1, 1, 1, 1, '2024-01-05 07:09:28', '2024-01-09 08:02:25'),
+	(9, '2024-01-09', 13, 3, 10, 9, 2, 1, 1, 1, '2024-01-09 08:03:08', '2024-01-09 08:12:04'),
+	(10, '2024-01-10', 9, 3, 5, 10, 1, 0, 1, 1, '2024-01-10 09:18:04', '2024-01-10 09:18:04'),
+	(11, '2024-01-11', 11, 20, 6, 11, 2, 1, 1, 1, '2024-01-10 09:18:25', '2024-01-10 09:18:45'),
+	(12, '2024-01-11', 4, 3, 8, 11, 1, 0, 1, 1, '2024-01-11 08:37:40', '2024-01-11 08:37:40');
 
 -- Дамп структуры для таблица my_world.roles
 DROP TABLE IF EXISTS `roles`;
@@ -257,8 +249,7 @@ CREATE TABLE IF NOT EXISTS `roles` (
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Дамп данных таблицы my_world.roles: ~3 rows (приблизительно)
-DELETE FROM `roles`;
-INSERT INTO `roles` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VALUES
+REPLACE INTO `roles` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VALUES
 	(1, 'admin', 'web', '2023-12-18 07:12:03', '2023-12-18 07:12:03'),
 	(2, 'moderator', 'web', '2023-12-18 07:12:03', '2023-12-18 07:12:03'),
 	(3, 'user', 'web', '2023-12-18 07:12:03', '2023-12-18 07:12:03');
@@ -275,21 +266,19 @@ CREATE TABLE IF NOT EXISTS `role_has_permissions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Дамп данных таблицы my_world.role_has_permissions: ~0 rows (приблизительно)
-DELETE FROM `role_has_permissions`;
 
 -- Дамп структуры для таблица my_world.rooms
 DROP TABLE IF EXISTS `rooms`;
 CREATE TABLE IF NOT EXISTS `rooms` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Дамп данных таблицы my_world.rooms: ~2 rows (приблизительно)
-DELETE FROM `rooms`;
-INSERT INTO `rooms` (`id`, `name`, `created_at`, `updated_at`) VALUES
+-- Дамп данных таблицы my_world.rooms: ~3 rows (приблизительно)
+REPLACE INTO `rooms` (`id`, `name`, `created_at`, `updated_at`) VALUES
 	(1, 'Кабинет логопеда', '2024-01-01 14:32:02', '2024-01-01 14:32:02'),
 	(2, 'Кабинет дефектолога', '2024-01-01 14:32:02', '2024-01-01 14:32:02'),
 	(3, 'Кабинет психолога', '2024-01-01 14:32:02', '2024-01-01 14:32:02');
@@ -298,7 +287,7 @@ INSERT INTO `rooms` (`id`, `name`, `created_at`, `updated_at`) VALUES
 DROP TABLE IF EXISTS `task`;
 CREATE TABLE IF NOT EXISTS `task` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `task` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `task` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `executeDate` date NOT NULL,
   `executed` int NOT NULL DEFAULT '0',
   `comments` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
@@ -307,18 +296,18 @@ CREATE TABLE IF NOT EXISTS `task` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Дамп данных таблицы my_world.task: ~1 rows (приблизительно)
-DELETE FROM `task`;
-INSERT INTO `task` (`id`, `task`, `executeDate`, `executed`, `comments`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
-	(1, 'Подготовить карточки ПЕКС «Много» «Мало» для Корчагина Артема', '2023-01-03', 0, '', 1, 1, '2024-01-01 04:21:30', '2024-01-01 04:21:30');
+-- Дамп данных таблицы my_world.task: ~0 rows (приблизительно)
+REPLACE INTO `task` (`id`, `task`, `executeDate`, `executed`, `comments`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
+	(1, 'Подготовить карточки ПЕКС «Много» «Мало» для Корчагина Артема', '2023-01-03', 1, '1', 1, 1, '2024-01-01 04:21:30', '2024-01-09 08:21:14'),
+	(4, 'Nobis dolor necessitatibus sit non et suscipit ut necessitatibus ullamco cupiditate minus assumenda est quasi in', '2024-05-04', 1, '11', 1, 1, '2024-01-09 08:25:13', '2024-01-09 08:30:04');
 
 -- Дамп структуры для таблица my_world.time_ranges
 DROP TABLE IF EXISTS `time_ranges`;
 CREATE TABLE IF NOT EXISTS `time_ranges` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -326,8 +315,7 @@ CREATE TABLE IF NOT EXISTS `time_ranges` (
 ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Дамп данных таблицы my_world.time_ranges: ~16 rows (приблизительно)
-DELETE FROM `time_ranges`;
-INSERT INTO `time_ranges` (`id`, `name`, `created_at`, `updated_at`) VALUES
+REPLACE INTO `time_ranges` (`id`, `name`, `created_at`, `updated_at`) VALUES
 	(1, '8:00-8:45', '2023-12-27 13:46:29', '2023-12-27 13:46:29'),
 	(2, '8:45-9:30', '2023-12-27 13:46:29', '2023-12-27 13:46:29'),
 	(3, '9:30-10:15', '2023-12-27 13:46:29', '2023-12-27 13:46:29'),
@@ -362,13 +350,12 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_username_unique` (`username`) USING BTREE,
   UNIQUE KEY `users_email_unique` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Дамп данных таблицы my_world.users: ~6 rows (приблизительно)
-DELETE FROM `users`;
-INSERT INTO `users` (`id`, `name`, `email`, `username`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `specialist`, `phone`) VALUES
-	(1, 'Иванов Иван Иванович', 'admin@example.com', 'Administrator', '2023-12-18 07:12:03', '$2y$12$SpXHbFldExHdn7K/gtAUl.88JvoBVNARiC63NbCkN9khz./fzKKpO', '5hiCZZ82FbdQ2SRnGIJWXCvEMaCov10UsGw5jOroaUhzmdg8wR7cLNd2sH9z', '2023-12-18 07:12:03', '2023-12-21 02:48:06', 0, NULL),
-	(2, 'Петрова Галина Марковна', 'moderator@example.com', 'Moderator', '2023-12-18 07:12:03', '$2y$12$WQBC/zeOqe13xRIArmuUtuJ8PJjLvsZBMSBz/XhPDu0laJO8fxuXq', 'Qmh2GBv0imoEaenWOdrYl0nleTWRpymkxkP3rrvVLMtsFAHQlIQI2NYfuZtY', '2023-12-18 07:12:03', '2024-01-01 10:59:53', 0, '+7(333)-333-33-33'),
+REPLACE INTO `users` (`id`, `name`, `email`, `username`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `specialist`, `phone`) VALUES
+	(1, 'Иванов Иван Иванович', 'admin@example.com', 'Administrator', '2023-12-18 07:12:03', '$2y$12$SpXHbFldExHdn7K/gtAUl.88JvoBVNARiC63NbCkN9khz./fzKKpO', 'J9uqO7HgrUIOGFJLFHbVV2ScAp3ksBUeR3PJiFexTwXICZWm1T7Rd6WJpayU', '2023-12-18 07:12:03', '2024-01-10 07:40:53', 0, '+7(455)-555-55-55'),
+	(2, 'Петрова Галина Марковна', 'moderator@example.com', 'Moderator', '2023-12-18 07:12:03', '$2y$12$WQBC/zeOqe13xRIArmuUtuJ8PJjLvsZBMSBz/XhPDu0laJO8fxuXq', 'Qmh2GBv0imoEaenWOdrYl0nleTWRpymkxkP3rrvVLMtsFAHQlIQI2NYfuZtY', '2023-12-18 07:12:03', '2024-01-10 07:41:02', 0, '+7(333)-333-33-33'),
 	(3, 'Голушко Ирина Петровна', 'user@example.com', 'User', '2023-12-18 07:12:03', '$2y$12$PQvju6QoVj.sGlrph3G/AO6mE839222DXiWbZOViImRYfo7YzieHy', 'Cw71JSFJxL8KuzXIRXuoZYByd7jPz2Ca1rmbOiIA4AycPTlDyAXdb0IqhbZw', '2023-12-18 07:12:03', '2024-01-01 10:49:36', 1, '+7(777)-777-77-77'),
 	(20, 'Хоста Екатерина Михайловна', NULL, 'hostaem', NULL, '$2y$12$8jGc7iP.z2rozVZ2/iu3f.paLL9C9iS2Jj6cnLvI64bJm9m12eXHi', NULL, '2023-12-21 09:12:46', '2023-12-21 09:12:46', 1, '+7(777)-777-77-77'),
 	(21, 'Саратов Ирина Михайловна', NULL, 'user2', NULL, '$2y$12$2RgrBpXHROBnLe6rRhPxdO6ulXktfp4TGV2MEzhtcgozAgmX3ORv2', NULL, '2024-01-05 05:48:51', '2024-01-05 05:48:51', 1, '+7(896)-786-56-56'),
@@ -385,17 +372,17 @@ CREATE TABLE IF NOT EXISTS `wishes` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Дамп данных таблицы my_world.wishes: ~6 rows (приблизительно)
-DELETE FROM `wishes`;
-INSERT INTO `wishes` (`id`, `class_id`, `client_id`, `prefer_amount_of_classes`, `prefer_time_id`, `created_at`, `updated_at`) VALUES
+REPLACE INTO `wishes` (`id`, `class_id`, `client_id`, `prefer_amount_of_classes`, `prefer_time_id`, `created_at`, `updated_at`) VALUES
 	(16, 5, 19, 1, 4, '2023-12-30 07:12:06', '2023-12-30 07:12:06'),
 	(17, 5, 19, 3, 5, '2023-12-30 07:12:06', '2023-12-30 07:12:06'),
 	(18, 1, 16, 1, 6, '2024-01-05 05:49:46', '2024-01-05 05:49:46'),
 	(19, 4, 16, 3, 6, '2024-01-05 05:49:46', '2024-01-05 05:49:46'),
 	(20, 8, 16, 5, 11, '2024-01-05 05:49:46', '2024-01-05 05:49:46'),
-	(21, 13, 16, 7, 15, '2024-01-05 05:49:46', '2024-01-05 05:49:46');
+	(21, 13, 16, 7, 15, '2024-01-05 05:49:46', '2024-01-05 05:49:46'),
+	(22, 3, 18, 1, 7, '2024-01-09 08:20:12', '2024-01-09 08:20:12');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

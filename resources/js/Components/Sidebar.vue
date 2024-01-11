@@ -7,10 +7,10 @@ const { hasRole } = usePermissions();
 </script>
 
 <template>
-    <aside id="sidebar" class="fixed hidden z-20 h-full top-0 left-0 pt-16 flex lg:flex flex-shrink-0 flex-col w-64 transition-width duration-75 " aria-label="Sidebar">
-         <div class="relative flex-1 flex flex-col min-h-0 border-r border-gray-200 dark:border-gray-700 bg-white pt-0 dark:bg-gray-900 dark:text-gray-400">
+    <aside id="sidebar" class="fixed hidden z-20 h-full top-0 left-0 pt-16 flex lg:flex flex-shrink-0 flex-col w-64 transition-width duration-75" aria-label="Sidebar">
+         <div class="relative flex-1 flex flex-col min-h-0 border-r border-gray-300 dark:border-gray-700 bg-white pt-0 dark:bg-slate-700 dark:text-gray-400">
             <div class="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-               <div class="flex-1 px-3 bg-white divide-y space-y-1 dark:bg-gray-900 dark:text-gray-400">
+               <div class="flex-1 px-3 bg-gray-100 divide-y space-y-1 dark:bg-slate-700 dark:text-gray-400">
                   <ul class="space-y-2 pb-2">
                     <li>
                         <SidebarLink :href="route('dashboard')" :active="route().current('dashboard')">
@@ -53,7 +53,7 @@ const { hasRole } = usePermissions();
                            <span class="ml-3">Пользователи</span>
                         </SidebarLink>
                      </li>
-                     <li class="pt-2 border-t dark:border-gray-700">
+                     <li class="pt-2 border-t border-gray-300 dark:border-slate-800">
                         <SidebarLink :href="route('logout')" method="post" as="button">
                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" data-slot="icon" class="w-6 h-6 text-blue-200 group-hover:text-blue-400 transition duration-75">
                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25" />

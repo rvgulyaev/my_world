@@ -63,7 +63,7 @@ const deleteUser = () => {
               <div class="bg-white dark:bg-gray-700 shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
                  <div class="mb-4 flex items-center justify-between">
                     <div>
-                       <h3 class="text-xl font-bold text-gray-900 mb-2">Список пользователей</h3>
+                       <h3 class="text-xl font-bold text-gray-900 dark:text-indigo-500 mb-2">Список пользователей</h3>
                        <span class="text-base font-normal text-gray-500">* Пользователи помеченные галочкой "Специалист" используются при составлении расписания занятий</span>
                     </div>
                     <div class="flex-shrink-0">

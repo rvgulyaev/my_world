@@ -55,8 +55,8 @@ onMounted(async ()=>{
 <template>
     <!-- component -->
 <!-- This is an example component -->
-<div class="min-h-screen bg-gray-100 dark:bg-gray-800">
-   <nav class="bg-white border-b border-gray-200 dark:border-gray-700 fixed z-30 w-full dark:bg-gray-900 dark:text-gray-400">
+<div class="min-h-screen bg-gray-100 dark:bg-slate-800">
+   <nav class="bg-gray-200 border-b border-gray-300 dark:border-slate-800 fixed z-30 w-full dark:bg-slate-700 dark:text-gray-400">
       <div class="px-3 py-3 lg:px-5 lg:pl-3">
          <div class="flex items-center justify-between">
             <div class="flex items-center justify-start">
@@ -68,10 +68,10 @@ onMounted(async ()=>{
                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                   </svg>
                </button>
-                  <a href="#" class="text-xl font-bold flex items-center lg:ml-2.5">
-                     <ApplicationLogo class="w-10 h-10 fill-current text-gray-500" />
-                     <span class="self-center whitespace-nowrap">Мой МИР</span>
-                  </a>
+               <a href="#" class="text-xl font-bold flex items-center lg:ml-2.5 space-x-5">
+                  <ApplicationLogo class="w-10 h-10 fill-current text-gray-500" />
+                  <span class="self-center whitespace-nowrap">Мой МИР</span>
+               </a>
             </div>
             <div class="flex items-center">
                <div class="hidden lg:flex items-center">
@@ -120,7 +120,7 @@ onMounted(async ()=>{
    <div class="flex overflow-hidden pt-16 ">
       <Sidebar />
       <div class="bg-gray-900 opacity-50" id="sidebarBackdrop"></div>
-      <div id="main-content" class="w-full bg-gray-50 lg:ml-64 dark:bg-gray-800">
+      <div id="main-content" class="w-full bg-gray-50 lg:ml-64 dark:bg-slate-900">
          <main class="w-full pt-6 px-4">
             <slot />
          </main>

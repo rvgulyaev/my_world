@@ -1,4 +1,5 @@
 <script setup>
+import { Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 </script>
@@ -11,122 +12,86 @@ import { Head } from '@inertiajs/vue3';
             <h2 class="text-gray-800 dark:text-gray-200 leading-tight">Главная</h2>
         </template>
 
-        <div class="pt-6 px-4">
-               <div class="w-full mb-4">
-                  <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
+        
                      <div class="mb-4 flex items-center justify-between">
                         <div>
-                           <h3 class="text-xl font-bold text-gray-900 mb-2">Главная страница</h3>
-                           <span class="text-base font-normal text-gray-500">This is a list of latest transactions</span>
-                        </div>
-                        <div class="flex-shrink-0">
-                           <a href="#" class="text-sm font-medium text-cyan-600 hover:bg-gray-100 rounded-lg p-2">View all</a>
+                           <h3 class="text-xl font-bold text-gray-900 dark:text-gray-300 mb-2">Главная страница</h3>
                         </div>
                      </div>
-                     <div class="flex flex-col mt-8">
-                        <div class="overflow-x-auto rounded-lg">
-                           <div class="align-middle inline-block min-w-full">
-                              <div class="shadow overflow-hidden sm:rounded-lg">
-                                 <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gray-50">
-                                       <tr>
-                                          <th scope="col" class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                             Transaction
-                                          </th>
-                                          <th scope="col" class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                             Date & Time
-                                          </th>
-                                          <th scope="col" class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                             Amount
-                                          </th>
-                                       </tr>
-                                    </thead>
-                                    <tbody class="bg-white">
-                                       <tr>
-                                          <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                             Payment from <span class="font-semibold">Bonnie Green</span>
-                                          </td>
-                                          <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                             Apr 23 ,2021
-                                          </td>
-                                          <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                             $2300
-                                          </td>
-                                       </tr>
-                                       <tr class="bg-gray-50">
-                                          <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900 rounded-lg rounded-left">
-                                             Payment refund to <span class="font-semibold">#00910</span>
-                                          </td>
-                                          <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                             Apr 23 ,2021
-                                          </td>
-                                          <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                             -$670
-                                          </td>
-                                       </tr>
-                                       <tr>
-                                          <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                             Payment failed from <span class="font-semibold">#087651</span>
-                                          </td>
-                                          <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                             Apr 18 ,2021
-                                          </td>
-                                          <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                             $234
-                                          </td>
-                                       </tr>
-                                       <tr class="bg-gray-50">
-                                          <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900 rounded-lg rounded-left">
-                                             Payment from <span class="font-semibold">Lana Byrd</span>
-                                          </td>
-                                          <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                             Apr 15 ,2021
-                                          </td>
-                                          <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                             $5000
-                                          </td>
-                                       </tr>
-                                       <tr>
-                                          <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                             Payment from <span class="font-semibold">Jese Leos</span>
-                                          </td>
-                                          <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                             Apr 15 ,2021
-                                          </td>
-                                          <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                             $2300
-                                          </td>
-                                       </tr>
-                                       <tr class="bg-gray-50">
-                                          <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900 rounded-lg rounded-left">
-                                             Payment from <span class="font-semibold">THEMESBERG LLC</span>
-                                          </td>
-                                          <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                             Apr 11 ,2021
-                                          </td>
-                                          <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                             $560
-                                          </td>
-                                       </tr>
-                                       <tr>
-                                          <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                             Payment from <span class="font-semibold">Lana Lysle</span>
-                                          </td>
-                                          <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                             Apr 6 ,2021
-                                          </td>
-                                          <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                             $1437
-                                          </td>
-                                       </tr>
-                                    </tbody>
-                                 </table>
+
+                     <div class="container flex flex-col mx-auto h-screen">
+                        <div class="w-full draggable">
+                           <div class="container flex flex-col items-center gap-16 mx-auto my-3">
+                              <div class="grid w-full grid-cols-1 gap-7 lg:grid-cols-3">
+                                 <Link :href="route('records.index')">
+                                    <div class="flex flex-col items-center gap-3 px-8 py-10 bg-white  dark:bg-slate-700 rounded-2xl border-gray-200 dark:border-slate-500 border shadow-lg transition duration-300 hover:scale-105">
+                                       <span>
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-20 h-20 text-blue-200 dark:text-pink-500 group-hover:text-blue-400 transition duration-75">
+                                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                          </svg>
+                                       </span>
+                                       <p class="text-2xl text-dark-grey-900 uppercase dark:text-indigo-500">Расписание занятий</p>
+                                       <p class="text-center leading-7 text-dark-grey-600 dark:text-slate-300">Раздел для ведения расписания занятий и отслеживания посещений</p>
+                                       <span
+                                       class="inline-flex items-center px-4 py-2 bg-indigo-300 border border-transparent rounded-md font-semibold text-xs text-indigo-800 uppercase tracking-widest hover:bg-indigo-500 active:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
+                                       >
+                                       Перейти
+                                       </span>
+                                    </div>                                    
+                                 </Link>
+                                 <Link :href="route('clients.index')">
+                                    <div class="flex flex-col items-center gap-3 px-8 py-10 bg-white dark:bg-slate-700 rounded-2xl dark:border-slate-500 border shadow-lg transition duration-300 hover:scale-105">
+                                       <span>
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" data-slot="icon" class="w-20 h-20 text-blue-200 flex-shrink-0 dark:text-pink-500 group-active:text-blue-400 group-hover:text-blue-400 transition duration-75">
+                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                                          </svg>
+                                       </span>
+                                       <p class="text-2xl text-dark-grey-900 uppercase dark:text-indigo-500">Список клиентов</p>
+                                       <p class="text-center leading-7 text-dark-grey-600 dark:text-slate-300">Раздел для ведения списка клиентов центра. Список используется в расписании занятий.</p>
+                                       <span
+                                       class="inline-flex items-center px-4 py-2 bg-indigo-300 border border-transparent rounded-md font-semibold text-xs text-indigo-800 uppercase tracking-widest hover:bg-indigo-500 active:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
+                                       >
+                                       Перейти
+                                       </span>
+                                    </div>                                    
+                                 </Link>                                 
+                                 <Link :href="route('tasks.index')">
+                                    <div class="flex flex-col items-center gap-3 px-8 py-10 bg-white dark:bg-slate-700 rounded-2xl dark:border-slate-500 border shadow-lg transition duration-300 hover:scale-105">
+                                       <span>
+                                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-20 h-20 text-blue-200 dark:text-pink-500 group-hover:text-blue-400 transition duration-75">
+                                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                                          </svg>
+                                       </span>
+                                       <p class="text-2xl text-dark-grey-900 uppercase dark:text-indigo-500">Список задача</p>
+                                       <p class="text-center leading-7 text-dark-grey-600 dark:text-slate-300">Раздел для ведения списка задач для администратора центра.</p>
+                                       <span
+                                       class="inline-flex items-center px-4 py-2 bg-indigo-300 border border-transparent rounded-md font-semibold text-xs text-indigo-800 uppercase tracking-widest hover:bg-indigo-500 active:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
+                                       >
+                                       Перейти
+                                       </span>
+                                    </div>                                    
+                                 </Link>
+                              </div>
+                              <div class="grid w-full grid-cols-1 gap-7 lg:grid-cols-3">
+                                 <Link :href="route('users.index')">
+                                    <div class="flex flex-col items-center gap-3 px-8 py-10 bg-white dark:bg-slate-700 rounded-2xl dark:border-slate-500 border shadow-lg transition duration-300 hover:scale-105">
+                                       <span>
+                                          <svg class="w-20 h-20 text-blue-200 flex-shrink-0 dark:text-pink-500 group-active:text-blue-400 group-hover:text-blue-400 transition duration-75" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                             <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
+                                          </svg>
+                                       </span>
+                                       <p class="text-2xl text-dark-grey-900 uppercase dark:text-indigo-500">Список пользователей</p>
+                                       <p class="text-center leading-7 text-dark-grey-600 dark:text-slate-300">Раздел для ведения пользователей, включая специалистов, с распределением прав доступа.</p>
+                                       <span
+                                       class="inline-flex items-center px-4 py-2 bg-indigo-300 border border-transparent rounded-md font-semibold text-xs text-indigo-800 uppercase tracking-widest hover:bg-indigo-500 active:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
+                                       >
+                                       Перейти
+                                       </span>
+                                    </div>                                    
+                                 </Link>
                               </div>
                            </div>
                         </div>
                      </div>
-                  </div>
-               </div>
-         </div>
     </AuthenticatedLayout>
 </template>

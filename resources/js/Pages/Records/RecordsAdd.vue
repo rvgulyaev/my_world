@@ -113,7 +113,7 @@ watch(client_info, (client_info, old_client_info) => {
 
         <div class="ml-3 mt-3 p-6 bg-white dark:bg-gray-700 rounded-md shadow-md">
             <div class="mb-5 pb-5 border-b border-gray-500">
-                <h3 class="text-xl font-bold text-gray-900 dark:text-gray-300 mb-2">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-indigo-500 mb-2">
                     Форма добавления записи в расписание
                 </h3>
                 <span class="text-base font-normal text-gray-500">Поля помеченные * обязательны для заполнения.</span>

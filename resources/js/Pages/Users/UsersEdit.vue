@@ -56,7 +56,7 @@ watch(
 
         <div class="max-w-lg ml-6 mt-6 p-6 bg-white dark:bg-gray-700 rounded-md shadow-md">
             <div>
-                <h3 class="text-xl font-bold text-gray-900 dark:text-indigo-400 mb-2">Форма редактирования пользователя</h3>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-indigo-500 mb-2">Форма редактирования пользователя</h3>
                 <span class="text-base font-normal text-gray-500">Заполните все поля и нажмите кнопку "Изменить" для сохранения данных.</span>
             </div>
             <div class="mt-6">
