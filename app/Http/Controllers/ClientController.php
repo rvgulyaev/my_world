@@ -20,12 +20,12 @@ class ClientController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): Response
     {
         $search = Request::has('search_client_fio') ? Request::input('search_client_fio') : '';
-        $clients = Client::when($search, function ($query) use ($search){  
+        $clients = ClientResource::collection(Client::when($search, function ($query) use ($search){  
             return $query->where('fio', 'LIKE', '%'.$search.'%');
-        })->paginate(7);
+        })->paginate(7));
         return Inertia::render('Clients/ClientsIndex', [
             'clients' => $clients,
             'search_client' => $search

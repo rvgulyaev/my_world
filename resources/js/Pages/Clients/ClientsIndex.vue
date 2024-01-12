@@ -119,7 +119,7 @@ const deleteClient = () => {
                                         </TableRow>
                                     </template>
                                 </Table>
-                                <pagination class="mt-6" :links="clients.links" />
+                                <pagination class="mt-6" :links="clients.meta.links" />
                             </div>
                         </div>
                     </div>
