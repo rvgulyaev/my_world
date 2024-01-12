@@ -98,7 +98,7 @@ const deleteClient = () => {
                                         </TableRow>
                                     </template>
                                     <template #default>
-                                        <TableRow v-for="client in clients.items" :key="client.id">
+                                        <TableRow v-for="client in clients.data" :key="client.id">
                                             <TableDataCell>{{ client.id }}</TableDataCell>
                                             <TableDataCell>
                                                 <Link :href="route('clients.edit',client.id)"
