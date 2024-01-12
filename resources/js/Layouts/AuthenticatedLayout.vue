@@ -55,7 +55,7 @@ onMounted(async ()=>{
 <template>
     <!-- component -->
 <!-- This is an example component -->
-<div class="min-h-screen bg-gray-100 dark:bg-slate-800">
+<div class="min-h-screen bg-gray-50 dark:bg-slate-800">
    <nav class="bg-gray-200 border-b border-gray-300 dark:border-slate-800 fixed z-30 w-full dark:bg-slate-700 dark:text-gray-400">
       <div class="px-3 py-3 lg:px-5 lg:pl-3">
          <div class="flex items-center justify-between">
@@ -70,7 +70,7 @@ onMounted(async ()=>{
                </button>
                <a href="#" class="text-xl font-bold flex items-center lg:ml-2.5 space-x-5">
                   <ApplicationLogo class="w-10 h-10 fill-current text-gray-500" />
-                  <span class="self-center whitespace-nowrap">Мой МИР</span>
+                  <span class="self-center whitespace-nowrap text-rose-500">Мой МИР</span>
                </a>
             </div>
             <div class="flex items-center">

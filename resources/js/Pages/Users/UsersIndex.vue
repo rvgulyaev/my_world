@@ -12,6 +12,7 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import PinkButton from '@/Components/PinkButton.vue';
 import PrimaryLink from '@/Components/PrimaryLink.vue';
 import { useToast } from "vue-toastification";
+import SearchInput from '@/Components/SearchInput.vue';
 
 const toast = useToast();
 const props  = defineProps({
@@ -19,6 +20,10 @@ const props  = defineProps({
         type: Object,
         required: true,
     },
+    search_user: {
+        type: Object,
+        default: ''
+    }
 })
 
 // Delete User Modal
@@ -69,7 +74,10 @@ const deleteUser = () => {
                     <div class="flex-shrink-0">
                         <PrimaryLink :href="route('users.create')">Добавить пользователя</PrimaryLink>
                     </div>
-                 </div>
+                 </div>                 
+                <div class="mb-4 flex items-center justify-between">
+                       <SearchInput :search_field="'search_user_fio'" :search="props.search_user" :route_link="'users.index'" :pholder="'Поиск по ФИО...'"/> 
+                </div>
                  <div class="flex flex-col mt-8">
                     <div class="overflow-x-auto rounded-lg">
                        <div class="align-middle inline-block min-w-full">

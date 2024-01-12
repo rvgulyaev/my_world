@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ClassesResource;
 use App\Http\Resources\ClientResource;
-use App\Http\Resources\RecordResource;
 use App\Http\Resources\RoomResource;
 use App\Http\Resources\TimeRangeResource;
 use App\Http\Resources\UserResource;
@@ -14,11 +13,8 @@ use App\Models\Record;
 use App\Models\TimeRange;
 use App\Models\User;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
-use Inertia\Response;
-use App\Models\Filters\RecordFilter;
 use Illuminate\Database\Query\JoinClause;
 
 class RecordController extends Controller

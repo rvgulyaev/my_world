@@ -8,7 +8,7 @@ use App\Http\Resources\UserResource;
 use App\Http\Resources\UserSharedResource;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -22,8 +22,16 @@ class UserController extends Controller
      */
     public function index(): Response
     {
+        $search = Request::has('search_user_fio') ? Request::input('search_user_fio') : null;
+        if ($search !== null) {
+            $users = UserResource::collection(User::where('name', 'LIKE', '%'.$search.'%')->get()->sortBy('name'));
+        } else {
+            $users = UserResource::collection(User::all()->sortBy('name'));
+            $search = '';
+        }
         return Inertia::render('Users/UsersIndex', [
-            'users' => UserResource::collection(User::all()->sortBy('name'))
+            'users' => $users,
+            'search_user' => $search
         ]);
     }
 

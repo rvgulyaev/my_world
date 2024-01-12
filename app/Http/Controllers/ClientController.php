@@ -9,7 +9,8 @@ use App\Models\Classes;
 use App\Models\Client;
 use App\Models\TimeRange;
 use App\Models\Wish;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -19,10 +20,15 @@ class ClientController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): Response
+    public function index()
     {
+        $search = Request::has('search_client_fio') ? Request::input('search_client_fio') : '';
+        $clients = Client::when($search, function ($query) use ($search){  
+            return $query->where('fio', 'LIKE', '%'.$search.'%');
+        })->paginate(7);
         return Inertia::render('Clients/ClientsIndex', [
-            'clients' => ClientResource::collection(Client::all()->sortBy('fio'))
+            'clients' => $clients,
+            'search_client' => $search
         ]);
     }
 

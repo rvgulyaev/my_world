@@ -11,13 +11,20 @@ import DangerButton from "@/Components/DangerButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryLink from "@/Components/PrimaryLink.vue";
 import PinkButton from "@/Components/PinkButton.vue";
+import SearchInput from "@/Components/SearchInput.vue";
+import Pagination from "@/Components/Pagination.vue";
 
 const props = defineProps({
     clients: {
         type: Object,
         required: true,
     },
+    search_client: {
+        type: String,
+        default: ''
+    }
 });
+
 
 // Delete User Modal
 const deleteForm = useForm({
@@ -36,6 +43,8 @@ const deleteClient = () => {
         onSuccess: () => closeModal(),
     });
 };
+
+
 </script>
 
 <template>
@@ -68,6 +77,9 @@ const deleteClient = () => {
                         </PrimaryLink>
                     </div>
                 </div>
+                <div class="mb-4 flex items-center justify-between">
+                       <SearchInput :search_field="'search_client_fio'" :search="props.search_client" :route_link="'clients.index'" :pholder="'Поиск по ФИО...'"/> 
+                </div>
                 <div class="flex flex-col mt-8">
                     <div class="overflow-x-auto rounded-lg">
                         <div class="align-middle inline-block min-w-full">
@@ -86,7 +98,7 @@ const deleteClient = () => {
                                         </TableRow>
                                     </template>
                                     <template #default>
-                                        <TableRow v-for="client in clients" :key="client.id">
+                                        <TableRow v-for="client in clients.items" :key="client.id">
                                             <TableDataCell>{{ client.id }}</TableDataCell>
                                             <TableDataCell>
                                                 <Link :href="route('clients.edit',client.id)"
@@ -107,6 +119,7 @@ const deleteClient = () => {
                                         </TableRow>
                                     </template>
                                 </Table>
+                                <pagination class="mt-6" :links="clients.links" />
                             </div>
                         </div>
                     </div>
