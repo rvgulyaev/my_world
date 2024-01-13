@@ -184,7 +184,7 @@ function task_is_timeout(execute_date) {
                                                         Не выполнено
                                                     </PinkButton>                                             
                                                 </TableDataCell>
-                                                <TableDataCell>{{ task.comments }}</TableDataCell>
+                                                <TableDataCell class="max-w-xs overflow-hidden">{{ task.comments }}</TableDataCell>
                                                 <TableDataCell v-if="hasRole('admin')">
                                                     <PinkButton @click="confirmDelete(task.id)">
                                                         Удалить

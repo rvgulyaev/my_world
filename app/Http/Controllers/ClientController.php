@@ -9,8 +9,8 @@ use App\Models\Classes;
 use App\Models\Client;
 use App\Models\TimeRange;
 use App\Models\Wish;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -20,9 +20,9 @@ class ClientController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $search = Request::has('search_client_fio') ? Request::input('search_client_fio') : '';
+        $search = $request->has('search_client_fio') ? $request->input('search_client_fio') : '';
         $clients = ClientResource::collection(Client::when($search, function ($query) use ($search){  
             return $query->where('fio', 'LIKE', '%'.$search.'%');
         })->paginate(7));
@@ -53,11 +53,11 @@ class ClientController extends Controller
             'burndate' => 'required|date',
             'diagnos' => 'required|string|max:255',
             'contras' => 'required|string|max:255',
-            'mother' => 'string|max:255',
-            'mother_phone' => 'string|max:255',
-            'father' => 'string|max:255',
-            'father_phone' => 'string|max:255',
-            'adress' => 'string|max:255',
+            'mother' => 'max:255',
+            'mother_phone' => 'max:255',
+            'father' => 'max:255',
+            'father_phone' => 'max:255',
+            'adress' => 'max:255',
             'wishes' => ['sometimes', 'array'],
         ]);
         $client = Client::create([
@@ -115,11 +115,11 @@ class ClientController extends Controller
             'burndate' => 'required|date',
             'diagnos' => 'required|string|max:255',
             'contras' => 'required|string|max:255',
-            'mother' => 'string|max:255',
-            'mother_phone' => 'string|max:255',
-            'father' => 'string|max:255',
-            'father_phone' => 'string|max:255',
-            'adress' => 'string|max:255',
+            'mother' => 'max:255',
+            'mother_phone' => 'max:255',
+            'father' => 'max:255',
+            'father_phone' => 'max:255',
+            'adress' => 'max:255',
             'wishes' => ['sometimes', 'array'],
         ]);
 

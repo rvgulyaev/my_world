@@ -25,7 +25,7 @@ onMounted(async ()=>{
    }   
    moment.locale('ru');
    setInterval(() => {
-      currentTime.value = moment().format('DD.MM.YYYY dddd H:mm:ss')
+      currentTime.value = moment().format('dddd DD.MM.YYYY H:mm:ss')
    })
 
    const sidebar = document.getElementById('sidebar');
