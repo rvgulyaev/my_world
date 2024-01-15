@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\RoomController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecordController;
+use App\Http\Controllers\TimeRangeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -45,8 +48,11 @@ Route::prefix('api')->group(function(){
     Route::post('/delete_record', [RecordController::class, 'delete_record'])->name('delete_record');
 })->middleware('auth');
 
-Route::middleware(['auth', 'role:admin'])->group(function () {
+Route::name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('/users', UserController::class);
+    Route::resource('/rooms', RoomController::class);
+    Route::resource('/classes', ClassesController::class);
+    Route::resource('/time-ranges', TimeRangeController::class);
 });
 
 require __DIR__.'/auth.php';

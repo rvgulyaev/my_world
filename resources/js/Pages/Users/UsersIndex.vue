@@ -72,7 +72,7 @@ const deleteUser = () => {
                        <span class="text-base font-normal text-gray-500">* Пользователи помеченные галочкой "Специалист" используются при составлении расписания занятий</span>
                     </div>
                     <div class="flex-shrink-0">
-                        <PrimaryLink :href="route('users.create')">Добавить пользователя</PrimaryLink>
+                        <PrimaryLink :href="route('admin.users.create')">Добавить пользователя</PrimaryLink>
                     </div>
                  </div>                 
                 <div class="mb-4 flex items-center justify-between">
@@ -98,7 +98,7 @@ const deleteUser = () => {
                                     <TableRow v-for="user in users" :key="user.id">
                                         <TableDataCell>{{ user.id }}</TableDataCell>
                                         <TableDataCell>
-                                            <Link :href="route('users.edit', user.id)" class="ml-3 text-xm leading-5 font-bold text-indigo-600 dark:text-indigo-500 hover:text-indigo-300">{{ user.name }}</Link>    
+                                            <Link :href="route('admin.users.edit', user.id)" class="ml-3 text-xm leading-5 font-bold text-indigo-600 dark:text-indigo-500 hover:text-indigo-300">{{ user.name }}</Link>    
                                         </TableDataCell>
                                         <TableDataCell>{{ user.username }}</TableDataCell>
                                         <TableDataCell>{{ user.phone }}</TableDataCell>

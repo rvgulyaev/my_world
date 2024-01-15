@@ -73,7 +73,7 @@ import { Head } from '@inertiajs/vue3';
                                  </Link>
                               </div>
                               <div class="grid w-full grid-cols-1 gap-7 lg:grid-cols-3">
-                                 <Link :href="route('users.index')">
+                                 <Link :href="route('admin.users.index')">
                                     <div class="flex flex-col items-center gap-3 px-8 py-10 bg-white dark:bg-slate-700 rounded-2xl dark:border-slate-500 border shadow-lg transition duration-300 hover:scale-105">
                                        <span>
                                           <svg class="w-20 h-20 text-blue-200 flex-shrink-0 dark:text-pink-500 group-active:text-blue-400 group-hover:text-blue-400 transition duration-75" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
