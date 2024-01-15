@@ -48,6 +48,7 @@ const confirmExecuteTask = (task_id) => {
 const closeModal = () => {
     showConfirmDeleteModal.value = false;
     showExecuteTaskModal.value = false;
+    showInfoModal.value = false;
 };
 const deleteTask = () => {
     deleteForm.delete(route("tasks.destroy", deleteForm.task_id), {
@@ -65,6 +66,14 @@ const deleteTask = () => {
         },
     });
 };
+
+const showInfoModal = ref(false)
+let taskInfo = ref({})
+
+const showInfo = (task) => {
+    showInfoModal.value = true
+    taskInfo.value = task
+}
 
 //Функция исполнения задачи
 function executeTask() {
@@ -148,7 +157,7 @@ function task_is_timeout(execute_date) {
                                             <TableRow v-if="task_is_timeout(task.executeDate)" class="bg-repeat" style="background-image:url('/images/stroke.png')">
                                                 <TableDataCell>{{ task.id }}</TableDataCell>
                                                 <TableDataCell>{{ task.created_by }}<br /><span>{{ task.created_at }}</span></TableDataCell>
-                                                <TableDataCell class="max-w-md overflow-hidden">{{ task.task }}</TableDataCell>
+                                                <TableDataCell class="max-w-md overflow-hidden font-semibold text-indigo-700 cursor-pointer" @click="showInfo(task)">{{ task.task }}</TableDataCell>
                                                 <TableDataCell>{{ task.executeDate }}</TableDataCell>
                                                 <TableDataCell>
                                                     <EmeraldButton v-if="task.executed === 1" enabled="false" class="cursor-not-allowed">
@@ -171,7 +180,7 @@ function task_is_timeout(execute_date) {
                                             <TableRow v-else>
                                                 <TableDataCell>{{ task.id }}</TableDataCell>
                                                 <TableDataCell>{{ task.created_by }}<br /><span>{{ task.created_at }}</span></TableDataCell>
-                                                <TableDataCell class="max-w-md overflow-hidden">{{ task.task }}</TableDataCell>
+                                                <TableDataCell class="max-w-md overflow-hidden font-semibold text-indigo-700 cursor-pointer" @click="showInfo(task)">{{ task.task }}</TableDataCell>
                                                 <TableDataCell>{{ task.executeDate }}</TableDataCell>
                                                 <TableDataCell>
                                                     <EmeraldButton v-if="task.executed === 1" enabled="false" class="cursor-not-allowed">
@@ -232,6 +241,42 @@ function task_is_timeout(execute_date) {
                 <div class="mt-6 border-t-2 pt-5 border-gray-700 space-x-2 flex items-center justify-center">
                     <DangerButton @click="executeTask">Выполнить задачу</DangerButton>
                     <SecondaryButton @click="closeModal">Отмена</SecondaryButton>
+                </div>
+            </div>
+        </Modal>
+
+        <Modal :show="showInfoModal" @close="closeModal" :maxWidth="'sm'">
+            <div class="p-6">
+                <div>
+                    <div class="mb-1">
+                            <div class="pb-3 border-b border-slate-300 mb-3">
+                                <span class="uppercase font-bold">Создано:</span>
+                                <div>{{ taskInfo.created_by }}   <span>{{ taskInfo.created_at }}</span></div>
+                            </div>
+                            <div class="pb-3 border-b border-slate-300 mb-3">
+                                <span class="uppercase font-bold">Задача:</span>
+                                <div>{{ taskInfo.task }}</div>
+                            </div>
+                            <div class="pb-3 border-b border-slate-300 mb-3">
+                                <span class="uppercase font-bold">Срок исполнения:</span>
+                                <div>{{ taskInfo.executeDate }}</div>
+                            </div>
+                            <div class="pb-3 border-b border-slate-300 mb-3">
+                                <span class="uppercase font-bold">Срок исполнения:</span>
+                                <div :class="(task_is_timeout(taskInfo.executeDate))?' text-rose-700 font-bold':'text-emerald-700 font-bold'">{{ taskInfo.executeDate }}</div>
+                            </div>
+                            <div class="pb-3 border-b border-slate-300 mb-3">
+                                <span class="uppercase font-bold">Статус выполнения:</span>
+                                <div :class="(taskInfo.executed === 1)?' text-emerald-700':' text-rose-700'" class="uppercase font-bold">{{ (taskInfo.executed === 1) ? "Выполнено" : "Не выполнено" }}</div>
+                            </div>
+                            <div>
+                                <span class="uppercase font-bold">Комментарии:</span>
+                                <div>{{  taskInfo.comments }}</div>
+                            </div>
+                        </div>
+                </div>
+                <div class="mt-6 border-t-2 pt-5 border-gray-700 space-x-2 flex items-center justify-center">
+                    <SecondaryButton @click="closeModal">Закрыть</SecondaryButton>
                 </div>
             </div>
         </Modal>
