@@ -35,6 +35,29 @@ class UserController extends Controller
         ]);
     }
 
+     /**
+     * Display a listing of the soft deleted items.
+     */
+    public function trashed(Request $request): Response
+    {
+        $search = $request->has('search_user_fio') ? $request->input('search_user_fio') : null;
+        if ($search !== null) {
+            $users = UserResource::collection(User::onlyTrashed()->where('name', 'LIKE', '%'.$search.'%')->get()->sortBy('name'));
+        } else {
+            $users = UserResource::collection(User::onlyTrashed()->get()->sortBy('name'));
+            $search = '';
+        }
+        return Inertia::render('Users/UsersTrashed', [
+            'users' => $users,
+            'search_user' => $search
+        ]);
+    }
+
+    public function restore(Request $request) {
+        User::onlyTrashed()->where('id', $request->user_id)->restore();
+        return to_route('admin.users.trashed');
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -66,7 +89,7 @@ class UserController extends Controller
             'password' => Hash::make($request->password)
         ]);
         $user->syncRoles($request->input('roles.*.name'));
-        return to_route('users.index');
+        return to_route('admin.users.index');
     }
 
     /**
@@ -113,7 +136,7 @@ class UserController extends Controller
 
         $user->syncRoles($request->input('roles.*.name'));
 
-        return to_route('users.index');
+        return to_route('admin.users.index');
     }
 
     /**
@@ -123,6 +146,15 @@ class UserController extends Controller
     {
         $user = User::find($id);
         $user->delete();
-        return to_route('users.index');
+        return to_route('admin.users.index');
+    }
+
+    /**
+     * Remove the specified resource from storage permanent.
+     */
+    public function terminate(Request $request)
+    {
+        User::where('id', $request->user_id)->forceDelete();
+        return to_route('admin.users.trashed');
     }
 }

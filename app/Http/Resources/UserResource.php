@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 class UserResource extends JsonResource
 {
@@ -20,6 +21,7 @@ class UserResource extends JsonResource
             'username' => $this->username,
             'specialist' => $this->specialist,
             'phone' => $this->phone,
+            'deleted_at' => $this->deleted_at ? Carbon::parse($this->deleted_at)->format('d.m.Y') : "Не определено",
             'roles' => $this->getRoleNames(),
         ];
     }

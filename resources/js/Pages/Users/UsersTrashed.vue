@@ -10,24 +10,27 @@ import Modal from '@/Components/Modal.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import PinkButton from '@/Components/PinkButton.vue';
-import PrimaryLink from '@/Components/PrimaryLink.vue';
 import { useToast } from "vue-toastification";
 import SearchInput from '@/Components/SearchInput.vue';
+import EmeraldButton from '@/Components/EmeraldButton.vue';
 
 const toast = useToast();
 const props  = defineProps({
     users: {
-        type: Object,
+        type: Array,
         required: true,
     },
     search_user: {
-        type: Object,
+        type: String,
         default: ''
     }
 })
 
 // Delete User Modal
 const deleteForm = useForm({
+    user_id: -1
+})
+const restoreForm = useForm({
     user_id: -1
 })
 const showConfirmDeleteUserModal = ref(false)
@@ -39,7 +42,7 @@ const closeModal = () => {
     showConfirmDeleteUserModal.value = false;
 }
 const deleteUser = () => {
-    deleteForm.delete(route('admin.users.destroy', deleteForm.user_id), {
+    deleteForm.post(route('admin.users.terminate', deleteForm.user_id), {
         onSuccess: () => { 
             closeModal(); 
             toast.success("Пользователь успешно удален!", {
@@ -54,38 +57,51 @@ const deleteUser = () => {
         }
     })
 }
+
+const restoreUser = (user) => {
+    restoreForm.user_id = user.id
+    restoreForm.post(route('admin.users.restore', restoreForm.user_id), {
+        onSuccess: () => { 
+            toast.success("Пользователь успешно восстановлен!", {
+                timeout: 2000
+            });
+        },
+        onError: () => {
+            toast.error("Ошибка при восстановлении пользователя!", {
+                timeout: 2000
+            });
+        }
+    })
+}
 </script>
 
 <template>
-  <Head title="Dashboard" />
+  <Head title="Корзина списка пользователей" />
 
 <AuthenticatedLayout>
     <template #header>
-        <h2 class="text-gray-800 dark:text-gray-200 leading-tight">Список пользователей</h2>
+        <h2 class="text-gray-800 dark:text-gray-200 leading-tight">Корзина списка пользователей</h2>
     </template>
 
            <div class="mb-4">
               <div class="bg-white dark:bg-gray-700 shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
                  <div class="mb-4 flex items-center justify-between">
-                    <div class="mr-20">
-                       <h3 class="text-xl font-bold text-gray-900 dark:text-indigo-500 mb-2">Список пользователей</h3>
-                       <span class="text-base font-normal text-gray-500">* Пользователи помеченные галочкой "Специалист" используются при составлении расписания занятий. Удаление пользователей происходит в "Корзину" с возможностью восстановления. Для окончательного удаления пользователя перейдите в "Корзину", нажав на ссылку "ПЕРЕЙТИ В КОРЗИНУ".</span>
-                    </div>
-                    <div class="flex-shrink-0">
-                        <PrimaryLink :href="route('admin.users.create')">Добавить пользователя</PrimaryLink>
+                    <div>
+                       <h3 class="text-xl font-bold text-gray-900 dark:text-indigo-500 mb-2">Корзина списка пользователей</h3>
+                       <span class="text-base font-normal text-gray-500">Для восстановления пользователя нажмите кнопку "Восстановить". Для окончательного удаления пользователя нажмите кнопку "Удалить".</span>
                     </div>
                  </div>                 
                 <div class="mb-4 flex items-center justify-between">
                        <SearchInput :search_field="'search_user_fio'" :search="props.search_user" :route_link="'users.index'" :pholder="'Поиск по ФИО...'"/> 
                        <div class="flex-shrink-0">
-                            <Link :href="route('admin.users.trashed')" class="uppercase hover:underline hover:decoration-solid hover:decoration-slate-500">Перейти в корзину</Link>
+                            <Link :href="route('admin.users.index')" class="uppercase hover:underline hover:decoration-solid hover:decoration-slate-500">Перейти в список пользователей</Link>
                         </div>
                 </div>
                  <div class="flex flex-col mt-8">
                     <div class="overflow-x-auto rounded-lg">
                        <div class="align-middle inline-block min-w-full">
                           <div class="shadow overflow-hidden">
-                             <Table>
+                             <Table v-if="users.length > 0">
                                 <template #header>
                                     <TableRow>
                                         <TableHeaderCell>Id</TableHeaderCell>
@@ -94,6 +110,7 @@ const deleteUser = () => {
                                         <TableHeaderCell>Телефон</TableHeaderCell>
                                         <TableHeaderCell>Специалист</TableHeaderCell>
                                         <TableHeaderCell>Права</TableHeaderCell>
+                                        <TableHeaderCell>Удален</TableHeaderCell>
                                         <TableHeaderCell>Действия</TableHeaderCell>
                                     </TableRow>
                                 </template>
@@ -119,12 +136,15 @@ const deleteUser = () => {
                                                 {{ role }}
                                             </span>
                                         </TableDataCell>
+                                        <TableDataCell>{{ user.deleted_at }}</TableDataCell>
                                         <TableDataCell>
-                                            <PinkButton @click="confirmDeleteUser(user.id)">Удалить</PinkButton>                                            
+                                            <EmeraldButton @click="restoreUser(user)">Восстановить</EmeraldButton>  
+                                            <PinkButton @click="confirmDeleteUser(user.id)">Удалить</PinkButton>                                          
                                         </TableDataCell>
                                     </TableRow>
                                 </template>
                              </Table>
+                             <span v-else>Корзина пуста.</span>
                           </div>
                        </div>
                     </div>
@@ -135,7 +155,7 @@ const deleteUser = () => {
                 <div class="p-6">
                     <div class="flex items-center justify-center">
                         <h2 class="text-lg font-semibold text-slate-800 dark:text-gray-500">
-                            Подтвердите удаление пользователя!
+                            Подтвердите удаление пользователя! Пользователь буде удален окончательно и безповоротно!
                         </h2>
                     </div>
                     <div class="mt-6 border-t-2 pt-5 border-gray-700 space-x-2 flex items-center justify-center">
