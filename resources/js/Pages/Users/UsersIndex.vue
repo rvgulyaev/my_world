@@ -183,11 +183,11 @@ function unBanUser (user_id, index){
                                         <TableDataCell>
                                         <div class="flex">
                                             <PinkButton @click="confirmDeleteUser(user.id)">Удалить</PinkButton> 
-                                            <DropdownMenu class="bg-pink-300 rounded ml-0 px-2 cursor-pointer" ref="dropdown">
+                                            <DropdownMenu class="bg-pink-300 dark:bg-pink-500 dark:text-pink-900 rounded ml-0 px-2 cursor-pointer" ref="dropdown">
                                             <template #trigger>
                                             ...
                                             </template>                                                        
-                                            <ul>
+                                            <ul class="dark:bg-gray-700 dark:border-gray-700">
                                                 <li>
                                                     <DropdownButton v-if="!user.banned_at" @click="banUser(user.id, index)">
                                                         Заблокировать

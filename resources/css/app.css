@@ -7,3 +7,13 @@
     background-repeat: repeat;
     background-image: url('/images/stroke.png');
 }
+.logo-bg {
+    background-image: url('/images/logo-light.png');
+    height: 40px;
+    width: 208px;
+}
+@media (prefers-color-scheme: dark) {
+.logo-bg {
+    background-image: url('/images/logo-dark.png');
+}
+}
