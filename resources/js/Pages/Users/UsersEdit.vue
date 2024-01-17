@@ -29,7 +29,7 @@ const form = useForm({
     roles: [],
 });
 const submit = () => {
-    form.put(route('users.update', props.user?.id), {
+    form.put(route('admin.users.update', props.user?.id), {
         onSuccess: () => {
             form.reset('name', 'username', 'specialist', 'phone', 'password', 'password_confirmation', 'roles');
         },
@@ -162,7 +162,7 @@ watch(
                     <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                         Обновить
                     </PrimaryButton>
-                    <Link :href="route('users.index')" 
+                    <Link :href="route('admin.users.index')" 
                         class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">
                         Отмена
                     </Link>

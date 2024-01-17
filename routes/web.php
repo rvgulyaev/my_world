@@ -52,6 +52,8 @@ Route::name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/users/trashed', [UserController::class, 'trashed'])->name('users.trashed');
     Route::post('/users/terminate', [UserController::class, 'terminate'])->name('users.terminate');
     Route::post('/users/restore', [UserController::class, 'restore'])->name('users.restore');
+    Route::post('/users/ban', [UserController::class, 'ban'])->name('users.ban');
+    Route::post('/users/unban', [UserController::class, 'unBan'])->name('users.unban');
     Route::resource('/users', UserController::class);
     Route::resource('/rooms', RoomController::class);
     Route::resource('/classes', ClassesController::class);

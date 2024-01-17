@@ -21,7 +21,8 @@ class UserResource extends JsonResource
             'username' => $this->username,
             'specialist' => $this->specialist,
             'phone' => $this->phone,
-            'deleted_at' => $this->deleted_at ? Carbon::parse($this->deleted_at)->format('d.m.Y') : "Не определено",
+            'deleted_at' => $this->deleted_at ? Carbon::parse($this->deleted_at)->format('d.m.Y') : "",
+            'banned_at' => $this->banned_at ? Carbon::parse($this->banned_at)->format('d.m.Y H:i:s') : "",
             'roles' => $this->getRoleNames(),
         ];
     }

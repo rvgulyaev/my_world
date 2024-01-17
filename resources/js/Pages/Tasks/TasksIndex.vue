@@ -154,7 +154,7 @@ function task_is_timeout(execute_date) {
                                     </template>
                                     <template #default>
                                         <template v-for="task in tasks" :key="task.id">
-                                            <TableRow v-if="task_is_timeout(task.executeDate)" class="bg-repeat" style="background-image:url('/images/stroke.png')">
+                                            <TableRow v-bind:class="(task_is_timeout(task.executeDate))?'bg-danger-stroked':''">
                                                 <TableDataCell>{{ task.id }}</TableDataCell>
                                                 <TableDataCell>{{ task.created_by }}<br /><span>{{ task.created_at }}</span></TableDataCell>
                                                 <TableDataCell class="max-w-md overflow-hidden font-semibold text-indigo-700 cursor-pointer" @click="showInfo(task)">{{ task.task }}</TableDataCell>
@@ -171,29 +171,6 @@ function task_is_timeout(execute_date) {
                                                     </PinkButton>                                             
                                                 </TableDataCell>
                                                 <TableDataCell>{{ task.comments }}</TableDataCell>
-                                                <TableDataCell v-if="hasRole('admin')">
-                                                    <PinkButton @click="confirmDelete(task.id)">
-                                                        Удалить
-                                                    </PinkButton>
-                                                </TableDataCell>
-                                            </TableRow>
-                                            <TableRow v-else>
-                                                <TableDataCell>{{ task.id }}</TableDataCell>
-                                                <TableDataCell>{{ task.created_by }}<br /><span>{{ task.created_at }}</span></TableDataCell>
-                                                <TableDataCell class="max-w-md overflow-hidden font-semibold text-indigo-700 cursor-pointer" @click="showInfo(task)">{{ task.task }}</TableDataCell>
-                                                <TableDataCell>{{ task.executeDate }}</TableDataCell>
-                                                <TableDataCell>
-                                                    <EmeraldButton v-if="task.executed === 1" enabled="false" class="cursor-not-allowed">
-                                                        Выполнено
-                                                    </EmeraldButton>
-                                                    <PinkButton v-else-if="task.executed !== 1 && hasRole('admin') | hasRole('moderator')" @click="confirmExecuteTask(task.id)">
-                                                        Не выполнено
-                                                    </PinkButton>  
-                                                    <PinkButton v-else-if="task.executed !== 1" enabled="false" class="cursor-not-allowed">
-                                                        Не выполнено
-                                                    </PinkButton>                                             
-                                                </TableDataCell>
-                                                <TableDataCell class="max-w-xs overflow-hidden">{{ task.comments }}</TableDataCell>
                                                 <TableDataCell v-if="hasRole('admin')">
                                                     <PinkButton @click="confirmDelete(task.id)">
                                                         Удалить

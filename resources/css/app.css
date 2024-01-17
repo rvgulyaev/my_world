@@ -2,3 +2,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.bg-danger-stroked {
+    background-repeat: repeat;
+    background-image: url('/images/stroke.png');
+}

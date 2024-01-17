@@ -157,4 +157,15 @@ class UserController extends Controller
         User::where('id', $request->user_id)->forceDelete();
         return to_route('admin.users.trashed');
     }
+
+    public function ban(Request $request) {
+        $u = $request->user_id;
+        User::where('id', $request->user_id)->update(['banned_at' => now()]);
+        return to_route('admin.users.index');
+    }
+
+    public function unBan(Request $request) {
+        User::where('id', $request->user_id)->update(['banned_at' => null]);
+        return to_route('admin.users.index');
+    }
 }
