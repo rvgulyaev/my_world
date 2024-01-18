@@ -23,7 +23,7 @@ class ClientController extends Controller
     public function index(Request $request): Response
     {
         $search = $request->has('search_client_fio') ? $request->input('search_client_fio') : '';
-        $clients = ClientResource::collection(Client::when($search, function ($query) use ($search){  
+        $clients = ClientResource::collection(Client::when($search, function ($query) use ($search){
             return $query->where('fio', 'LIKE', '%'.$search.'%');
         })->paginate(7));
         return Inertia::render('Clients/ClientsIndex', [
@@ -32,6 +32,25 @@ class ClientController extends Controller
         ]);
     }
 
+    /**
+    * Display a listing of the soft deleted items.
+    */
+    public function trashed(Request $request): Response
+    {
+     $search = $request->has('search_client_fio') ? $request->input('search_client_fio') : '';
+     $clients = ClientResource::collection(Client::onlyTrashed()->when($search, function ($query) use ($search){ 
+            return $query->where('fio', 'LIKE', '%'.$search.'%');
+        })->paginate(7));
+        return Inertia::render('Clients/ClientsTrashed', [
+             'clients' => $clients,
+             'search_client' => $search
+        ]);
+    }
+    
+    public function restore(Request $request) {
+     Client::onlyTrashed()->where('id', $request->client_id)->restore();
+     return to_route('clients.trashed');
+     }
     /**
      * Show the form for creating a new resource.
      */
@@ -161,5 +180,14 @@ class ClientController extends Controller
         Wish::where('client_id', $id)->delete();
         $client->delete();
         return to_route('clients.index');
+    }
+    
+    /**
+     * Remove the specified resource from storage permanent.
+     */
+    public function terminate(Request $request)
+    {
+        Client::where('id', $request->client_id)->forceDelete();
+        return to_route('clients.trashed');
     }
 }

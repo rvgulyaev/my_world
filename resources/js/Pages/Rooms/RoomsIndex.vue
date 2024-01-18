@@ -85,6 +85,12 @@ const deleteTask = () => {
                         </PrimaryLink>
                     </div>
                 </div>
+                <div class="mb-4 flex items-center justify-between">
+                        <div></div>
+                       <div class="flex-shrink-0">
+                            <Link :href="route('admin.rooms.trashed')" class="uppercase hover:underline hover:decoration-solid hover:decoration-slate-500 dark:text-slate-300">Перейти в корзину</Link>
+                        </div>
+                </div>
                 <div class="flex flex-col mt-8">
                     <div class="overflow-x-auto rounded-lg">
                         <div class="align-middle inline-block min-w-full">
@@ -94,7 +100,7 @@ const deleteTask = () => {
                                         <TableRow>
                                             <TableHeaderCell>Id</TableHeaderCell>
                                             <TableHeaderCell>Имя</TableHeaderCell>
-                                            <TableHeaderCell>Действия</TableHeaderCell>
+                                            <TableHeaderCell class="text-right">Действия</TableHeaderCell>
                                         </TableRow>
                                     </template>
                                     <template #default>
@@ -106,7 +112,7 @@ const deleteTask = () => {
                                                 {{ room.name }}
                                                 </Link>
                                                 </TableDataCell>
-                                                <TableDataCell>
+                                                <TableDataCell class="text-right">
                                                     <PinkButton @click="confirmDelete(room)">
                                                         Удалить
                                                     </PinkButton>
@@ -123,13 +129,13 @@ const deleteTask = () => {
         </div>
         
         <Modal :show="showConfirmDeleteModal" @close="closeModal" :maxWidth="'sm'">
-            <div class="p-6">
+            <div class="p-6 dark:bg-gray-600">
                 <div class="flex items-center justify-center">
-                    <h2 class="text-lg font-semibold text-slate-800 dark:text-gray-500">
+                    <h2 class="text-lg font-semibold text-slate-800 dark:text-gray-300">
                         Подтвердите удаление кабинета!
                     </h2>
                 </div>
-                <div class="mt-6 border-t-2 pt-5 border-gray-700 space-x-2 flex items-center justify-center">
+                <div class="mt-6 border-t pt-5 border-gray-500 space-x-2 flex items-center justify-center">
                     <DangerButton @click="deleteTask">Удалить</DangerButton>
                     <SecondaryButton @click="closeModal">Отмена</SecondaryButton>
                 </div>

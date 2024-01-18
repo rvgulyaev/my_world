@@ -24,6 +24,20 @@ class RoomController extends Controller
     }
 
     /**
+    * Display a listing of the soft deleted items.
+    */
+    public function trashed(): Response
+    {
+        return Inertia::render('Rooms/RoomsTrashed', [
+             'rooms' => RoomResource::collection(Room::onlyTrashed()->get()),
+        ]);
+    }
+    
+    public function restore(Request $request) {
+     Room::onlyTrashed()->where('id', $request->room_id)->restore();
+     return to_route('admin.rooms.trashed');
+     }
+    /**
      * Show the form for creating a new resource.
      */
     public function create(): Response
@@ -88,5 +102,14 @@ class RoomController extends Controller
     {
         $room->delete();
         return to_route('admin.rooms.index');
+    }
+     
+    /**
+     * Remove the specified resource from storage permanent.
+     */
+    public function terminate(Request $request)
+    {
+        Room::where('id', $request->room_id)->forceDelete();
+        return to_route('admin.rooms.trashed');
     }
 }

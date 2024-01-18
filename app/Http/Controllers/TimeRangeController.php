@@ -22,6 +22,20 @@ class TimeRangeController extends Controller
     }
 
     /**
+    * Display a listing of the soft deleted items.
+    */
+    public function trashed(): Response
+    {
+        return Inertia::render('TimeRanges/TimeRangesTrashed', [
+             'time_ranges' => TimeRangeResource::collection(TimeRange::onlyTrashed()->get()),
+        ]);
+    }
+    
+    public function restore(Request $request) {
+     TimeRange::onlyTrashed()->where('id', $request->time_range_id)->restore();
+     return to_route('admin.time-ranges.trashed');
+     }
+    /**
      * Show the form for creating a new resource.
      */
     public function create(): Response
@@ -82,5 +96,14 @@ class TimeRangeController extends Controller
     {
         $timeRange->delete();
         return to_route('admin.time-ranges.index');
+    }
+    
+    /**
+     * Remove the specified resource from storage permanent.
+     */
+    public function terminate(Request $request)
+    {
+        TimeRange::where('id', $request->time_range_id)->forceDelete();
+        return to_route('admin.time-ranges.trashed');
     }
 }

@@ -6,17 +6,49 @@ use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class TaskController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request): Response
     {
+        $search = $request->has('search_task') ? $request->input('search_task') : null;
+        if ($search !== null) {
+            $tasks = TaskResource::collection(Task::where('task', 'LIKE', '%'.$search.'%')->get()->sortBy('executeDate'));
+        } else {
+            $tasks = TaskResource::collection(Task::all()->sortBy('executeDate'));
+            $search = '';
+        }
         return Inertia::render('Tasks/TasksIndex', [
-            'tasks' => TaskResource::collection(Task::all())
+            'tasks' => $tasks,
+            'search_task' => $search
         ]);
+    }
+
+    /**
+    * Display a listing of the soft deleted items.
+    */
+   public function trashed(Request $request): Response
+   {
+    $search = $request->has('search_task') ? $request->input('search_task') : null;
+       if ($search !== null) {
+        $tasks = TaskResource::collection(Task::onlyTrashed()->where('task', 'LIKE', '%'.$search.'%')->get()->sortBy('executeDate'));
+       } else {
+        $tasks = TaskResource::collection(Task::onlyTrashed()->get()->sortBy('executeDate'));
+        $search = '';
+       }
+       return Inertia::render('Tasks/TasksTrashed', [
+            'tasks' => $tasks,
+            'search_task' => $search
+       ]);
+   }
+   
+   public function restore(Request $request) {
+    Task::onlyTrashed()->where('id', $request->task_id)->restore();
+    return to_route('tasks.trashed');
     }
 
     /**
@@ -83,5 +115,14 @@ class TaskController extends Controller
         $task = Task::find($id);
         $task->delete();
         return to_route('tasks.index');
+    }
+
+    /**
+     * Remove the specified resource from storage permanent.
+     */
+    public function terminate(Request $request)
+    {
+        Task::where('id', $request->task_id)->forceDelete();
+        return to_route('tasks.trashed');
     }
 }

@@ -13,7 +13,9 @@ import PrimaryLink from "@/Components/PrimaryLink.vue";
 import PinkButton from "@/Components/PinkButton.vue";
 import SearchInput from "@/Components/SearchInput.vue";
 import Pagination from "@/Components/Pagination.vue";
+import { useToast } from "vue-toastification";
 
+const toast = useToast();
 const props = defineProps({
     clients: {
         type: Object,
@@ -40,7 +42,18 @@ const closeModal = () => {
 };
 const deleteClient = () => {
     deleteForm.delete(route("clients.destroy", deleteForm.client_id), {
-        onSuccess: () => closeModal(),
+        onSuccess: () => {
+            closeModal();
+            toast.success("Клиент успешно удален в корзину!", {
+                timeout: 2000
+            });
+        },
+        onError: (e) => {
+            closeModal();
+            toast.error("Ошибка при удалении клиента!", {
+                timeout: 2000
+            });
+        },
     });
 };
 
@@ -79,6 +92,9 @@ const deleteClient = () => {
                 </div>
                 <div class="mb-4 flex items-center justify-between">
                        <SearchInput :search_field="'search_client_fio'" :search="props.search_client" :route_link="'clients.index'" :pholder="'Поиск по ФИО...'"/> 
+                       <div class="flex-shrink-0">
+                            <Link :href="route('clients.trashed')" class="uppercase hover:underline hover:decoration-solid hover:decoration-slate-500 dark:text-slate-300">Перейти в корзину</Link>
+                        </div>
                 </div>
                 <div class="flex flex-col mt-8">
                     <div class="overflow-x-auto rounded-lg">
@@ -128,13 +144,13 @@ const deleteClient = () => {
         </div>
         
         <Modal :show="showConfirmDeleteModal" @close="closeModal" :maxWidth="'sm'">
-            <div class="p-6">
+            <div class="p-6 dark:bg-gray-700">
                 <div class="flex items-center justify-center">
-                    <h2 class="text-lg font-semibold text-slate-800 dark:text-gray-500">
+                    <h2 class="text-lg font-semibold text-slate-800 dark:text-gray-300">
                         Подтвердите удаление клиента!
                     </h2>
                 </div>
-                <div class="mt-6 border-t-2 pt-5 border-gray-700 space-x-2 flex items-center justify-center">
+                <div class="mt-6 border-t pt-5 border-gray-500 space-x-2 flex items-center justify-center">
                     <DangerButton @click="deleteClient">Удалить</DangerButton>
                     <SecondaryButton @click="closeModal">Отмена</SecondaryButton>
                 </div>

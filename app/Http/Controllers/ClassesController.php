@@ -22,6 +22,20 @@ class ClassesController extends Controller
     }
 
     /**
+    * Display a listing of the soft deleted items.
+    */
+    public function trashed(): Response
+    {
+        return Inertia::render('Classes/ClassesTrashed', [
+             'classes' => ClassesResource::collection(Classes::onlyTrashed()->get()),
+        ]);
+    }
+    
+    public function restore(Request $request) {
+     Classes::onlyTrashed()->where('id', $request->class_id)->restore();
+     return to_route('admin.classes.trashed');
+     }
+    /**
      * Show the form for creating a new resource.
      */
     public function create(): Response
@@ -83,5 +97,14 @@ class ClassesController extends Controller
     {
         Classes::find($class_id)->delete();
         return to_route('admin.classes.index');
+    }
+    
+    /**
+     * Remove the specified resource from storage permanent.
+     */
+    public function terminate(Request $request)
+    {
+        Classes::where('id', $request->class_id)->forceDelete();
+        return to_route('admin.classes.trashed');
     }
 }

@@ -208,13 +208,13 @@ onMounted(() => {
         </div>
 
         <Modal :show="showConfirmDeleteModal" @close="closeModal" :maxWidth="'sm'">
-            <div class="p-6">
+            <div class="p-6 dark:bg-gray-600">
                 <div class="flex items-center justify-center">
-                    <h2 class="text-lg font-semibold text-slate-800 dark:text-gray-500">
+                    <h2 class="text-lg font-semibold text-slate-800 dark:text-gray-300">
                         Подтвердите удаление записи в расписании!
                     </h2>
                 </div>
-                <div class="mt-6 border-t-2 pt-5 border-gray-700 space-x-2 flex items-center justify-center">
+                <div class="mt-6 border-t pt-5 border-gray-500 space-x-2 flex items-center justify-center">
                     <DangerButton @click="deleteRecord">Удалить</DangerButton>
                     <SecondaryButton @click="closeModal">Отмена</SecondaryButton>
                 </div>

@@ -94,7 +94,7 @@ const restoreUser = (user) => {
                 <div class="mb-4 flex items-center justify-between">
                        <SearchInput :search_field="'search_user_fio'" :search="props.search_user" :route_link="'users.index'" :pholder="'Поиск по ФИО...'"/> 
                        <div class="flex-shrink-0">
-                            <Link :href="route('admin.users.index')" class="uppercase hover:underline hover:decoration-solid hover:decoration-slate-500">Перейти в список пользователей</Link>
+                            <Link :href="route('admin.users.index')" class="uppercase hover:underline hover:decoration-solid hover:decoration-slate-500 dark:text-slate-300">Перейти в список пользователей</Link>
                         </div>
                 </div>
                  <div class="flex flex-col mt-8">
@@ -123,10 +123,10 @@ const restoreUser = (user) => {
                                         <TableDataCell>{{ user.username }}</TableDataCell>
                                         <TableDataCell>{{ user.phone }}</TableDataCell>
                                         <TableDataCell>
-                                            <svg v-if="user.specialist === 1" class="w-6 h-6 mx-auto text-cyan-500 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                            <svg v-if="user.specialist === 1" class="w-6 h-6 mx-auto text-cyan-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z"/>
                                             </svg>
-                                            <svg v-if="user.specialist !== 1" class="w-6 h-6 mx-auto text-red-300 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                            <svg v-if="user.specialist !== 1" class="w-6 h-6 mx-auto text-red-300" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 11.793a1 1 0 1 1-1.414 1.414L10 11.414l-2.293 2.293a1 1 0 0 1-1.414-1.414L8.586 10 6.293 7.707a1 1 0 0 1 1.414-1.414L10 8.586l2.293-2.293a1 1 0 0 1 1.414 1.414L11.414 10l2.293 2.293Z"/>
                                             </svg>
                                         </TableDataCell>
@@ -144,7 +144,7 @@ const restoreUser = (user) => {
                                     </TableRow>
                                 </template>
                              </Table>
-                             <span v-else>Корзина пуста.</span>
+                             <span v-else class="dark:text-slate-300">Корзина пуста.</span>
                           </div>
                        </div>
                     </div>
@@ -152,13 +152,13 @@ const restoreUser = (user) => {
               </div>
            </div>
            <Modal :show="showConfirmDeleteUserModal" @close="closeModal" :maxWidth="'sm'">
-                <div class="p-6">
+                <div class="p-6 dark:bg-gray-600">
                     <div class="flex items-center justify-center">
-                        <h2 class="text-lg font-semibold text-slate-800 dark:text-gray-500">
+                        <h2 class="text-lg font-semibold text-slate-800 dark:text-gray-300">
                             Подтвердите удаление пользователя! Пользователь буде удален окончательно и безповоротно!
                         </h2>
                     </div>
-                    <div class="mt-6 border-t-2 pt-5 border-gray-700 space-x-2 flex items-center justify-center">
+                    <div class="mt-6 border-t pt-5 border-gray-500 space-x-2 flex items-center justify-center">
                         <DangerButton @click="deleteUser">Удалить</DangerButton>
                         <SecondaryButton @click="closeModal">Отмена</SecondaryButton>
                     </div>

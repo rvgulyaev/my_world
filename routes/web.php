@@ -25,7 +25,16 @@ use Inertia\Inertia;
 
 Route::middleware('auth')->group(function () {
     Route::get('/', function () { return Inertia::render('Dashboard'); })->name('dashboard');
+
+    Route::get('/clients/trashed', [ClientController::class, 'trashed'])->name('clients.trashed');
+    Route::post('/clients/terminate', [ClientController::class, 'terminate'])->name('clients.terminate');
+    Route::post('/clients/restore', [ClientController::class, 'restore'])->name('clients.restore');
     Route::resource('/clients', ClientController::class);
+
+    Route::get('/tasks/trashed', [TaskController::class, 'trashed'])->name('tasks.trashed');
+    Route::post('/tasks/terminate', [TaskController::class, 'terminate'])->name('tasks.terminate');
+    Route::post('/tasks/restore', [TaskController::class, 'restore'])->name('tasks.restore');
+
     Route::resource('/tasks', TaskController::class);
     Route::resource('/records', RecordController::class);
     Route::post('/records/index', [RecordController::class, 'index'])->name('record.filter');
@@ -55,8 +64,20 @@ Route::name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/users/ban', [UserController::class, 'ban'])->name('users.ban');
     Route::post('/users/unban', [UserController::class, 'unBan'])->name('users.unban');
     Route::resource('/users', UserController::class);
+
+    Route::get('/rooms/trashed', [RoomController::class, 'trashed'])->name('rooms.trashed');
+    Route::post('/rooms/terminate', [RoomController::class, 'terminate'])->name('rooms.terminate');
+    Route::post('/rooms/restore', [RoomController::class, 'restore'])->name('rooms.restore');
     Route::resource('/rooms', RoomController::class);
+
+    Route::get('/classes/trashed', [ClassesController::class, 'trashed'])->name('classes.trashed');
+    Route::post('/classes/terminate', [ClassesController::class, 'terminate'])->name('classes.terminate');
+    Route::post('/classes/restore', [ClassesController::class, 'restore'])->name('classes.restore');
     Route::resource('/classes', ClassesController::class);
+
+    Route::get('/time-ranges/trashed', [TimeRangeController::class, 'trashed'])->name('time-ranges.trashed');
+    Route::post('/time-ranges/terminate', [TimeRangeController::class, 'terminate'])->name('time-ranges.terminate');
+    Route::post('/time-ranges/restore', [TimeRangeController::class, 'restore'])->name('time-ranges.restore');
     Route::resource('/time-ranges', TimeRangeController::class);
 });
 
