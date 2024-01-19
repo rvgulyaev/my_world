@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ProfileController;
@@ -38,6 +39,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('/tasks', TaskController::class);
     Route::resource('/records', RecordController::class);
     Route::post('/records/index', [RecordController::class, 'index'])->name('record.filter');
+});
+
+Route::name('reports.')->prefix('/reports')->middleware(['auth', 'role:admin|moderator'])->group(function () {
+    Route::get('/clients/index', [ReportController::class, 'get_clients_report'])->name('clients.index');
+    Route::get('/specialist/index', [ReportController::class, 'get_specialist_report'])->name('specialist.index');
 });
 
 Route::prefix('api')->group(function(){

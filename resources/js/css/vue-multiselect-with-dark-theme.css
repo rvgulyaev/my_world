@@ -13,11 +13,6 @@ fieldset[disabled] .multiselect {
     background: #fff;
     display: block;
   }
-  @media (prefers-color-scheme: dark) {
-    .multiselect__spinner {
-        background: rgb(31 41 55 / var(--tw-bg-opacity));
-      }
-  }
 
   .multiselect__spinner::before,
   .multiselect__spinner::after {
@@ -33,6 +28,12 @@ fieldset[disabled] .multiselect {
     border-style: solid;
     border-width: 2px;
     box-shadow: 0 0 0 1px transparent;
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    .multiselect__spinner {
+        background: rgb(31 41 55 / var(--tw-bg-opacity));
+      }
   }
 
   .multiselect__spinner::before {
@@ -118,7 +119,7 @@ fieldset[disabled] .multiselect {
   @media(prefers-color-scheme: dark) {
     .multiselect__input,
       .multiselect__single {
-          background: rgb(31 41 55 / var(--tw-bg-opacity));
+          background: #35495e;
       }
   }
   .multiselect__input,

@@ -10,6 +10,7 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import axios from 'axios';
+import VueTailwindDatepicker from 'vue-tailwind-datepicker'
 
 // проверка авторизации пользователя - если статус 401 - перенаправляем на страницу авторизации
 axios.interceptors.response.use(function (response) {
@@ -34,6 +35,7 @@ createInertiaApp({
             .use(ZiggyVue, Ziggy)
             .use(mask)
             .use(Toast)
+            .use(VueTailwindDatepicker)
             .mount(el);
     },
     progress: {

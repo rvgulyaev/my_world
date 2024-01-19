@@ -122,7 +122,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head title="Расписание занятий" />
 
     <AuthenticatedLayout>
         <template #header>

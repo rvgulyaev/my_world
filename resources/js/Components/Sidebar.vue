@@ -5,10 +5,15 @@ import { ref } from 'vue'
 
 const { hasRole } = usePermissions();
 
-let showSubMenu = ref(false);
+let showAdminSubMenu = ref(false);
 
-const collapseMenu = () => {
-   showSubMenu.value = !showSubMenu.value
+const collapseAdminMenu = () => {
+   showAdminSubMenu.value = !showAdminSubMenu.value
+}
+let showReportSubMenu = ref(false);
+
+const collapseReportMenu = () => {
+   showReportSubMenu.value = !showReportSubMenu.value
 }
 
 </script>
@@ -52,20 +57,20 @@ const collapseMenu = () => {
                         </SidebarLink>
                      </li>
                      <li>
-                        <button v-if="hasRole('admin')" v-bind:class = "(route().current('admin.*'))?'bg-blue-100 dark:bg-gray-800':''" @click="collapseMenu" 
+                        <button v-if="hasRole('admin')" v-bind:class = "(route().current('admin.*'))?'bg-blue-100 dark:bg-gray-800':''" @click="collapseAdminMenu" 
                         class="text-base text-gray-900 dark:text-blue-200 font-normal rounded-md hover:bg-blue-100 dark:hover:bg-gray-800 hover:text-blue-900 dark:hover:text-blue-200 flex items-center p-2 group ">
                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-blue-200 flex-shrink-0 group-active:text-blue-400 group-hover:text-blue-400 transition duration-75">
                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
                            </svg>
                            <span class="flex-1 ml-3 text-left whitespace-nowrap">Администрирование</span>
-                           <svg v-if="showSubMenu" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3 ml-4">
+                           <svg v-if="showAdminSubMenu" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3 ml-4">
                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
                            </svg>
-                           <svg v-if="!showSubMenu" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3 ml-4">
+                           <svg v-if="!showAdminSubMenu" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3 ml-4">
                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                            </svg>
                         </button>
-                        <ul class="pl-3 mt-1" v-if="showSubMenu">
+                        <ul class="pl-3 mt-1" v-if="showAdminSubMenu">
                            <li class="pb-1">
                               <SidebarLink :href="route('admin.users.index')" :active="route().current('admin.users.*')" v-if="hasRole('admin')">
                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-blue-200 flex-shrink-0 group-active:text-blue-400 group-hover:text-blue-400 transition duration-75">
@@ -101,10 +106,45 @@ const collapseMenu = () => {
                            </li>
                         </ul>
                      </li>
+                     <li>
+                        <button v-if="hasRole('admin') | hasRole('moderator')" v-bind:class = "(route().current('reports.*'))?'bg-blue-100 dark:bg-gray-800':''" @click="collapseReportMenu" 
+                        class="text-base text-gray-900 dark:text-blue-200 font-normal rounded-md hover:bg-blue-100 dark:hover:bg-gray-800 hover:text-blue-900 dark:hover:text-blue-200 flex items-center p-2 group w-full">
+                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-blue-200 group-hover:text-blue-400 transition duration-75">
+                           <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+                           </svg>
+                           <span class="flex items-center justify-between w-full">
+                              <span class="ml-3 whitespace-nowrap">Отчеты</span>
+                              <svg v-if="showReportSubMenu" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                              </svg>
+                              <svg v-if="!showReportSubMenu" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                              </svg>
+                           </span>
+                        </button>
+                        <ul class="pl-3 mt-1" v-if="showReportSubMenu">
+                           <li class="pb-1">
+                              <SidebarLink :href="route('reports.clients.index')" :active="route().current('reports.clients.*')" v-if="hasRole('admin') | hasRole('moderator')">
+                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-blue-200 flex-shrink-0 group-active:text-blue-400 group-hover:text-blue-400 transition duration-75">
+                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                 </svg>
+                                 <span class="ml-3">Учет посещений</span>
+                              </SidebarLink>
+                           </li>
+                           <li class="pb-1">
+                              <SidebarLink :href="route('reports.specialist.index')" :active="route().current('reports.specialist.*')" v-if="hasRole('admin') | hasRole('moderator')">
+                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-blue-200 flex-shrink-0 group-active:text-blue-400 group-hover:text-blue-400 transition duration-75">
+                                 <path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75" />
+                                 </svg>
+                                 <span class="ml-3">Отчет по специалистам</span>
+                              </SidebarLink>
+                           </li>
+                        </ul>
+                     </li>
                      <li class="border-t border-slate-300 pt-3">
                         <SidebarLink :href="route('logout')" method="post" as="button" class="w-full">
-                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" data-slot="icon" class="w-6 h-6 text-blue-200 group-hover:text-blue-400 transition duration-75">
-                           <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25" />
+                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-blue-200 flex-shrink-0 group-active:text-blue-400 group-hover:text-blue-400 transition duration-75">
+                           <path stroke-linecap="round" stroke-linejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z" />
                            </svg>
                            <span class="ml-3">Выход</span>
                         </SidebarLink>

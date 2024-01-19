@@ -1,6 +1,8 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
 
+const colors = require("tailwindcss/colors");
+
 /** @type {import('tailwindcss').Config} */
 export default {
     content: [
@@ -8,6 +10,7 @@ export default {
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
         './resources/js/**/*.vue',
+        "./node_modules/vue-tailwind-datepicker/**/*.js",
     ],
 
     theme: {
@@ -17,7 +20,11 @@ export default {
             },
             zIndex: {
                 '9999': '9999'
-            }
+            },
+            colors: {
+                "vtd-primary": colors.sky, // Light mode Datepicker color
+                "vtd-secondary": colors.gray, // Dark mode Datepicker color
+              },
         },
     },
 
