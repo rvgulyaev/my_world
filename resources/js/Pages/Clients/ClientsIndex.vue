@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head, useForm, Link } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import Table from "@/Components/Table.vue";
 import TableRow from "@/Components/TableRow.vue";
 import TableHeaderCell from "@/Components/TableHeaderCell.vue";
@@ -14,8 +14,12 @@ import PinkButton from "@/Components/PinkButton.vue";
 import SearchInput from "@/Components/SearchInput.vue";
 import Pagination from "@/Components/Pagination.vue";
 import { useToast } from "vue-toastification";
+import axios from "axios";
+import Spinner from '@/Components/Spinner.vue';
+import EmeraldButton from "@/Components/EmeraldButton.vue";
 
 const toast = useToast();
+const showSpinner = ref(false);
 const props = defineProps({
     clients: {
         type: Object,
@@ -24,9 +28,16 @@ const props = defineProps({
     search_client: {
         type: String,
         default: ''
+    },
+    classes: {
+        type: Object,
+        required: true
     }
 });
 
+const clientInfo = ref([]);
+let showInfoModal = ref(false);
+let wishes_list = reactive([]);
 
 // Delete User Modal
 const deleteForm = useForm({
@@ -39,6 +50,7 @@ const confirmDelete = (client_id) => {
 };
 const closeModal = () => {
     showConfirmDeleteModal.value = false;
+    showInfoModal.value = false;
 };
 const deleteClient = () => {
     deleteForm.delete(route("clients.destroy", deleteForm.client_id), {
@@ -57,6 +69,27 @@ const deleteClient = () => {
     });
 };
 
+async function getClientInfo(client_id) {
+    showSpinner.value = true;
+    await axios.post('/api/get_client_info', {'client_id':client_id})
+    .then((response) => {
+        showSpinner.value=false;
+        clientInfo.value=response.data.client_info[0];
+        wishes_list = clientInfo.value.wishes;
+        console.log(wishes_list)
+        wishes_list.forEach(el => {
+            el.class_name = props.classes[props.classes.findIndex((obj) => obj.id === el.class_id)].name
+        });
+        showInfoModal.value = true;
+    })
+    .catch((e) => {
+        console.log(e)
+        showSpinner.value = false;
+        toast.error("Ошибка при получении информации о клиенте!", {
+            timeout: 2000
+        });
+    })
+}
 
 </script>
 
@@ -126,8 +159,11 @@ const deleteClient = () => {
                                             <TableDataCell>{{ client.diagnos }}</TableDataCell>
                                             <TableDataCell>{{ client.contras }}</TableDataCell>
                                             <TableDataCell>{{ client.created_by }}<br /><span>{{ client.created_at }}</span></TableDataCell>
-                                            <TableDataCell>{{ client.updated_by }}<br /><span>{{ client.updated_at }}</span></TableDataCell>
+                                            <TableDataCell>{{ client.updated_by }}<br /><span>{{ client.updated_at }}</span></TableDataCell>                                            
                                             <TableDataCell>
+                                                <EmeraldButton @click="getClientInfo(client.id)">
+                                                    Инфо
+                                                </EmeraldButton>
                                                 <PinkButton @click="confirmDelete(client.id)">
                                                     Удалить
                                                 </PinkButton>
@@ -156,5 +192,56 @@ const deleteClient = () => {
                 </div>
             </div>
         </Modal>
+
+        <Modal :show="showInfoModal" @close="closeModal" :maxWidth="'xl'">
+            <div class="p-6">
+                <div>
+                    <div class="mb-1">
+                            <div class="pb-3 border-b border-slate-300 mb-3">
+                                <span class="uppercase font-bold">ФИО:</span>
+                                <div>{{ clientInfo.fio }}</div>
+                            </div>
+                            <div class="pb-3 border-b border-slate-300 mb-3">
+                                <span class="uppercase font-bold">Дата рождения:</span>
+                                <div>{{ clientInfo.burndate }}</div>
+                            </div>
+                            <div class="pb-3 border-b border-slate-300 mb-3">
+                                <span class="uppercase font-bold">Диагноз:</span>
+                                <div>{{ clientInfo.diagnos }}</div>
+                            </div>
+                            <div class="pb-3 border-b border-slate-300 mb-3">
+                                <span class="uppercase font-bold">Противопоказания:</span>
+                                <div>{{ clientInfo.contras }}</div>
+                            </div>
+                            <div class="pb-3 border-b border-slate-300 mb-3">
+                                <span class="uppercase font-bold">Мама:</span>
+                                <div>{{ clientInfo.mother }} (тел - {{ clientInfo.mother_phone }})</div>
+                            </div>
+                            <div class="pb-3 border-b border-slate-300 mb-3">
+                                <span class="uppercase font-bold">Папа:</span>
+                                <div>{{ clientInfo.father }} (тел - {{ clientInfo.father_phone }})</div>
+                            </div>
+                            <div class="pb-3 border-b border-slate-300 mb-3">
+                                <span class="uppercase font-bold">Адрес проживания:</span>
+                                <div>{{ clientInfo.adress }}</div>
+                            </div>
+                            <div>
+                                <span class="uppercase font-bold">Пожелания по занятиям:</span>
+                                <div>
+                                    <span v-for="(wish, index) in wishes_list" :key="index" 
+                                    class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-500 dark:text-indigo-900">
+                                        <strong>Напр:</strong> {{ wish.class_name }} || <strong>Кол-во:</strong> {{ wish.prefer_amount_of_classes }} || <strong>Дни:</strong> {{ wish.prefer_day }} || <strong>Время:</strong> {{ wish.prefer_time }}
+                                    </span>
+                                </div>
+
+                            </div>
+                        </div>
+                </div>
+                <div class="mt-6 border-t-2 pt-5 border-gray-700 space-x-2 flex items-center justify-center">
+                    <SecondaryButton @click="closeModal">Закрыть</SecondaryButton>
+                </div>
+            </div>
+        </Modal>
+        <Spinner :showSpinner="showSpinner" />  
     </AuthenticatedLayout>
 </template>

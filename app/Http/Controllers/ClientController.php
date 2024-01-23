@@ -26,9 +26,11 @@ class ClientController extends Controller
         $clients = ClientResource::collection(Client::when($search, function ($query) use ($search){
             return $query->where('fio', 'LIKE', '%'.$search.'%');
         })->paginate(7));
+        \Session::put('back_url',request()->fullUrl());
         return Inertia::render('Clients/ClientsIndex', [
             'clients' => $clients,
-            'search_client' => $search
+            'search_client' => $search,
+            'classes' => ClassesResource::collection(Classes::all())
         ]);
     }
 
@@ -41,6 +43,7 @@ class ClientController extends Controller
      $clients = ClientResource::collection(Client::onlyTrashed()->when($search, function ($query) use ($search){ 
             return $query->where('fio', 'LIKE', '%'.$search.'%');
         })->paginate(7));
+        \Session::put('back_url',request()->fullUrl());
         return Inertia::render('Clients/ClientsTrashed', [
              'clients' => $clients,
              'search_client' => $search
@@ -58,7 +61,6 @@ class ClientController extends Controller
     {
         return Inertia::render('Clients/ClientsAdd', [
             'classes' => ClassesResource::collection(Classes::all()),
-            'timeRanges' => TimeRangeResource::collection(TimeRange::all()),
         ]);
     }
 
@@ -96,10 +98,14 @@ class ClientController extends Controller
                     'class_id' => $wish['class_id'],
                     'client_id' => $client->id,
                     'prefer_amount_of_classes' => $wish['prefer_amount_of_classes'],
-                    'prefer_time_id' => $wish['prefer_time_id']
+                    'prefer_day' => $wish['prefer_day'],
+                    'prefer_time' => $wish['prefer_time']
                 ]);
             }
         }
+        if(\Session('back_url')){
+            return redirect(\Session('back_url'));
+          }
         return to_route('clients.index');
     }
 
@@ -120,7 +126,6 @@ class ClientController extends Controller
         return Inertia::render('Clients/ClientsEdit', [
             'client' => $client,
             'classes' => ClassesResource::collection(Classes::all()),
-            'timeRanges' => TimeRangeResource::collection(TimeRange::all()),
         ]);
     }
 
@@ -164,10 +169,14 @@ class ClientController extends Controller
                     'class_id' => $wish['class_id'],
                     'client_id' => $client->id,
                     'prefer_amount_of_classes' => $wish['prefer_amount_of_classes'],
-                    'prefer_time_id' => $wish['prefer_time_id']
+                    'prefer_day' => $wish['prefer_day'],
+                    'prefer_time' => $wish['prefer_time'],
                 ]);
             }
         }
+        if(\Session('back_url')){
+            return redirect(\Session('back_url'));
+          }
         return to_route('clients.index');
     }
 
@@ -179,6 +188,9 @@ class ClientController extends Controller
         $client = Client::find($id);
         Wish::where('client_id', $id)->delete();
         $client->delete();
+        if(\Session('back_url')){
+            return redirect(\Session('back_url'));
+          }
         return to_route('clients.index');
     }
     
@@ -188,6 +200,10 @@ class ClientController extends Controller
     public function terminate(Request $request)
     {
         Client::where('id', $request->client_id)->forceDelete();
+        Wish::where('client_id', $request->client_id)->delete();
+        if(\Session('back_url')){
+            return redirect(\Session('back_url'));
+          }
         return to_route('clients.trashed');
     }
 }
