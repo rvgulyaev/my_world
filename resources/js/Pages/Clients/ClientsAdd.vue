@@ -18,7 +18,7 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 
 const toast = useToast();
 const showAddWishModal = ref(false)
-const back_url = usePage().props.session.back_url
+const back_url = usePage().props.back_url
 
 const props = defineProps({
     classes: Array,
@@ -50,8 +50,7 @@ const form = useForm({
 const checkedClass = ref(null);
 const classesAmount = ref('');
 const preferDay = ref('');
-const preferStartTime = ref('');
-const preferDuration = ref('');
+const preferTime = ref('');
 
 // Добавить пожелание
 function addWish() {
@@ -63,19 +62,18 @@ function addWish() {
         )[0].name,
         prefer_amount_of_classes: classesAmount.value,
         prefer_day: preferDay.value,
-        prefer_time: preferStartTime.value + '-' + addDurationToStartTime()
+        prefer_time: preferTime.value
     });
     form.wishes.push({
         class_id: checkedClass.value,
         prefer_amount_of_classes: classesAmount.value,
         prefer_day: preferDay.value,
-        prefer_time: preferStartTime.value + '-' + addDurationToStartTime(),
+        prefer_time: preferTime.value
     });
     checkedClass.value = null;
     classesAmount.value = '';
     preferDay.value = ''
-    preferStartTime.value = '';
-    preferDuration.value = '';
+    preferTime.value = '';
     closeModal();
 }
 
@@ -86,25 +84,6 @@ function delWish(wish) {
         wishes_list.splice(objIndex, 1);
         form.wishes.splice(objIndex, 1);
     }
-}
-
-function addDurationToStartTime() {
-    // get hours and minutes as integer values
-    let hours = parseInt(preferStartTime.value.split(':')[0]);
-    let minutes = parseInt(preferStartTime.value.split(':')[1]);
-    // add 30 minutes
-    minutes += parseInt(preferDuration.value);
-    // if an hour is exceeded, add it to hours instead
-    // and account for a day passing by
-    if (minutes >= 60) {
-        hours = (hours + 1) % 24;
-        minutes -= 60;
-    }
-    // reformat values as strings with a fix length of 2
-    hours = (hours < 10 ? `0${hours}` : `${hours}`);
-    minutes = (minutes < 10 ? `0${minutes}` : `${minutes}`);
-    // assign new value to the end input
-    return `${hours}:${minutes}`;
 }
 
 const submit = () => {
@@ -416,12 +395,12 @@ const submit = () => {
                     <div class="mb-4">
                         <InputLabel
                             for="burndate"
-                            value="* Предпочитаемые дни недели"
+                            value="* Дни недели"
                         />
                         <TextInput
                             id="preferDay"
                             type="text"
-                            placeholder="Укажите дни недели"
+                            placeholder="Укажите желаемые дни недели"
                             class="mt-1 block w-full"
                             v-model="preferDay"
                             autocomplite="preferDay"
@@ -430,29 +409,16 @@ const submit = () => {
                     <div class="mb-4">
                         <InputLabel
                             for="burndate"
-                            value="* Предпочитаемые время начала занятий"
+                            value="* Время занятий"
                         />
+                        <span class="text-xs">Маска ##:## - ##:## (с обязательным 0 до 10)</span>
                         <TextInput
-                            id="preferStartTime"
-                            type="time"
-                            placeholder="Укажите время начала занятий"
+                            id="preferTime"
+                            type="text"
+                            placeholder="Укажите желаемое время занятий"
                             class="mt-1 block w-full"
-
-                            v-model="preferStartTime"
-                        />
-                    </div>
-                    <div class="mb-4">
-                        <InputLabel
-                            for="burndate"
-                            value="* Продолжительность занятий"
-                        />
-                        <TextInput
-                            id="preferDuration"
-                            type="number"
-                            placeholder="Укажите продолжительность занятий"
-                            class="mt-1 block w-full"
-                            v-model="preferDuration"
-                            min="10"
+                            v-mask="'##:## - ##:##'"
+                            v-model="preferTime"
                         />
                     </div>
                 <div class="mt-6 border-t pt-5 border-gray-500 space-x-2 flex items-center justify-center">

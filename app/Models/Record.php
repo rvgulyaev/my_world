@@ -14,7 +14,7 @@ class Record extends Model
 
     protected $table='record';
 
-    protected $fillable = ['client_id', 'educationDate', 'user_id', 'time_range', 'class_id', 'room_id', 'is_present'];
+    protected $fillable = ['client_id', 'educationDate', 'user_id', 'start_time', 'end_time', 'class_id', 'room_id', 'is_present'];
 
     protected $filterFields = [
         'educationDate',
@@ -37,10 +37,6 @@ class Record extends Model
 
     public function client() : BelongsTo {
         return $this->belongsTo(Client::class);
-    }
-
-    public function time_range() : BelongsTo {
-        return $this->belongsTo(TimeRange::class, 'time_range', 'id');
     }
 
     public function classes() : BelongsTo {

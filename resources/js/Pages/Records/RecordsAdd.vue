@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, useForm, Link } from "@inertiajs/vue3";
+import { Head, useForm, Link, usePage } from "@inertiajs/vue3";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import InputLabel from "@/Components/InputLabel.vue";
@@ -13,12 +13,19 @@ import { useToast } from "vue-toastification";
 import axios from "axios";
 import { ref, watch } from 'vue'
 import Spinner from '@/Components/Spinner.vue';
+import moment from 'moment/min/moment-with-locales';
 
 const toast = useToast();
-const free_time_ranges = ref([]);
+const busy_time = ref([]);
 const free_rooms = ref([]);
 const client_info = ref([]);
 const showSpinner = ref(false);
+const startTime = ref('');
+const endTime = ref('');
+const flash_time = ref([]);
+const session_date = usePage().props.education_date
+
+moment.locale('ru');
 
 let formatter = new Intl.DateTimeFormat('ru', [{day: 'numeric'}, {month: 'numeric'}, {year: 'numeric'}])
 let client_age = ''
@@ -33,13 +40,38 @@ const props = defineProps({
 
 // Add User Modal
 const form = useForm({
-    educationDate: null,
+    educationDate: session_date,
     time_range: -1,
     user_id: -1,
     client_id: -1,
     class_id: -1,
     room_id: -1,
+    startTimeStamp: null,
+    endTimeStamp: null
 });
+
+function checkEndTime() {
+    flash_time.value = []
+    form.errors.endTime =""
+    form.startTimeStamp = moment(form.educationDate + ' ' + startTime.value).format('YYYY-MM-DD H:mm:ss')
+    form.endTimeStamp = moment(form.educationDate + ' ' + endTime.value).format('YYYY-MM-DD H:mm:ss')
+    if (form.startTimeStamp >= form.endTimeStamp) {
+        form.errors.endTime = "Время окончания занятий должно быть больше времени начала."
+    } else {
+        busy_time.value.forEach(el => {
+            if ((new Date(form.startTimeStamp) >= new Date(el.start_time) && new Date(form.startTimeStamp) < new Date(el.end_time))
+             || (new Date(form.endTimeStamp) > new Date(el.start_time) && new Date(form.endTimeStamp) <= new Date(el.end_time))
+             || (new Date(el.start_time) > new Date(form.startTimeStamp) && new Date(el.start_time) < new Date(form.endTimeStamp))) {
+                flash_time.value.push(el.start_time + ' - ' + el.end_time)
+            }
+        });
+        if (flash_time.value.length>0) {            
+            form.errors.endTime = "Данный интервал пересекается с одним или несколькими из имеющихся в расписании"
+        } else {
+            getFreeRooms();
+        }
+    }
+}
 
 async function getClientInfo() {
     showSpinner.value = true;
@@ -53,12 +85,12 @@ async function getClientInfo() {
     })
 }
 
-async function getFreeTimeRanges() {
+async function getBusyTime() {
     showSpinner.value = true;
-    await axios.post('/api/get_free_time_ranges', {'user_id':form.user_id,'educationDate':form.educationDate})
+    await axios.post('/api/get_busy_time', {'user_id':form.user_id,'educationDate':form.educationDate})
     .then((response) => {
         showSpinner.value = false;
-        free_time_ranges.value = response.data.free_time_ranges
+        busy_time.value = response.data.busy_time
     })
     .catch((e) => {
         showSpinner.value = false;
@@ -67,7 +99,7 @@ async function getFreeTimeRanges() {
 
 async function getFreeRooms() {
     showSpinner.value = true;
-    await axios.post('/api/get_free_rooms', {'time_range':form.time_range,'educationDate':form.educationDate})
+    await axios.post('/api/get_free_rooms', {'start_time_stamp':form.startTimeStamp, 'end_time_stamp': form.endTimeStamp, 'educationDate':form.educationDate})
     .then((response) => {
         showSpinner.value = false;
         free_rooms.value = response.data.free_rooms
@@ -109,7 +141,7 @@ watch(client_info, (client_info, old_client_info) => {
                 <h2 class="text-gray-800 dark:text-gray-200 leading-tight">
                     Форма добавления записи в расписание
                 </h2>
-</template>
+        </template>
 
         <div class="ml-3 mt-3 p-6 bg-white dark:bg-gray-700 rounded-md shadow-md">
             <div class="mb-5 pb-5 border-b border-gray-500">
@@ -120,33 +152,8 @@ watch(client_info, (client_info, old_client_info) => {
             </div>
             <form @submit.prevent="submit">
                 <div class="grid xl:grid-cols-2 2xl:grid-cols-2 gap-11">
-                    <div>                        
+                    <div> 
                         <div class="mb-4">
-                            <InputLabel for="client_id" value="* Клиент" />
-                            <span class="text-sm text-gray-500">Если клиент отсутствует в списке необходимо добавить его в разделе 'Клиенты'</span>
-
-                            <select
-                                id="client_id"
-                                class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm disabled:dark:bg-slate-800"
-                                v-model="form.client_id"
-                                required
-                                @change="getClientInfo()"
-                                :disabled="form.educationDate !== null"
-                            >
-                                <option :value="-1" disabled>
-                                    Выберите клиента
-                                </option>
-                                <option v-for="client in clients" :key="client.id" :value="client.id">
-                                    {{ client.fio }}
-                                </option>
-                            </select>
-
-                            <InputError
-                                class="mt-2"
-                                :message="form.errors.client_id"
-                            />
-                        </div>
-                        <div class="mb-4" v-show="form.client_id>0">
                             <InputLabel
                                 for="educationDate"
                                 value="* Дата занятия"
@@ -165,8 +172,33 @@ watch(client_info, (client_info, old_client_info) => {
                                 class="mt-2"
                                 :message="form.errors.educationDate"
                             />
-                        </div>
-                        <div class="mb-4" v-show="form.educationDate">
+                        </div>                       
+                        <div class="mb-4">
+                            <InputLabel for="client_id" value="* Клиент" />
+                            <span class="text-sm text-gray-500">Если клиент отсутствует в списке необходимо добавить его в разделе 'Клиенты'</span>
+
+                            <select
+                                id="client_id"
+                                class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm disabled:dark:bg-slate-800"
+                                v-model="form.client_id"
+                                required
+                                @change="getClientInfo()"
+                                :disabled="form.user_id>0"
+                            >
+                                <option :value="-1">
+                                    Выберите клиента
+                                </option>
+                                <option v-for="client in clients" :key="client.id" :value="client.id">
+                                    {{ client.fio }}
+                                </option>
+                            </select>
+
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.client_id"
+                            />
+                        </div>                        
+                        <div class="mb-4" v-show="form.client_id>0&&form.educationDate !== ''">
                             <InputLabel for="user_id" value="* Специалист" />
 
                             <select
@@ -174,10 +206,10 @@ watch(client_info, (client_info, old_client_info) => {
                                 class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm disabled:dark:bg-slate-800"
                                 v-model="form.user_id"
                                 required
-                                @change="getFreeTimeRanges()"
-                                :disabled="form.time_range>0"
+                                @change="getBusyTime()"
+                                :disabled="endTime !== ''"
                             >
-                                <option :value="-1" disabled>
+                                <option :value="-1">
                                     Выберите специалиста
                                 </option>
                                 <option v-for="(user, index) in users" :key="index" :value="user.id">
@@ -191,30 +223,55 @@ watch(client_info, (client_info, old_client_info) => {
                             />
                         </div>
                         <div class="mb-4" v-show="form.user_id>0" >
-                            <InputLabel for="time_range" value="* Время занятий (в списке отображаются только свободные для этого специалиста на этот день временные диапазоны)" />
+                            <InputLabel for="time_range" value="* Время занятий (укажите время начала и окончания занятий)" />
+                            <div v-if="form.user_id > 0 && busy_time.length > 0" class="mb-3 w-full">
+                                <div class="text-xs"><span class="bg-rose-100 text-rose-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded">ВНИМАНИЕ:</span> Найдены занятия у <span class="underline">{{ users.find(user => user.id === form.user_id).name }}</span> на {{ moment(form.educationDate).format('DD.MM.YYYY') }} в </div>
+                                <div class="flex flex-wrap">
+                                    <div v-for="(busy, index) in busy_time" :key="index" 
+                                        class="text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-500 dark:text-indigo-900 whitespace-nowrap mt-2" v-bind:class="(flash_time.find(el => el === (busy.start_time + ' - ' + busy.end_time))) ? 'bg-rose-100 text-rose-800':'bg-blue-100 text-blue-800'">
+                                        {{ moment(busy.start_time).format('HH:mm') }}-{{ moment(busy.end_time).format('HH:mm') }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-else-if="form.user_id > 0" class="mb-3">
+                                <span class="text-xs">Справочно: Записи о занятиях в расписании у <span class="underline">{{ users.find(user => user.id === form.user_id).name }}</span> на {{ moment(form.educationDate).format('DD.MM.YYYY') }} не найдены. </span>
+                            </div>
+                            <div class="flex w-full">
+                                <div class="mr-3">
+                                    <TextInput
+                                    id="startTime"
+                                    type="time"
+                                    class="mt-1 block w-full disabled:dark:bg-slate-800"
+                                    v-model="startTime"
+                                    required
+                                    :disabled="endTime !== ''"
+                                    />
 
-                            <select
-                                id="time_range"
-                                class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm disabled:dark:bg-slate-800"
-                                v-model="form.time_range"
-                                required
-                                @change="getFreeRooms()"
-                                :disabled="form.room_id>0"
-                            >
-                                <option :value="-1" disabled>
-                                    Выберите время занятий
-                                </option>
-                                <option v-for="time in free_time_ranges" :key="time.id" :value="time.id">
-                                    {{ time.name }}
-                                </option>
-                            </select>
+                                    <InputError
+                                        class="mt-2"
+                                        :message="form.errors.time_range"
+                                    />
+                                </div>
+                                <div class="my-auto">-</div>
+                                <div class="ml-3">
+                                    <TextInput
+                                    id="endTime"
+                                    type="time"
+                                    class="mt-1 block w-full disabled:dark:bg-slate-800"
+                                    v-model="endTime"
+                                    @change="checkEndTime"
+                                    required
+                                    :disabled="form.room_id>0"
+                                    />
+                                </div>   
+                            </div>                                                       
 
                             <InputError
-                                class="mt-2"
-                                :message="form.errors.time_range"
-                            />
+                                        class="mt-2"
+                                        :message="form.errors.endTime"
+                                    />
                         </div>
-                        <div class="mb-4" v-show="form.time_range>0" >
+                        <div class="mb-4" v-show="endTime !== '' && form.errors.endTime === ''" >
                             <InputLabel for="room_id" value="* Кабинет для занятий (в списке отображаются только свободные для этого специалиста на этот день кабинеты)" />
 
                             <select
@@ -224,7 +281,7 @@ watch(client_info, (client_info, old_client_info) => {
                                 required
                                 :disabled="form.class_id>0"
                             >
-                                <option :value="-1" disabled>
+                                <option :value="-1">
                                     Выберите кабинет для занятий
                                 </option>
                                 <option v-for="room in free_rooms" :key="room.id" :value="room.id">
@@ -246,7 +303,7 @@ watch(client_info, (client_info, old_client_info) => {
                                 v-model="form.class_id"
                                 required
                             >
-                                <option :value="-1" disabled>
+                                <option :value="-1">
                                     Выберите направление занятий
                                 </option>
                                 <option v-for="class_item in classes" :key="class_item.id" :value="class_item.id">

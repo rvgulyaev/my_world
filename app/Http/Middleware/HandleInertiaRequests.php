@@ -40,9 +40,8 @@ class HandleInertiaRequests extends Middleware
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
-            'session' => [
-                'back_url' => \Session::has('back_url') ? \Session::get('back_url') : null
-            ]
+            'education_date' => \Session::has('education_date') ? \Session::get('education_date') : Date('Y-m-d'),
+            'back_url' => \Session::has('back_url') ? \Session::get('back_url') : Date('Y-m-d'),
         ];
     }
 }

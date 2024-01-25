@@ -12,7 +12,7 @@ use App\Models\Client;
 use App\Models\Record;
 use App\Models\TimeRange;
 use App\Models\User;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Illuminate\Database\Query\JoinClause;
@@ -23,31 +23,34 @@ class RecordController extends Controller
      * Display a listing of the resource.
      */
 
-     public function index() {
-        return Inertia::render('Records/RecordsIndex');
+     public function index(Request $request) {
+        $user_id = $request->get('user_id', (\Session('user_id')) ? \Session('user_id') : 1);
+        return Inertia::render('Records/RecordsIndex', [
+            'user_id' => $user_id
+        ]);
      }
 
 
-    public function get_records()
-    {        
-        $filters['education_date'] = Request::input('education_date', Date('Y-m-d')); 
+    public function get_records(Request $request)
+    {   
+        $filters['education_date'] = $request->get('education_date', ((\Session('education_date')) ? \Session('education_date') : Date('Y-m-d'))); 
         $users = DB::table('users')->select(['id', 'name'])->whereIn('id', Record::where('educationDate', '=', $filters['education_date'])->get('user_id'))->orderBy('name')->get();   
-        $filters['user_id'] = Request::input('user_id', count($users) > 0 ? $users->first()->id : -1);  
-        $filtered_records = Record::query()->when($filters['education_date'], function ($query, $education_date) {
-            $query->where('educationDate', '=', $education_date);
-        })->when(Request::input('user_id', $filters['user_id']), function ($query, $user_id) {
-            $query->where('user_id', '=', $user_id);
-        });
-        $records = DB::table('time_ranges')
-                    ->select('time_ranges.name AS time_range_name', 'clients.fio AS client_name', 'classes.name AS class_name', 'rooms.name as room_name', 'filtered_records.is_present', 'filtered_records.id')
-                    ->leftJoinSub($filtered_records, 'filtered_records', function (JoinClause $join){
-                        $join->on('time_ranges.id', '=', 'filtered_records.time_range');
-                    })
-                    ->leftJoin('clients', 'filtered_records.client_id', '=', 'clients.id')
-                    ->leftJoin('classes', 'filtered_records.class_id', '=', 'classes.id')
-                    ->leftJoin('rooms', 'filtered_records.room_id', '=', 'rooms.id')
-                    ->orderBy('time_ranges.id')
-                    ->get();      
+        $filters['user_id'] = $request->get('user_id', (\Session('user_id')) ? \Session('user_id') : ((count($users) > 0) ? $users->first()->id : -1));  
+        
+        $records = DB::table('record')
+                    ->select('record.start_time as start_time', 'record.end_time as end_time', 'clients.fio AS client_name', 'classes.name AS class_name', 'rooms.name as room_name', 'record.is_present', 'record.id')
+                    ->leftJoin('clients', 'record.client_id', '=', 'clients.id')
+                    ->leftJoin('classes', 'record.class_id', '=', 'classes.id')
+                    ->leftJoin('rooms', 'record.room_id', '=', 'rooms.id')
+                    ->when($filters['education_date'], function ($query, $education_date) {
+                            $query->where('record.educationDate', '=', $education_date);
+                        })->when($request->get('user_id', $filters['user_id']), function ($query, $user_id) {
+                            $query->where('record.user_id', '=', $user_id);
+                        })
+                    ->orderBy('record.start_time')
+                    ->get();   
+        \Session::put('education_date',$filters['education_date']);   
+        \Session::put('user_id',$filters['user_id']);   
         return response()->json([
             'users' => $users,
             'records' => $records,
@@ -68,22 +71,29 @@ class RecordController extends Controller
         ]);
     }
 
-    public function getClientInfo() {
-        $client_info = Client::where('id', Request::input('client_id'))->get()->load('wishes');
+    public function getClientInfo(Request $request) {
+        $client_info = Client::where('id', $request->get('client_id'))->get()->load('wishes');
         return response()->json([
             'client_info' => $client_info
         ], 200);
     }
 
-    public function getFreeTimeRanges() {
-        $free_time_ranges = TimeRangeResource::collection(DB::select('SELECT id, name FROM time_ranges WHERE id NOT IN (SELECT time_range FROM record WHERE user_id=' . Request::input('user_id') . ' AND educationDate="' . Request::input('educationDate') .'") order by id'));
+    public function getBusyTime(Request $request) {
+        $busy_time = DB::table('record')->where('educationDate', $request->get('educationDate'))->where('user_id', $request->get('user_id'))->get(['start_time', 'end_time']);
         return response()->json([
-            'free_time_ranges' => $free_time_ranges
+            'busy_time' => $busy_time
         ], 200);
     }
 
-    public function getFreeRooms() {
-        $free_rooms = RoomResource::collection(DB::select('SELECT id, name FROM rooms WHERE id NOT IN (SELECT room_id FROM record WHERE time_range=' . Request::input('time_range') . ' AND educationDate="' . Request::input('educationDate') .'") order by name'));
+    public function getFreeRooms(Request $request) {
+        $start_time = $request->get('start_time_stamp');
+        $end_time = $request->get('end_time_stamp');
+        $educationDate = $request->get('educationDate');
+       $free_rooms = RoomResource::collection(DB::select('SELECT id, name FROM rooms WHERE id NOT IN (
+            SELECT room_id FROM record WHERE ("' . $start_time . '" > start_time AND "' . $start_time . '" < end_time)' .
+            ' OR ("' . $end_time . '" > start_time AND "' . $end_time . '" < end_time)' .
+            ' OR (start_time > "' . $start_time . '" AND start_time < "' . $end_time . '")' .
+            ' AND educationDate="' . $educationDate .'") order by name'));
         return response()->json([
             'free_rooms' => $free_rooms
         ], 200);
@@ -92,71 +102,40 @@ class RecordController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store()
+    public function store(Request $request)
     {
-        Request::validate([
+        $request->validate([
             'client_id' => 'required|integer',
             'educationDate' => 'required|date',
             'user_id' => 'required|integer',
-            'time_range' => 'required|integer',
+            'startTimeStamp' => 'required',
+            'endTimeStamp' => 'required',
             'room_id' => 'required|integer',
             'class_id' => 'required|integer',
         ]);
-        Record::create([
-            'client_id' => Request::input('client_id'),
-            'educationDate' => Request::input('educationDate'),
-            'user_id' => Request::input('user_id'),
-            'time_range' => Request::input('time_range'),
-            'room_id' => Request::input('room_id'),
-            'class_id' => Request::input('class_id'),
+        $record = Record::create([
+            'client_id' => $request->get('client_id'),
+            'educationDate' => $request->get('educationDate'),
+            'user_id' => $request->get('user_id'),
+            'start_time' => $request->get('startTimeStamp'),
+            'end_time' => $request->get('endTimeStamp'),
+            'room_id' => $request->get('room_id'),
+            'class_id' => $request->get('class_id'),
         ]);
-        return to_route('records.index');
+        return to_route('records.index', ['user_id' => $record->user_id]);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request)
-    {
-        
-    }
-
-    public function set_is_present() {
-        if (!Request::has('record_id')) { return response()->json('Нет record_id', 500); }
-        $record = Record::firstWhere('id',Request::input('record_id'));
+    public function set_is_present(Request $request) {
+        if (!$request->has('record_id')) { return response()->json('Нет record_id', 500); }
+        $record = Record::firstWhere('id', $request->get('record_id'));
         $is_present = 1 - $record->is_present;
         $record->update(['is_present' => $is_present]);
         return response()->json(['is_present' => $is_present], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-
-    public function delete_record() {
-        if (!Request::has('record_id')) { return response()->json('Нет record_id', 500); }
-        $id = Request::input('record_id');
-        $record = Record::firstWhere('id',Request::input('record_id'));
+    public function delete_record(Request $request) {
+        if (!$request->has('record_id')) { return response()->json('Нет record_id', 500); }
+        $record = Record::firstWhere('id', $request->get('record_id'));
         $record->delete();
         return response()->json('Запись успешно удалена', 200);
     }

@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head} from "@inertiajs/vue3";
-import { ref } from "vue";
+import { Head, usePage } from "@inertiajs/vue3";
+import { ref, onMounted, watch } from "vue";
 import Table from "@/Components/Table.vue";
 import TableRow from "@/Components/TableRow.vue";
 import TableHeaderCell from "@/Components/TableHeaderCell.vue";
@@ -16,21 +16,28 @@ import { usePermissions } from "@/Composables/permissions";
 import ButtonInActive from "@/Components/ButtonInActive.vue";
 import TextInput from "@/Components/TextInput.vue";
 import ButtonActive from "@/Components/ButtonActive.vue";
-import { watch } from "vue";
-import { onMounted } from "vue";
 import Spinner from '@/Components/Spinner.vue';
 import DangerButton from "@/Components/DangerButton.vue";
+import moment from 'moment/min/moment-with-locales';
 
 const { hasRole } = usePermissions();
-
 const showSpinner = ref(false);
-
 const toast = useToast();
+const session_date = usePage().props.education_date
 
-let education_date = ref(new Date().toISOString().split('T')[0])
-let user_id = ref(-1)
+const props = defineProps({
+    user_id: {
+        type: Number,
+        default: 1
+    }
+})
+
+moment.locale('ru')
+
+let education_date = ref(session_date)
+let user_id = ref(Number(props.user_id))
 let users = ref({})
-let records = ref({})
+let records = ref([])
 let record_to_delete = ref(-1)
 
 const showConfirmDeleteModal = ref(false);
@@ -49,17 +56,14 @@ async function deleteRecord () {
     .then((response) => {
         showSpinner.value = false;
         let index = records.value.findIndex((x) => x.id === record_to_delete.value);
-        records.value[index].class_name = null;
-        records.value[index].client_name = null;
-        records.value[index].id = null;
-        records.value[index].room_name = null;
-        records.value[index].is_present = null;
+        records.value.splice(index, 1)
         toast.success("Отметка о посещении клиента успешно обновлена!", {
                 timeout: 2000
             });
     })
     .catch((e) => {
         showSpinner.value = false;
+        console.log(e)
         toast.error("Ошибка при удалении записи из расписания! - ", {
                 timeout: 2000
             });
@@ -115,7 +119,7 @@ async function setPresent(id) {
     });
 }
 
-onMounted(() => {
+onMounted(() => {    
     getRecords();
 })
 
@@ -155,7 +159,6 @@ onMounted(() => {
                         </h3>
                         <div>                            
                         <TextInput type="date" v-model="education_date" class="mr-7"/>
-                        
                         <template v-for="user in users" :key="user.id">
                             <ButtonActive v-if="user.id === user_id">{{ user.name }}</ButtonActive>
                             <ButtonInActive v-else @click="checkUser(user.id)">{{ user.name }}</ButtonInActive>
@@ -180,7 +183,8 @@ onMounted(() => {
                                     </template>
                                     <template #default>
                                         <TableRow v-for="record in records" :key="record.id">
-                                            <TableDataCell>{{ record.time_range_name }}</TableDataCell>
+                                            <TableDataCell v-if="record.start_time !== null && record.end_time !== null">{{ moment(record.start_time).format('H:mm') }} - {{ moment(record.end_time).format('H:mm') }}</TableDataCell>
+                                            <TableDataCell v-else></TableDataCell>
                                             <TableDataCell>{{ record.client_name }}</TableDataCell>
                                             <TableDataCell>{{ record.class_name }}</TableDataCell>
                                             <TableDataCell>{{ record.room_name }}</TableDataCell>

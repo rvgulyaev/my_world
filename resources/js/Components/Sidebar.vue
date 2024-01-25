@@ -96,14 +96,6 @@ const collapseReportMenu = () => {
                                  <span class="ml-3">Справочник кабинетов</span>
                               </SidebarLink>
                            </li>
-                           <li class="pb-1">
-                              <SidebarLink :href="route('admin.time-ranges.index')" :active="route().current('admin.time-ranges.index')" v-if="hasRole('admin')">
-                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-blue-200 group-hover:text-blue-400 transition duration-75">
-                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                 </svg>
-                                 <span class="ml-3">Справочник времени</span>
-                              </SidebarLink>
-                           </li>
                         </ul>
                      </li>
                      <li>

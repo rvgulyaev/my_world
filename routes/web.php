@@ -53,7 +53,7 @@ Route::prefix('api')->group(function(){
     Route::get('/getSessionTimeOut', function () {
         return response(['session_time_out' => config('session.lifetime', 120) * 60 * 1000]);
     })->name('timeout');  
-    Route::post('/get_free_time_ranges', [RecordController::class, 'getFreeTimeRanges'])->name('get_free_time_ranges');
+    Route::post('/get_busy_time', [RecordController::class, 'getBusyTime'])->name('get_busy_time');
     Route::post('/get_free_rooms', [RecordController::class, 'getFreeRooms'])->name('get_free_rooms');
     Route::post('/get_client_info', [RecordController::class, 'getClientInfo'])->name('get_client_info');
     Route::post('/set_record_present', [RecordController::class, 'setPresent'])->name('set_record_present');
