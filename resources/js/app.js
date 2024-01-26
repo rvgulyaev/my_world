@@ -11,6 +11,8 @@ import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import axios from 'axios';
 import VueTailwindDatepicker from 'vue-tailwind-datepicker'
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 
 // проверка авторизации пользователя - если статус 401 - перенаправляем на страницу авторизации
 axios.interceptors.response.use(function (response) {
@@ -36,6 +38,7 @@ createInertiaApp({
             .use(mask)
             .use(Toast)
             .use(VueTailwindDatepicker)
+            .component('DatePicker', VueDatePicker)
             .mount(el);
     },
     progress: {

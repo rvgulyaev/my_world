@@ -42,8 +42,8 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::name('reports.')->prefix('/reports')->middleware(['auth', 'role:admin|moderator'])->group(function () {
-    Route::get('/clients/index', [ReportController::class, 'get_clients_report'])->name('clients.index');
-    Route::get('/specialist/index', [ReportController::class, 'get_specialist_report'])->name('specialist.index');
+    Route::get('/clients/index', [ReportController::class, 'clients_index'])->name('clients.index');
+    Route::get('/specialists/index', [ReportController::class, 'specialists_index'])->name('specialist.index');
 });
 
 Route::prefix('api')->group(function(){
@@ -61,6 +61,9 @@ Route::prefix('api')->group(function(){
     Route::post('/get_records', [RecordController::class, 'get_records'])->name('get_records');
     Route::post('/set_is_present', [RecordController::class, 'set_is_present'])->name('set_is_present');
     Route::post('/delete_record', [RecordController::class, 'delete_record'])->name('delete_record');
+
+    Route::post('/get_clients_report', [ReportController::class, 'get_clients_report'])->name('get_clients_report');
+    Route::get('/get_clients_list', [ReportController::class, 'get_clients'])->name('get_clients_list');
 })->middleware('auth');
 
 Route::name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
