@@ -111,28 +111,15 @@ const restoreClient = (client) => {
                                     <TableRow>
                                         <TableHeaderCell>Id</TableHeaderCell>
                                         <TableHeaderCell>ФИО</TableHeaderCell>
-                                        <TableHeaderCell>Дата рождения</TableHeaderCell>
-                                        <TableHeaderCell>Диагноз</TableHeaderCell>
-                                        <TableHeaderCell>Противопоказания</TableHeaderCell>
                                         <TableHeaderCell>Создано</TableHeaderCell>
-                                        <TableHeaderCell>Обновлено</TableHeaderCell>
                                         <TableHeaderCell>Действия</TableHeaderCell>
                                     </TableRow>
                                 </template>
                                 <template #default>
                                     <TableRow v-for="client in clients.data" :key="client.id">
                                             <TableDataCell>{{ client.id }}</TableDataCell>
-                                            <TableDataCell>
-                                                <Link :href="route('clients.edit',client.id)"
-                                                    class="ml-3 text-xm leading-5 font-bold text-indigo-600 dark:text-indigo-500 hover:text-indigo-300"
-                                                >{{ client.fio }}
-                                                </Link>
-                                            </TableDataCell>
-                                            <TableDataCell>{{ client.burndate }}</TableDataCell>
-                                            <TableDataCell>{{ client.diagnos }}</TableDataCell>
-                                            <TableDataCell>{{ client.contras }}</TableDataCell>
+                                            <TableDataCell>{{ client.fio }}</TableDataCell>
                                             <TableDataCell>{{ client.created_by }}<br /><span>{{ client.created_at }}</span></TableDataCell>
-                                            <TableDataCell>{{ client.updated_by }}<br /><span>{{ client.updated_at }}</span></TableDataCell>
                                             <TableDataCell v-if="hasRole('admin')">
                                                 <EmeraldButton @click="restoreClient(client)">Восстановить</EmeraldButton>  
                                                 <PinkButton @click="confirmDeleteClient(client.id)">Удалить</PinkButton> 

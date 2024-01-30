@@ -38,7 +38,7 @@ class RecordController extends Controller
         $filters['user_id'] = $request->get('user_id', (\Session('user_id')) ? \Session('user_id') : ((count($users) > 0) ? $users->first()->id : -1));  
         
         $records = DB::table('record')
-                    ->select('record.start_time as start_time', 'record.end_time as end_time', 'clients.fio AS client_name', 'classes.name AS class_name', 'rooms.name as room_name', 'record.is_present', 'record.id')
+                    ->select('record.start_time as start_time', 'record.end_time as end_time', 'clients.fio AS client_name', 'classes.name AS class_name', 'rooms.name as room_name', 'record.is_present', 'record.id', 'record.comment')
                     ->leftJoin('clients', 'record.client_id', '=', 'clients.id')
                     ->leftJoin('classes', 'record.class_id', '=', 'classes.id')
                     ->leftJoin('rooms', 'record.room_id', '=', 'rooms.id')
@@ -131,6 +131,15 @@ class RecordController extends Controller
         $is_present = 1 - $record->is_present;
         $record->update(['is_present' => $is_present]);
         return response()->json(['is_present' => $is_present], 200);
+    }
+
+    public function store_record_comment(Request $request) {
+        if (!$request->has('record_id')) { return response()->json('Нет record_id', 500); }
+        $record = Record::firstWhere('id', $request->get('record_id'));
+        if($request->has('comment')) { 
+            $record->update(['comment' => $request->get('comment')]); 
+        }
+        return response()->json('Примечание сохранено', 200);
     }
 
     public function delete_record(Request $request) {

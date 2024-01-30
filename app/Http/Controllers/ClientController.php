@@ -40,9 +40,9 @@ class ClientController extends Controller
     public function trashed(Request $request): Response
     {
      $search = $request->has('search_client_fio') ? $request->input('search_client_fio') : '';
-     $clients = ClientResource::collection(Client::onlyTrashed()->when($search, function ($query) use ($search){ 
+     $clients = ClientResource::collection(Client::when($search, function ($query) use ($search){ 
             return $query->where('fio', 'LIKE', '%'.$search.'%');
-        })->paginate(7));
+        })->onlyTrashed()->paginate(7));
         \Session::put('back_url',request()->fullUrl());
         return Inertia::render('Clients/ClientsTrashed', [
              'clients' => $clients,

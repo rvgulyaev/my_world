@@ -19,11 +19,21 @@ import ButtonActive from "@/Components/ButtonActive.vue";
 import Spinner from '@/Components/Spinner.vue';
 import DangerButton from "@/Components/DangerButton.vue";
 import moment from 'moment/min/moment-with-locales';
+import DropdownButton from '@/Components/DropdownButton.vue';
+import DropdownMenu from 'v-dropdown';
+import InputLabel from '@/Components/InputLabel.vue'
 
 const { hasRole } = usePermissions();
 const showSpinner = ref(false);
 const toast = useToast();
 const session_date = usePage().props.education_date
+const showConfirmDeleteModal = ref(false);
+const showCommentModal = ref(false);
+const dropdown = ref(null)
+const comment = ref({
+    record_id: null,
+    text: ''
+})
 
 const props = defineProps({
     user_id: {
@@ -40,7 +50,6 @@ let users = ref({})
 let records = ref([])
 let record_to_delete = ref(-1)
 
-const showConfirmDeleteModal = ref(false);
 function confirmDeleteRecord (record_id) {
     showConfirmDeleteModal.value = true;
     record_to_delete.value = record_id;
@@ -48,6 +57,7 @@ function confirmDeleteRecord (record_id) {
 };
 const closeModal = () => {
     showConfirmDeleteModal.value = false;
+    showCommentModal.value = false;
 };
 async function deleteRecord () {
     closeModal();
@@ -101,7 +111,6 @@ async function getRecords() {
 
 async function setPresent(id) {
     showSpinner.value = true;
-    console.log(id);
     await axios.post('/api/set_is_present', { 'record_id': id })
     .then((response) => {
             showSpinner.value = false;
@@ -117,6 +126,32 @@ async function setPresent(id) {
                 timeout: 2000
             });
     });
+}
+
+function commentRecord(record_id, index) {
+    if (dropdown.value[index].visible) {
+        dropdown.value[index].close()
+    }
+    showCommentModal.value = true
+    comment.value.id = record_id
+}
+
+async function storeCommentRecord() {
+    closeModal()
+    await axios.post('/api/store_record_comment', {'record_id': comment.value.id, 'comment': comment.value.text})
+    .then((response) => {
+        showSpinner.value = false
+        let index = records.value.findIndex((x) => x.id === comment.value.id)
+        records.value[index].comment = comment.value.text
+        toast.success("Примечание успешно сохранено!", {
+            timeout: 2000
+        })
+    })
+    .catch((e) => {
+        showSpinner.value = false
+        console.log(e)
+        toast.error("Ошибка при сохранении примечания!")
+    })
 }
 
 onMounted(() => {    
@@ -178,11 +213,12 @@ onMounted(() => {
                                             <TableHeaderCell>Направление</TableHeaderCell>
                                             <TableHeaderCell>Кабинет</TableHeaderCell>
                                             <TableHeaderCell>Отметка о посещении</TableHeaderCell>
+                                            <TableHeaderCell>Примечание</TableHeaderCell>
                                             <TableHeaderCell v-if="hasRole('moderator')|hasRole('admin')">Действие</TableHeaderCell>
                                         </TableRow>
                                     </template>
                                     <template #default>
-                                        <TableRow v-for="record in records" :key="record.id">
+                                        <TableRow v-for="(record, index) in records" :key="record.id">
                                             <TableDataCell v-if="record.start_time !== null && record.end_time !== null">{{ moment(record.start_time).format('H:mm') }} - {{ moment(record.end_time).format('H:mm') }}</TableDataCell>
                                             <TableDataCell v-else></TableDataCell>
                                             <TableDataCell>{{ record.client_name }}</TableDataCell>
@@ -196,10 +232,25 @@ onMounted(() => {
                                                     Был
                                                 </EmeraldButton>
                                             </TableDataCell>
+                                            <TableDataCell>{{ record.comment }}</TableDataCell>
                                             <TableDataCell>
-                                                <PinkButton v-if="record.id > 0&&hasRole('moderator')|hasRole('admin')" @click="confirmDeleteRecord(record.id)">
-                                                    Удалить
-                                                </PinkButton>
+                                                <div class="flex">
+                                                    <PinkButton v-if="record.id > 0&&hasRole('moderator')|hasRole('admin')" @click="confirmDeleteRecord(record.id)">
+                                                        Удалить
+                                                    </PinkButton>
+                                                    <DropdownMenu class="bg-pink-300 dark:bg-pink-500 dark:text-pink-900 rounded ml-0 px-2 cursor-pointer" ref="dropdown">
+                                                        <template #trigger>
+                                                        ...
+                                                        </template>                                                        
+                                                        <ul class="dark:bg-gray-700 dark:border-gray-700">
+                                                            <li>
+                                                                <DropdownButton @click="commentRecord(record.id, index)">
+                                                                    Добавить / изменить примечание
+                                                                </DropdownButton>
+                                                            </li>
+                                                        </ul>
+                                                    </DropdownMenu>
+                                                </div>
                                             </TableDataCell>        
                                         </TableRow>
                                     </template>
@@ -220,6 +271,26 @@ onMounted(() => {
                 </div>
                 <div class="mt-6 border-t pt-5 border-gray-500 space-x-2 flex items-center justify-center">
                     <DangerButton @click="deleteRecord">Удалить</DangerButton>
+                    <SecondaryButton @click="closeModal">Отмена</SecondaryButton>
+                </div>
+            </div>
+        </Modal>
+
+        <Modal :show="showCommentModal" @close="closeModal" :maxWidth="'sm'">
+            <div class="p-6 dark:bg-gray-600">
+                <div class="mb-1">
+                        <InputLabel for="comment" value="Примечание" />
+
+                        <textarea id="comment" rows="3" 
+                        class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"                            
+                        v-model="comment.text"
+                        maxlength="255"
+                        autofocus
+                        required
+                        ></textarea>
+                    </div>
+                <div class="mt-6 border-t pt-5 border-gray-500 space-x-2 flex items-center justify-center">
+                    <DangerButton @click="storeCommentRecord">Сохранить</DangerButton>
                     <SecondaryButton @click="closeModal">Отмена</SecondaryButton>
                 </div>
             </div>

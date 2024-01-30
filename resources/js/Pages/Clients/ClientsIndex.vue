@@ -139,10 +139,9 @@ async function getClientInfo(client_id) {
                                             <TableHeaderCell>Id</TableHeaderCell>
                                             <TableHeaderCell>ФИО</TableHeaderCell>
                                             <TableHeaderCell>Дата рождения</TableHeaderCell>
-                                            <TableHeaderCell>Диагноз</TableHeaderCell>
                                             <TableHeaderCell>Противопоказания</TableHeaderCell>
+                                            <TableHeaderCell>Пожелания родителей</TableHeaderCell>
                                             <TableHeaderCell>Создано</TableHeaderCell>
-                                            <TableHeaderCell>Обновлено</TableHeaderCell>
                                             <TableHeaderCell>Действия</TableHeaderCell>
                                         </TableRow>
                                     </template>
@@ -156,10 +155,17 @@ async function getClientInfo(client_id) {
                                                 </Link>
                                             </TableDataCell>
                                             <TableDataCell>{{ client.burndate }}</TableDataCell>
-                                            <TableDataCell>{{ client.diagnos }}</TableDataCell>
                                             <TableDataCell>{{ client.contras }}</TableDataCell>
-                                            <TableDataCell>{{ client.created_by }}<br /><span>{{ client.created_at }}</span></TableDataCell>
-                                            <TableDataCell>{{ client.updated_by }}<br /><span>{{ client.updated_at }}</span></TableDataCell>                                            
+                                            <TableDataCell>
+                                                <template class="flex flex-wrap w-80">
+                                                    <span v-for="wish in client.wishes" :key="wish.id"
+                                                    class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded  whitespace-normal dark:bg-indigo-500 dark:text-indigo-900 mt-2"
+                                                    >
+                                                    <strong>Направление:</strong> {{ wish.class }} &bull; <strong>Кол-во:</strong> {{ wish.prefer_amount_of_classes }} &bull; <strong>Дни:</strong> {{ wish.prefer_day }} &bull; <strong>Время:</strong> {{ wish.prefer_time }}
+                                                    </span>
+                                                </template>                                                
+                                            </TableDataCell>
+                                            <TableDataCell>{{ client.created_by }}<br /><span>{{ client.created_at }}</span></TableDataCell>                                           
                                             <TableDataCell>
                                                 <EmeraldButton @click="getClientInfo(client.id)">
                                                     Инфо

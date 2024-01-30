@@ -17,39 +17,37 @@ moment.locale('ru')
 const { hasRole } = usePermissions();
 const showSpinner = ref(false);
 
-const clients = ref([])
-const client = ref(null)
+const specialists = ref([])
 const records = ref([])
-const client_id = ref()
+const specialist_id = ref()
 const dateValue = ref()
 const format = 'dd.MM.yyyy'
 let filters = {}
 
 async function getReport() {
     showSpinner.value = true;
-    if (client_id.value.id > 0) {
-        filters = { 'start_date':dateValue.value[0], 'end_date':dateValue.value[1], 'client_id': client_id.value.id }
+    if (specialist_id.value.id > 0) {
+        filters = { 'start_date':dateValue.value[0], 'end_date':dateValue.value[1], 'specialist_id': specialist_id.value.id }
          } else {
         filters = { 'start_date':dateValue.value[0], 'end_date':dateValue.value[1] }
         }
-    await axios.post('/api/get_clients_report', filters)
+    await axios.post('/api/get_specialists_report', filters)
     .then((response) => {
         showSpinner.value=false;
         records.value = response.data.records
-        client.value = response.data.client[0]
     })
     .catch((e) => {
         showSpinner.value = false;
     })
 }
 
-async function getClients() {
+async function getSpecialists() {
     showSpinner.value = true;
-    await axios.get('/api/get_clients_list')
+    await axios.get('/api/get_specialists_list')
     .then((response) => {
         showSpinner.value = false
-        clients.value = response.data.clients
-        client_id.value = response.data.clients[0]
+        specialists.value = response.data.specialists
+        specialist_id.value = response.data.specialists[0]
     })
     .catch((e) => {
         showSpinner.value = false
@@ -61,17 +59,17 @@ onBeforeMount(() => {
     const startDate = moment(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()-6)).format('YYYY-MM-DD');
     const endDate =  moment(new Date()).format('YYYY-MM-DD');
     dateValue.value = [startDate, endDate]
-    getClients()
+    getSpecialists()
 })
 </script>
 
 <template>
-     <Head title="Учет посещений" />
+     <Head title="Отчет по специалистам" />
 
 <AuthenticatedLayout>
     <template #header>
         <h2 class="text-gray-800 leading-tight">
-            Учет посещений
+            Отчет по специалистам
         </h2>
     </template>
 
@@ -80,28 +78,28 @@ onBeforeMount(() => {
             <div class="mb-4 flex items-center justify-between">
                 <div>
                     <h3 class="text-xl font-bold text-gray-900 dark:text-indigo-500 mb-2">
-                        Учет посещений
+                        Отчет по специалистам
                     </h3>
                     <span class="text-base font-normal text-gray-500"
-                        >Отчет о песещении занятий за определенный период - по умолчанию период за последнюю(не календарную) неделю. <br/>
-                        (Примечание: Значение полей таблицы `Израсходовано за период` и `Остаток`, вычисляются по полю `Отметка о посещении`.)</span
+                        >Отчет по проведенным занятиям специалистами за определенный период - по умолчанию период за последнюю(не календарную) неделю. <br/>
+                        (Примечание: Значение полей таблицы `Проведено занятий` и `Остаток`, вычисляются по полю `Отметка о посещении` расписания занятий.)</span
                     >
                 </div>
             </div>
             <div>
                 <h3 class="text-gray-900 dark:text-gray-300 mb-2">
-                    Выберите клиента и период для отображения отчета
+                    Выберите специалиста и период для отображения отчета
                 </h3>
             </div>
             <div class="mb-4 flex items-center space-x-2">
                     <div class="w-72">  
                         <VueMultiselect
-                            v-model="client_id"
-                            :options="clients"
+                            v-model="specialist_id"
+                            :options="specialists"
                             :multiple="false"
                             :close-on-select="true"
                             :searchable="true"
-                            placeholder="Выберите клиента"
+                            placeholder="Выберите специалиста"
                             label="name"
                             track-by="id"
                             :showLabels="false"
@@ -116,20 +114,6 @@ onBeforeMount(() => {
                         </PrimaryButton>
                     </div>
             </div>
-            <div class="mb-4" v-if="client">
-                <span class="font-bold text-lg">{{ client.fio }}</span> (id - {{ client.id }})              
-                <div>
-                    <span class="font-bold text-blue-500">Запрос родителей</span> - 
-                        <span v-for="wish in client.wishes" :key="wish.id"
-                        class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-500 dark:text-indigo-900 whitespace-nowrap mt-2"
-                        >
-                        <strong>Направление:</strong> {{ wish.class }} * <strong>Кол-во:</strong> {{ wish.prefer_amount_of_classes }} * <strong>Дни:</strong> {{ wish.prefer_day }} * <strong>Время:</strong> {{ wish.prefer_time }}
-                        </span>
-                </div>
-                <div>
-                    <span class="font-bold text-blue-500">Примечание</span> - {{ client.comment }}
-                </div>
-            </div>
             <div class="flex flex-col mt-8" v-if="records.length > 0">
                 <div class="overflow-x-auto rounded-lg">
                     <div class="align-middle inline-block min-w-full">
@@ -139,8 +123,7 @@ onBeforeMount(() => {
                                     <TableRow>
                                         <TableHeaderCell>Направление</TableHeaderCell>
                                         <TableHeaderCell>Запланированно занятий</TableHeaderCell>
-                                        <TableHeaderCell>Запланированно занятий по датам</TableHeaderCell>
-                                        <TableHeaderCell>Израсходовано за период</TableHeaderCell>
+                                        <TableHeaderCell>Проведено занятий</TableHeaderCell>
                                         <TableHeaderCell>Остаток</TableHeaderCell>
                                     </TableRow>
                                 </template>
@@ -148,13 +131,6 @@ onBeforeMount(() => {
                                     <TableRow v-for="record in records" :key="record.id">
                                         <TableDataCell>{{ record.class_name }}</TableDataCell>
                                         <TableDataCell>{{ record.sum_count }}</TableDataCell>
-                                        <TableDataCell class="flex flex-wrap">
-                                            <span v-for="item in record.records_by_date" :key="item.id"
-                                            class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-1 rounded dark:bg-indigo-500 dark:text-indigo-900 whitespace-nowrap"
-                                            >
-                                                {{ moment(item.educationDate).format("ddd DD.MM.YYYY") }}&nbsp;-&nbsp;<span class="bg-blue-400 text-blue-100 px-1.5 py-0.5 rounded-full">{{ item.date_count }}</span>
-                                            </span>
-                                        </TableDataCell>
                                         <TableDataCell>{{ record.present }}</TableDataCell>
                                         <TableDataCell>{{ record.not_present }}</TableDataCell>
                                     </TableRow>
@@ -164,7 +140,7 @@ onBeforeMount(() => {
                     </div>
                 </div>
             </div>
-            <div class="border-l-8 p-4 border-red-300" v-else>Данные на указанный период и клиента отсутствуют в расписании. Попробуйте изменить клиента или период.</div>
+            <div class="border-l-8 p-4 border-red-300" v-else>Данные на указанный период и специалисту отсутствуют в расписании. Попробуйте изменить специалиста или период.</div>
         </div>
     </div>
     <Spinner :showSpinner="showSpinner" />    

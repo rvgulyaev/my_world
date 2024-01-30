@@ -14,7 +14,7 @@ class Record extends Model
 
     protected $table='record';
 
-    protected $fillable = ['client_id', 'educationDate', 'user_id', 'start_time', 'end_time', 'class_id', 'room_id', 'is_present'];
+    protected $fillable = ['client_id', 'educationDate', 'user_id', 'start_time', 'end_time', 'class_id', 'room_id', 'is_present', 'comment'];
 
     protected $filterFields = [
         'educationDate',

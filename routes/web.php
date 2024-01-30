@@ -57,6 +57,7 @@ Route::prefix('api')->group(function(){
     Route::post('/get_free_rooms', [RecordController::class, 'getFreeRooms'])->name('get_free_rooms');
     Route::post('/get_client_info', [RecordController::class, 'getClientInfo'])->name('get_client_info');
     Route::post('/set_record_present', [RecordController::class, 'setPresent'])->name('set_record_present');
+    Route::post('/store_record_comment', [RecordController::class, 'store_record_comment'])->name('store_record_comment');
 
     Route::post('/get_records', [RecordController::class, 'get_records'])->name('get_records');
     Route::post('/set_is_present', [RecordController::class, 'set_is_present'])->name('set_is_present');
@@ -64,6 +65,9 @@ Route::prefix('api')->group(function(){
 
     Route::post('/get_clients_report', [ReportController::class, 'get_clients_report'])->name('get_clients_report');
     Route::get('/get_clients_list', [ReportController::class, 'get_clients'])->name('get_clients_list');
+
+    Route::post('/get_specialists_report', [ReportController::class, 'get_specialists_report'])->name('get_specialists_report');
+    Route::get('/get_specialists_list', [ReportController::class, 'get_specialists'])->name('get_specialists_list');
 })->middleware('auth');
 
 Route::name('admin.')->middleware(['auth', 'role:admin'])->group(function () {

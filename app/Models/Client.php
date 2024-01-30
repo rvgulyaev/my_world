@@ -29,8 +29,9 @@ class Client extends Model
         'adress',
     ];
 
+
     function wishes(): HasMany {
-        return $this->hasMany(Wish::class);
+        return $this->hasMany('App\Models\Wish', 'id', 'client_id');
     }
     
     public function created_by_user()

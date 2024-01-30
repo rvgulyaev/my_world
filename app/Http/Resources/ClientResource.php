@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Wish;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -30,6 +31,8 @@ class ClientResource extends JsonResource
             'updated_by' => $this->updated_by ? $this->updated_by_user->name : "Не определено",
             'created_at' => $this->created_at ? Carbon::parse($this->created_at)->format('d.m.Y H:i:s') : "Не определено",
             'updated_at' => $this->updated_at ? Carbon::parse($this->updated_at)->format('d.m.Y H:i:s') : "Не определено",
+            'comment' => $this->comment,
+            'wishes' => WishResource::collection(Wish::where('client_id', $this->id)->get())
         ];
     }
 }
