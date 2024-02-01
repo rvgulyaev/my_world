@@ -17,7 +17,9 @@ import { useToast } from "vue-toastification";
 import axios from "axios";
 import Spinner from '@/Components/Spinner.vue';
 import EmeraldButton from "@/Components/EmeraldButton.vue";
+import { usePermissions } from "@/Composables/permissions";
 
+const { hasRole } = usePermissions();
 const toast = useToast();
 const showSpinner = ref(false);
 const props = defineProps({
@@ -74,16 +76,11 @@ async function getClientInfo(client_id) {
     await axios.post('/api/get_client_info', {'client_id':client_id})
     .then((response) => {
         showSpinner.value=false;
-        clientInfo.value=response.data.client_info[0];
-        wishes_list = clientInfo.value.wishes;
-        console.log(wishes_list)
-        wishes_list.forEach(el => {
-            el.class_name = props.classes[props.classes.findIndex((obj) => obj.id === el.class_id)].name
-        });
+        clientInfo.value = response.data.client_info;
+        wishes_list = response.data.wishes;
         showInfoModal.value = true;
     })
     .catch((e) => {
-        console.log(e)
         showSpinner.value = false;
         toast.error("Ошибка при получении информации о клиенте!", {
             timeout: 2000
@@ -126,7 +123,7 @@ async function getClientInfo(client_id) {
                 <div class="mb-4 flex items-center justify-between">
                        <SearchInput :search_field="'search_client_fio'" :search="props.search_client" :route_link="'clients.index'" :pholder="'Поиск по ФИО...'"/> 
                        <div class="flex-shrink-0">
-                            <Link :href="route('clients.trashed')" class="uppercase hover:underline hover:decoration-solid hover:decoration-slate-500 dark:text-slate-300">Перейти в корзину</Link>
+                            <Link :href="route('clients.trashed')" class="uppercase hover:underline hover:decoration-solid hover:decoration-slate-500 dark:text-slate-300" v-if="hasRole('admin')">Перейти в корзину</Link>
                         </div>
                 </div>
                 <div class="flex flex-col mt-8">
@@ -155,7 +152,7 @@ async function getClientInfo(client_id) {
                                                 </Link>
                                             </TableDataCell>
                                             <TableDataCell>{{ client.burndate }}</TableDataCell>
-                                            <TableDataCell>{{ client.contras }}</TableDataCell>
+                                            <TableDataCell style="white-space:normal">{{ client.contras }}</TableDataCell>
                                             <TableDataCell>
                                                 <template class="flex flex-wrap w-80">
                                                     <span v-for="wish in client.wishes" :key="wish.id"
@@ -236,7 +233,7 @@ async function getClientInfo(client_id) {
                                 <div>
                                     <span v-for="(wish, index) in wishes_list" :key="index" 
                                     class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-indigo-500 dark:text-indigo-900">
-                                        <strong>Напр:</strong> {{ wish.class_name }} || <strong>Кол-во:</strong> {{ wish.prefer_amount_of_classes }} || <strong>Дни:</strong> {{ wish.prefer_day }} || <strong>Время:</strong> {{ wish.prefer_time }}
+                                        <strong>Напр:</strong> {{ wish.class }} || <strong>Кол-во:</strong> {{ wish.prefer_amount_of_classes }} || <strong>Дни:</strong> {{ wish.prefer_day }} || <strong>Время:</strong> {{ wish.prefer_time }}
                                     </span>
                                 </div>
 

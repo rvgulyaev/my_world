@@ -7,11 +7,13 @@ use App\Http\Resources\ClientResource;
 use App\Http\Resources\RoomResource;
 use App\Http\Resources\TimeRangeResource;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\WishResource;
 use App\Models\Classes;
 use App\Models\Client;
 use App\Models\Record;
 use App\Models\TimeRange;
 use App\Models\User;
+use App\Models\Wish;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -24,37 +26,47 @@ class RecordController extends Controller
      */
 
      public function index(Request $request) {
-        $user_id = $request->get('user_id', (\Session('user_id')) ? \Session('user_id') : 1);
-        return Inertia::render('Records/RecordsIndex', [
-            'user_id' => $user_id
-        ]);
+        return Inertia::render('Records/RecordsIndex');
      }
 
 
     public function get_records(Request $request)
-    {   
-        $filters['education_date'] = $request->get('education_date', ((\Session('education_date')) ? \Session('education_date') : Date('Y-m-d'))); 
-        $users = DB::table('users')->select(['id', 'name'])->whereIn('id', Record::where('educationDate', '=', $filters['education_date'])->get('user_id'))->orderBy('name')->get();   
-        $filters['user_id'] = $request->get('user_id', (\Session('user_id')) ? \Session('user_id') : ((count($users) > 0) ? $users->first()->id : -1));  
-        
-        $records = DB::table('record')
-                    ->select('record.start_time as start_time', 'record.end_time as end_time', 'clients.fio AS client_name', 'classes.name AS class_name', 'rooms.name as room_name', 'record.is_present', 'record.id', 'record.comment')
-                    ->leftJoin('clients', 'record.client_id', '=', 'clients.id')
-                    ->leftJoin('classes', 'record.class_id', '=', 'classes.id')
-                    ->leftJoin('rooms', 'record.room_id', '=', 'rooms.id')
-                    ->when($filters['education_date'], function ($query, $education_date) {
-                            $query->where('record.educationDate', '=', $education_date);
-                        })->when($request->get('user_id', $filters['user_id']), function ($query, $user_id) {
-                            $query->where('record.user_id', '=', $user_id);
+    {  
+        $records = null; 
+        ($request->has('education_date')) ? \Session::put('education_date',$request->get('education_date')) : ((!\Session::has('education_date') ? \Session::put('education_date', Date('Y-m-d')) : null));     
+        $filters['education_date'] = \Session::get('education_date');
+        if (auth()->user()->hasRole('user')) {
+            $filters['user_id'] = auth()->user()->id;
+        } else {
+            ($request->has('user_id')) ? \Session::put('user_id',$request->get('user_id')) : ((!\Session::has('user_id') ? \Session::put('user_id', -1) : null));
+            $filters['user_id'] = \Session::get('user_id');
+        }
+        $users = DB::table('users')->select(['id', 'name'])->whereIn('id', Record::where('educationDate', '=', \Session::get('education_date'))->get('user_id'))->orderBy('name')->get();
+        if (count($users) > 0) {
+            if (!auth()->user()->hasRole('user')) {
+                $user_in_users = $users->filter(function($item) use ($filters) { return $item->id === $filters['user_id']; })->first();
+                if (!$user_in_users) { \Session::put('user_id', $users->first()->id); }
+                $filters['user_id'] = \Session::get('user_id'); 
+            }
+                    
+            $records = DB::table('record')
+                        ->select('record.start_time as start_time', 'record.end_time as end_time', 'clients.fio AS client_name', 'classes.name AS class_name', 'rooms.name as room_name', 'record.is_present', 'record.id', 'record.comment')
+                        ->leftJoin('clients', 'record.client_id', '=', 'clients.id')
+                        ->leftJoin('classes', 'record.class_id', '=', 'classes.id')
+                        ->leftJoin('rooms', 'record.room_id', '=', 'rooms.id')
+                        ->when($filters['education_date'], function ($query, $education_date) {
+                                $query->where('record.educationDate', '=', $education_date);
+                        })->when($filters['user_id'], function ($query, $user_id) {
+                                $query->where('record.user_id', '=', $user_id);
                         })
-                    ->orderBy('record.start_time')
-                    ->get();   
-        \Session::put('education_date',$filters['education_date']);   
-        \Session::put('user_id',$filters['user_id']);   
+                        ->orderBy('record.start_time')
+                        ->get();   
+         }
         return response()->json([
             'users' => $users,
             'records' => $records,
-            'user_id' => $filters['user_id']
+            'user_id' => $filters['user_id'],
+            'education_date' => $filters['education_date']
         ]);
     }
 
@@ -72,9 +84,12 @@ class RecordController extends Controller
     }
 
     public function getClientInfo(Request $request) {
-        $client_info = Client::where('id', $request->get('client_id'))->get()->load('wishes');
+        $client_id = $request->get('client_id');
+        $client_info = DB::table('clients')->where('id', $client_id)->first();
+        $wishes = WishResource::collection(Wish::where('client_id', $client_id)->get());
         return response()->json([
-            'client_info' => $client_info
+            'client_info' => $client_info,
+            'wishes' => $wishes
         ], 200);
     }
 

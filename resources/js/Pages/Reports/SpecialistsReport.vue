@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
-import { Head } from "@inertiajs/vue3";
+import { Head, usePage } from "@inertiajs/vue3";
 import { onBeforeMount, ref } from 'vue';
 import { usePermissions } from "@/Composables/permissions";
 import VueMultiselect from "vue-multiselect";
@@ -15,6 +15,7 @@ import moment from 'moment/min/moment-with-locales';
 moment.locale('ru')
     
 const { hasRole } = usePermissions();
+const user = usePage().props.auth.user
 const showSpinner = ref(false);
 
 const specialists = ref([])
@@ -26,6 +27,9 @@ let filters = {}
 
 async function getReport() {
     showSpinner.value = true;
+    if (hasRole('user')) {
+        specialist_id.value = user.id
+    }
     if (specialist_id.value.id > 0) {
         filters = { 'start_date':dateValue.value[0], 'end_date':dateValue.value[1], 'specialist_id': specialist_id.value.id }
          } else {
@@ -80,19 +84,22 @@ onBeforeMount(() => {
                     <h3 class="text-xl font-bold text-gray-900 dark:text-indigo-500 mb-2">
                         Отчет по специалистам
                     </h3>
-                    <span class="text-base font-normal text-gray-500"
-                        >Отчет по проведенным занятиям специалистами за определенный период - по умолчанию период за последнюю(не календарную) неделю. <br/>
-                        (Примечание: Значение полей таблицы `Проведено занятий` и `Остаток`, вычисляются по полю `Отметка о посещении` расписания занятий.)</span
-                    >
+                    <span class="text-base font-normal text-gray-500" v-if="hasRole('user')">Отчет по проведенным занятиям специалиста <span class="underline">{{ user.name }}</span> за определенный период - по умолчанию период за последнюю(не календарную) неделю. <br/>
+                        (Примечание: Значение полей таблицы `Проведено занятий` и `Остаток`, вычисляются по полю `Отметка о посещении` расписания занятий.)</span>
+                    <span class="text-base font-normal text-gray-500" v-else>Отчет по проведенным занятиям специалистами за определенный период - по умолчанию период за последнюю(не календарную) неделю. <br/>
+                        (Примечание: Значение полей таблицы `Проведено занятий` и `Остаток`, вычисляются по полю `Отметка о посещении` расписания занятий.)</span>
                 </div>
             </div>
             <div>
-                <h3 class="text-gray-900 dark:text-gray-300 mb-2">
+                <h3 class="text-gray-900 dark:text-gray-300 mb-2" v-if="hasRole('user')">
+                    Выберите период для отображения отчета
+                </h3>
+                <h3 class="text-gray-900 dark:text-gray-300 mb-2" v-else>
                     Выберите специалиста и период для отображения отчета
                 </h3>
             </div>
             <div class="mb-4 flex items-center space-x-2">
-                    <div class="w-72">  
+                    <div class="w-72" v-if="hasRole('admin')||hasRole('moderator')">  
                         <VueMultiselect
                             v-model="specialist_id"
                             :options="specialists"

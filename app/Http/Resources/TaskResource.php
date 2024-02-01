@@ -21,6 +21,7 @@ class TaskResource extends JsonResource
             'executeDate' => $this->executeDate ? Carbon::parse($this->executeDate)->format('d.m.Y') : "Не определено",
             'executed' => $this->executed,
             'comments' => $this->comments,
+            'created_by_id' => $this->created_by,
             'created_by' => $this->created_by ? $this->created_by_user->name : "Не определено",
             'updated_by' => $this->updated_by ? $this->updated_by_user->name : "Не определено",
             'created_at' => $this->created_at ? Carbon::parse($this->created_at)->format('d.m.Y') : "Не определено",

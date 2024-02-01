@@ -26,7 +26,7 @@ import InputLabel from '@/Components/InputLabel.vue'
 const { hasRole } = usePermissions();
 const showSpinner = ref(false);
 const toast = useToast();
-const session_date = usePage().props.education_date
+const user = usePage().props.auth.user
 const showConfirmDeleteModal = ref(false);
 const showCommentModal = ref(false);
 const dropdown = ref(null)
@@ -35,20 +35,14 @@ const comment = ref({
     text: ''
 })
 
-const props = defineProps({
-    user_id: {
-        type: Number,
-        default: 1
-    }
-})
-
 moment.locale('ru')
 
-let education_date = ref(session_date)
-let user_id = ref(Number(props.user_id))
+let education_date = ref()
+let user_id = ref()
 let users = ref({})
 let records = ref([])
 let record_to_delete = ref(-1)
+let filters = {};
 
 function confirmDeleteRecord (record_id) {
     showConfirmDeleteModal.value = true;
@@ -81,28 +75,24 @@ async function deleteRecord () {
 };
 
 function checkUser(userid) {
-    user_id.value = userid
+    filters.user_id = userid
     getRecords();
 }
 
 watch(education_date, (value) => {
+    filters.education_date = education_date.value
     getRecords();
 });
 
 async function getRecords() {
     showSpinner.value = true;
-    let filters = {};
-    if (user_id.value > 0) {
-        filters = { 'education_date':education_date.value, 'user_id': user_id.value }
-         } else {
-        filters = { 'education_date':education_date.value }
-        }
     await axios.post('/api/get_records', filters)
     .then((response) => {
         showSpinner.value=false;
         users.value = response.data.users
         records.value = response.data.records
         user_id.value = response.data.user_id
+        education_date.value = response.data.education_date
     })
     .catch((e) => {
         showSpinner.value = false;
@@ -177,9 +167,8 @@ onMounted(() => {
                         <h3 class="text-xl font-bold text-gray-900 dark:text-indigo-500 mb-2">
                             Расписание занятий
                         </h3>
-                        <span class="text-base font-normal text-gray-500"
-                            >Раздел предназначен для ведения расписания занятий.</span
-                        >
+                        <span class="text-base font-normal text-gray-500"  v-if="hasRole('user')">Расписание занятий для <span class="underline">{{ user.name }}</span>.</span>
+                        <span class="text-base font-normal text-gray-500"  v-else>Раздел предназначен для ведения расписания занятий.</span>
                     </div>
                     <div class="flex-shrink-0">
                         <PrimaryLink :href="route('records.create')" v-if="hasRole('moderator')|hasRole('admin')">
@@ -188,20 +177,21 @@ onMounted(() => {
                     </div>
                 </div>
                 <div class="mb-4 flex items-center justify-between">
-                    <div>
-                        <h3 class="text-gray-900 dark:text-gray-300 mb-2">
-                            Выберите дату и специалиста для отображения расписания
-                        </h3>
-                        <div>                            
-                        <TextInput type="date" v-model="education_date" class="mr-7"/>
-                        <template v-for="user in users" :key="user.id">
-                            <ButtonActive v-if="user.id === user_id">{{ user.name }}</ButtonActive>
-                            <ButtonInActive v-else @click="checkUser(user.id)">{{ user.name }}</ButtonInActive>
-                        </template>
-                        </div>                        
+                    <div >
+                        <h3 class="text-gray-900 dark:text-gray-300 mb-2" v-if="hasRole('user')">Выберите дату для отображения расписания</h3>
+                        <h3 class="text-gray-900 dark:text-gray-300 mb-2" v-else>Выберите дату и специалиста для отображения расписания</h3>
+                        <div class="flex items-center">
+                            <TextInput type="date" v-model="education_date" class="mr-7"/>
+                            <div v-if="hasRole('admin')||hasRole('moderator')">                            
+                                <template v-for="user in users" :key="user.id">
+                                    <ButtonActive v-if="user.id === user_id">{{ user.name }}</ButtonActive>
+                                    <ButtonInActive v-else @click="checkUser(user.id)">{{ user.name }}</ButtonInActive>
+                                </template>
+                            </div>
+                        </div>                          
                     </div>
                 </div>
-                <div class="flex flex-col mt-8">
+                <div class="flex flex-col mt-8" v-if="records&&records.length>0">
                     <div class="overflow-x-auto rounded-lg">
                         <div class="align-middle inline-block min-w-full">
                             <div class="shadow overflow-hidden sm:rounded-lg">
@@ -224,7 +214,7 @@ onMounted(() => {
                                             <TableDataCell>{{ record.client_name }}</TableDataCell>
                                             <TableDataCell>{{ record.class_name }}</TableDataCell>
                                             <TableDataCell>{{ record.room_name }}</TableDataCell>
-                                            <TableDataCell>
+                                            <TableDataCell v-if="hasRole('moderator')|hasRole('admin')">
                                                 <PinkButton v-if="record.is_present === 0" @click="setPresent(record.id)">
                                                     Не был
                                                 </PinkButton>
@@ -232,8 +222,16 @@ onMounted(() => {
                                                     Был
                                                 </EmeraldButton>
                                             </TableDataCell>
+                                            <TableDataCell v-else>
+                                                <PinkButton v-if="record.is_present === 0" enabled="false" class="cursor-not-allowed">
+                                                    Не был
+                                                </PinkButton>
+                                                <EmeraldButton v-else-if="record.is_present === 1" enabled="false" class="cursor-not-allowed">
+                                                    Был
+                                                </EmeraldButton>
+                                            </TableDataCell>
                                             <TableDataCell>{{ record.comment }}</TableDataCell>
-                                            <TableDataCell>
+                                            <TableDataCell v-if="hasRole('moderator')|hasRole('admin')">
                                                 <div class="flex">
                                                     <PinkButton v-if="record.id > 0&&hasRole('moderator')|hasRole('admin')" @click="confirmDeleteRecord(record.id)">
                                                         Удалить
@@ -259,6 +257,7 @@ onMounted(() => {
                         </div>
                     </div>
                 </div>
+                <div class="border-l-8 p-4 border-red-300" v-else>Данные на указанный период отсутствуют в расписании. Попробуйте изменить значения фильтра.</div>
             </div>
         </div>
 

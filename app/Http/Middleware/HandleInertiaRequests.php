@@ -41,7 +41,8 @@ class HandleInertiaRequests extends Middleware
                 'location' => $request->url(),
             ],
             'education_date' => \Session::has('education_date') ? \Session::get('education_date') : Date('Y-m-d'),
-            'back_url' => \Session::has('back_url') ? \Session::get('back_url') : Date('Y-m-d'),
+            'user_id' => \Session::has('user_id') ? \Session::get('user_id') : -1,
+            'back_url' => \Session::has('back_url') ? \Session::get('back_url') : null,
         ];
     }
 }

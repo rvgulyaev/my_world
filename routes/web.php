@@ -41,7 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/records/index', [RecordController::class, 'index'])->name('record.filter');
 });
 
-Route::name('reports.')->prefix('/reports')->middleware(['auth', 'role:admin|moderator'])->group(function () {
+Route::name('reports.')->prefix('/reports')->middleware(['auth'])->group(function () {
     Route::get('/clients/index', [ReportController::class, 'clients_index'])->name('clients.index');
     Route::get('/specialists/index', [ReportController::class, 'specialists_index'])->name('specialist.index');
 });

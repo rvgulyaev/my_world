@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, useForm, Link } from "@inertiajs/vue3";
+import { Head, useForm, Link, usePage } from "@inertiajs/vue3";
 import { ref } from "vue";
 import Table from "@/Components/Table.vue";
 import TableRow from "@/Components/TableRow.vue";
@@ -21,6 +21,7 @@ import SearchInput from '@/Components/SearchInput.vue';
 const { hasRole } = usePermissions();
 
 const toast = useToast();
+const user = usePage().props.auth.user
 const props = defineProps({
     tasks: {
         type: Object,
@@ -145,7 +146,7 @@ function task_is_timeout(execute_date) {
                 <div class="mb-4 flex items-center justify-between">
                        <SearchInput :search_field="'search_task'" :search="props.search_task" :route_link="'tasks.index'" :pholder="'Поиск по Задаче...'"/> 
                        <div class="flex-shrink-0">
-                            <Link :href="route('tasks.trashed')" class="uppercase hover:underline hover:decoration-solid hover:decoration-slate-500 dark:text-slate-300">Перейти в корзину</Link>
+                            <Link :href="route('tasks.trashed')" class="uppercase hover:underline hover:decoration-solid hover:decoration-slate-500 dark:text-slate-300" v-if="hasRole('admin')">Перейти в корзину</Link>
                         </div>
                     </div>
                 <div class="flex flex-col mt-8">
@@ -161,7 +162,7 @@ function task_is_timeout(execute_date) {
                                             <TableHeaderCell>Срок</TableHeaderCell>
                                             <TableHeaderCell>Выполнение</TableHeaderCell>
                                             <TableHeaderCell>Комментарий</TableHeaderCell>
-                                            <TableHeaderCell v-if="hasRole('admin')">Действия</TableHeaderCell>
+                                            <TableHeaderCell v-if="hasRole('admin')||hasRole('user')">Действия</TableHeaderCell>
                                         </TableRow>
                                     </template>
                                     <template #default>
@@ -183,11 +184,12 @@ function task_is_timeout(execute_date) {
                                                     </PinkButton>                                             
                                                 </TableDataCell>
                                                 <TableDataCell><div class="w-40 overflow-hidden">{{ task.comments }}</div></TableDataCell>
-                                                <TableDataCell v-if="hasRole('admin')">
+                                                <TableDataCell v-if="hasRole('admin')||(hasRole('user')&&user.id===task.created_by_id)">
                                                     <PinkButton @click="confirmDelete(task.id)">
                                                         Удалить
                                                     </PinkButton>
                                                 </TableDataCell>
+                                                <TableDataCell v-else></TableDataCell>
                                             </TableRow>
                                         </template>
                                     </template>

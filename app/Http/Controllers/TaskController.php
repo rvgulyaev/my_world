@@ -97,7 +97,7 @@ class TaskController extends Controller
     public function update(Request $request, Task $task)
     {
         $request->validate([
-            'comments' => 'string|max:255'
+            'comments' => 'string|max:255|nullable'
         ]);
 
         $task->update([
