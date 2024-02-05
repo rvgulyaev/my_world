@@ -171,7 +171,7 @@ onMounted(() => {
                         <span class="text-base font-normal text-gray-500"  v-else>Раздел предназначен для ведения расписания занятий.</span>
                     </div>
                     <div class="flex-shrink-0">
-                        <PrimaryLink :href="route('records.create')" v-if="hasRole('moderator')|hasRole('admin')">
+                        <PrimaryLink :href="route('records.create')">
                             Добавить запись
                         </PrimaryLink>
                     </div>
@@ -204,7 +204,7 @@ onMounted(() => {
                                             <TableHeaderCell>Кабинет</TableHeaderCell>
                                             <TableHeaderCell>Отметка о посещении</TableHeaderCell>
                                             <TableHeaderCell>Примечание</TableHeaderCell>
-                                            <TableHeaderCell v-if="hasRole('moderator')|hasRole('admin')">Действие</TableHeaderCell>
+                                            <TableHeaderCell>Действие</TableHeaderCell>
                                         </TableRow>
                                     </template>
                                     <template #default>
@@ -214,7 +214,7 @@ onMounted(() => {
                                             <TableDataCell>{{ record.client_name }}</TableDataCell>
                                             <TableDataCell>{{ record.class_name }}</TableDataCell>
                                             <TableDataCell>{{ record.room_name }}</TableDataCell>
-                                            <TableDataCell v-if="hasRole('moderator')|hasRole('admin')">
+                                            <TableDataCell>
                                                 <PinkButton v-if="record.is_present === 0" @click="setPresent(record.id)">
                                                     Не был
                                                 </PinkButton>
@@ -222,18 +222,10 @@ onMounted(() => {
                                                     Был
                                                 </EmeraldButton>
                                             </TableDataCell>
-                                            <TableDataCell v-else>
-                                                <PinkButton v-if="record.is_present === 0" enabled="false" class="cursor-not-allowed">
-                                                    Не был
-                                                </PinkButton>
-                                                <EmeraldButton v-else-if="record.is_present === 1" enabled="false" class="cursor-not-allowed">
-                                                    Был
-                                                </EmeraldButton>
-                                            </TableDataCell>
                                             <TableDataCell>{{ record.comment }}</TableDataCell>
-                                            <TableDataCell v-if="hasRole('moderator')|hasRole('admin')">
+                                            <TableDataCell>
                                                 <div class="flex">
-                                                    <PinkButton v-if="record.id > 0&&hasRole('moderator')|hasRole('admin')" @click="confirmDeleteRecord(record.id)">
+                                                    <PinkButton v-if="record.id > 0" @click="confirmDeleteRecord(record.id)">
                                                         Удалить
                                                     </PinkButton>
                                                     <DropdownMenu class="bg-pink-300 dark:bg-pink-500 dark:text-pink-900 rounded ml-0 px-2 cursor-pointer" ref="dropdown">

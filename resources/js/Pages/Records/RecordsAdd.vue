@@ -11,14 +11,18 @@ import TableHeaderCell from "@/Components/TableHeaderCell.vue";
 import TableDataCell from "@/Components/TableDataCell.vue";
 import { useToast } from "vue-toastification";
 import axios from "axios";
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import Spinner from '@/Components/Spinner.vue';
 import moment from 'moment/min/moment-with-locales';
+import { usePermissions } from "@/Composables/permissions";
 
+const { hasRole } = usePermissions();
+const currentUser = usePage().props.auth.user
 const toast = useToast();
 const busy_time = ref([]);
 const free_rooms = ref([]);
-const client_info = ref([]);
+const client_info = ref();
+const wishes = ref([]);
 const showSpinner = ref(false);
 const startTime = ref('');
 const endTime = ref('');
@@ -75,10 +79,12 @@ function checkEndTime() {
 
 async function getClientInfo() {
     showSpinner.value = true;
+    (hasRole('user'))?form.user_id=currentUser.id:null
     await axios.post('/api/get_client_info', {'client_id':form.client_id})
     .then((response) => {
         showSpinner.value=false;
         client_info.value=response.data.client_info
+        wishes.value = response.data.wishes
     })
     .catch((e) => {
         showSpinner.value = false;
@@ -128,8 +134,8 @@ const submit = () => {
 };
 
 watch(client_info, (client_info, old_client_info) => {    
-    client_age = String((new Date()).getFullYear() - (new Date(client_info[0].burndate).getFullYear()))
-    age_suffix = (client_age.slice(-1) > 4) ? 'лет' : 'год(а)' 
+    client_age = String((new Date()).getFullYear() - (new Date(client_info.burndate).getFullYear()))
+    age_suffix = (client_age.slice(-1) > 4) ? 'лет' : (client_age.slice(-1) < 2)?'год':'года' 
 })
 </script>
 
@@ -207,7 +213,7 @@ watch(client_info, (client_info, old_client_info) => {
                                 v-model="form.user_id"
                                 required
                                 @change="getBusyTime()"
-                                :disabled="endTime !== ''"
+                                :disabled="endTime !== '' || hasRole('user')"
                             >
                                 <option :value="-1">
                                     Выберите специалиста
@@ -317,40 +323,42 @@ watch(client_info, (client_info, old_client_info) => {
                             />
                         </div>
                     </div>
-                    <div v-if="typeof client_info !== 'undefined' && client_info.length > 0">
+                    <div v-if="typeof client_info !== 'undefined'">
                         <h3 class="text-lg text-gray-900 dark:text-gray-300 mb-2">
-                            Справочная информация о клиенте <strong class="text-indigo-500">{{ client_info[0].fio }}</strong>
+                            Справочная информация о клиенте <strong class="text-indigo-500">{{ client_info.fio }}</strong>
                         </h3>
                         <div class="grid grid-cols-2 gap-4 text-gray-400">
                             <div class="font-semibold">Дата рождения:</div>
-                            <div>{{ formatter.format(new Date(client_info[0].burndate)) }} ( Возраст - {{ client_age }} {{ age_suffix }} )</div>
+                            <div>{{ formatter.format(new Date(client_info.burndate)) }} ( Возраст - {{ client_age }} {{ age_suffix }} )</div>
                             <div class="font-semibold">Диагноз:</div>
-                            <div>{{ client_info[0].diagnos }}</div>
+                            <div>{{ client_info.diagnos }}</div>
                             <div class="font-semibold">Противопоказания:</div>
-                            <div>{{ client_info[0].contras }}</div>
+                            <div>{{ client_info.contras }}</div>
                             <div class="font-semibold">Мама:</div>
-                            <div>{{ (client_info[0].mother !== '') ? client_info[0].mother : '-' }} / {{ (client_info[0].mother_phone !== '') ? client_info[0].mother_phone : '-' }}</div>
+                            <div>{{ (client_info.mother !== '') ? client_info.mother : '-' }} / {{ (client_info.mother_phone !== '+7(') ? client_info.mother_phone : '-' }}</div>
                             <div class="font-semibold">Папа:</div>
-                            <div>{{ (client_info[0].father !== '') ? client_info[0].father : '-' }} / {{ (client_info[0].father_phone !== '') ? client_info[0].father_phone : '-' }}</div>
+                            <div>{{ (client_info.father !== '') ? client_info.father : '-' }} / {{ (client_info.father_phone !== '+7(') ? client_info.father_phone : '-' }}</div>
                             <div class="font-semibold">Адрес</div>
-                            <div>{{ (client_info[0].adress !== '') ? client_info[0].adress : '-' }}</div>
+                            <div>{{ (client_info.adress !== '') ? client_info.adress : '-' }}</div>
                         </div>
                         <h3 class="mt-7 text-lg text-gray-900 dark:text-gray-300 mb-2">
                             Пожелания родителей по занятиям
                         </h3>
-                        <Table v-if="client_info[0].wishes.length > 0">
+                        <Table v-if="wishes.length > 0">
                             <template #header>
                                 <TableRow>
                                     <TableHeaderCell>Занятие</TableHeaderCell>
                                     <TableHeaderCell>Желаемое кол-во</TableHeaderCell>
+                                    <TableHeaderCell>Желаемые дни недели</TableHeaderCell>
                                     <TableHeaderCell>Желаемое время</TableHeaderCell>
                                 </TableRow>
                             </template>
                             <template #default>
-                                <TableRow v-for="wish in client_info[0].wishes" :key="wish.id" >
-                                    <TableDataCell>{{ classes[wish.class_id].name }}</TableDataCell>
+                                <TableRow v-for="wish in wishes" :key="wish.id" >
+                                    <TableDataCell>{{ wish.class }}</TableDataCell>
                                     <TableDataCell>{{ wish.prefer_amount_of_classes }}</TableDataCell>
-                                    <TableDataCell>{{ time_ranges[wish.prefer_time_id].name }}</TableDataCell>
+                                    <TableDataCell>{{ wish.prefer_day }}</TableDataCell>
+                                    <TableDataCell>{{ wish.prefer_time }}</TableDataCell>
                                 </TableRow>
                             </template>
                         </Table>
