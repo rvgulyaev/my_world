@@ -251,7 +251,7 @@ function unBanUser (user_id, index){
                             </div>
                             <div class="pb-3 border-b border-slate-300 mb-3">
                                 <span class="uppercase font-bold">Статус:</span>
-                                <div>{{  (userInfo.banned_at !== null) ? 'Пользователь забанен с ' + userInfo.banned_at : 'Учетная запись пользователя активна' }}</div>
+                                <div>{{  (userInfo.banned_at !== null && userInfo.banned_at !== "") ? 'Пользователь забанен с ' + userInfo.banned_at : 'Учетная запись пользователя активна' }}</div>
                             </div>
                             <div>
                                 <span class="uppercase font-bold">Роли пользователя:</span>
