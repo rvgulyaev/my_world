@@ -364,7 +364,7 @@ function back(step) {
                                 />
                             </div>
                         </div>
-                        <div v-if="typeof client_info !== 'undefined'">
+                        <div v-if="typeof client_info !== 'undefined'" class="overflow-x-auto">
                             <h3 class="text-lg text-gray-900 dark:text-gray-300 mb-2">
                                 Справочная информация о клиенте <strong class="text-indigo-500">{{ client_info.fio }}</strong>
                             </h3>
