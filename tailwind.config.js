@@ -21,6 +21,9 @@ export default {
             zIndex: {
                 '9999': '9999'
             },
+            height: {
+                'h-dvh': '100vh'
+            },
             colors: {
                 "vtd-primary": colors.sky, // Light mode Datepicker color
                 "vtd-secondary": colors.gray, // Dark mode Datepicker color

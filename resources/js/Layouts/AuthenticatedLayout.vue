@@ -119,7 +119,7 @@ onMounted(async ()=>{
    <div class="flex overflow-hidden pt-16 ">
       <Sidebar />
       <div class="bg-gray-900 opacity-50" id="sidebarBackdrop"></div>
-      <div id="main-content" class="w-full bg-gray-50 lg:ml-64 dark:bg-slate-900">
+      <div id="main-content" class="w-full min-h-[90vh] bg-gray-50 lg:ml-64 dark:bg-slate-900 pb-7">
          <main class="w-full pt-6 px-4">
             <slot />
          </main>

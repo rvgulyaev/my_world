@@ -209,7 +209,7 @@ onMounted(() => {
                                     </template>
                                     <template #default>
                                         <TableRow v-for="(record, index) in records" :key="record.id">
-                                            <TableDataCell v-if="record.start_time !== null && record.end_time !== null">{{ moment(record.start_time).format('H:mm') }} - {{ moment(record.end_time).format('H:mm') }}</TableDataCell>
+                                            <TableDataCell v-if="record.start_time !== null && record.end_time !== null"><a :href="route('records.edit', record.id)" class="text-indigo-700 underline underline-offset-4">{{ moment(record.start_time).format('H:mm') }} - {{ moment(record.end_time).format('H:mm') }}</a></TableDataCell>
                                             <TableDataCell v-else></TableDataCell>
                                             <TableDataCell>{{ record.client_name }}</TableDataCell>
                                             <TableDataCell>{{ record.class_name }}</TableDataCell>

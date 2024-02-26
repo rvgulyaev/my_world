@@ -16,6 +16,7 @@ import Spinner from '@/Components/Spinner.vue';
 import moment from 'moment/min/moment-with-locales';
 import { usePermissions } from "@/Composables/permissions";
 import VueMultiselect from 'vue-multiselect';
+import RoomsAdd from "../Rooms/RoomsAdd.vue";
 
 const { hasRole } = usePermissions();
 const currentUser = usePage().props.auth.user
@@ -37,10 +38,18 @@ let client_age = ''
 let age_suffix = ''
 
 const props = defineProps({
+    record: {
+        type: Object,
+        required: true
+    },
+    client_info: {
+        type: Object,
+        required: true
+    },
+    wishes: Array,
     users: Array,
     clients: Array,
     classes: Array,
-    time_ranges: Array
 })
 
 function clearData() {    
@@ -56,30 +65,30 @@ function clearData() {
 // Add User Modal
 const form = useForm({
     educationDate: session_date,
-    time_range: -1,
-    user_id: -1,
-    user: {
-        id: -1,
-        name: ''
-    },
-    client_id: -1,
-    client: {
-        id: -1,
-        name: ''
-    },
-    class_id: -1,
-    class: {
-        id: -1,
-        name: ''
-    },
-    room_id: -1,
+    user_id: props.record.user.id,
+    user: props.record.user,
+    client_id: props.record.client.id,
+    client: props.record.client,
+    class_id: props.record.class.id,
+    class: props.record.class,
+    room_id: props.record.room.id,
     room: {
         id: -1,
         name: ''
     },
-    startTimeStamp: null,
-    endTimeStamp: null
+    startTimeStamp: props.record.start_time,
+    endTimeStamp: props.record.end_time
 });
+
+onMounted(() => {
+    client_info.value = props.client_info;
+    wishes.value = props.wishes;
+    getFreeRooms();
+    getBusyTime();
+    startTime.value = moment(props.record.start_time).format("HH:mm");
+    endTime.value = moment(props.record.end_time).format("HH:mm");
+    form.room = props.record.room;
+})
 
 function checkEndTime() {
     flash_time.value = []
@@ -100,6 +109,12 @@ function checkEndTime() {
             form.errors.endTime = "Данный интервал пересекается с одним или несколькими из имеющихся в расписании"
         } else {
             getFreeRooms();
+            if(!free_rooms.value.find(el => el.id === props.record.room.id)) {
+                form.room = {
+                    id: -1,
+                    name: ''
+                }
+            }
         }
     }
 }
@@ -125,6 +140,7 @@ async function getBusyTime() {
     .then((response) => {
         showSpinner.value = false;
         busy_time.value = response.data.busy_time
+        busy_time.value.splice(response.data.busy_time.findIndex(el => (el.start_time === props.record.start_time && el.end_time === props.record.end_time)), 1)
     })
     .catch((e) => {
         showSpinner.value = false;
@@ -149,7 +165,7 @@ const submit = () => {
     form.user_id = form.user.id
     form.client_id = form.client.id
     form.room_id = form.room.id
-    form.post(route("records.store"), {
+    form.put(route("records.update", props.record.id), {
         onSuccess: () => {
             showSpinner.value = false;
             toast.success("Запись в расписании успешно сохранена!", {
@@ -169,21 +185,6 @@ watch(client_info, (client_info, old_client_info) => {
     client_age = String((new Date()).getFullYear() - (new Date(client_info.burndate).getFullYear()))
     age_suffix = (client_age.slice(-1) > 4) ? 'лет' : (client_age.slice(-1) < 2)?'год':'года' 
 })
-
-function back(step) {
-    switch(step) {
-        case 2:
-            form.startTimeStamp=null
-            form.endTimeStamp=null
-            form.user={
-                id: -1,
-                name: ''
-            }
-            break;
-            default:
-                console.log('нет такого шага')
-    }
-}
 </script>
 
 <template>
@@ -192,14 +193,14 @@ function back(step) {
     <AuthenticatedLayout>
         <template #header>
                 <h2 class="text-gray-800 dark:text-gray-200 leading-tight">
-                    Форма добавления записи в расписание
+                    Форма редактирования записи в расписание
                 </h2>
         </template>
 
         <div class="ml-3 mt-3 p-6 bg-white dark:bg-gray-700 rounded-md shadow-md min-h-[85vh]">
             <div class="mb-5 pb-5 border-b border-gray-500">
                 <h3 class="text-xl font-bold text-gray-900 dark:text-indigo-500 mb-2">
-                    Форма добавления записи в расписание
+                    Форма редактирования записи в расписание
                 </h3>
                 <span class="text-base font-normal text-gray-500">Поля помеченные * обязательны для заполнения.</span>
             </div>
@@ -412,7 +413,7 @@ function back(step) {
                             :class="{ 'opacity-25': form.processing }"
                             :disabled="form.class.id<-1"
                         >
-                            Добавить запись
+                            Сохранить запись
                         </PrimaryButton>
                         <Link
                             :href="route('records.index')"

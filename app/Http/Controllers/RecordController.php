@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ClassesResource;
-use App\Http\Resources\ClientResource;
+use App\Http\Resources\ClassesSearchResource;
+use App\Http\Resources\ClientSearchResource;
+use App\Http\Resources\RecordEditResource;
 use App\Http\Resources\RoomResource;
 use App\Http\Resources\TimeRangeResource;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\UserSearchResource;
 use App\Http\Resources\WishResource;
 use App\Models\Classes;
 use App\Models\Client;
@@ -17,7 +18,7 @@ use App\Models\Wish;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
-use Illuminate\Database\Query\JoinClause;
+use Inertia\Response;
 
 class RecordController extends Controller
 {
@@ -76,20 +77,37 @@ class RecordController extends Controller
     public function create()
     {
         return Inertia::render('Records/RecordsAdd', [            
-            'users' => UserResource::collection(User::where('specialist', 1)->get()),
-            'clients' => ClientResource::collection(Client::all()),
-            'classes' => ClassesResource::collection(Classes::all()),
+            'users' => UserSearchResource::collection(User::where('specialist', 1)->select('name', 'id')->get()->sortBy('name')),
+            'clients' => ClientSearchResource::collection(Client::select('fio', 'id')->get()->sortBy('fio')),
+            'classes' => ClassesSearchResource::collection(Classes::select('name', 'id')->get()->sortBy('name')),
             'time_ranges' => TimeRangeResource::collection(TimeRange::all()),
         ]);
     }
 
+    public function edit(Record $record): Response {
+        return Inertia::render('Records/RecordsEdit', [   
+            'record' => new RecordEditResource($record),
+            'client_info' => $this->clientInfo($record->client_id),       
+            'wishes' => $this->clientWishes($record->client_id),       
+            'users' => UserSearchResource::collection(User::where('specialist', 1)->select('name', 'id')->get()->sortBy('name')),
+            'clients' => ClientSearchResource::collection(Client::select('fio', 'id')->get()->sortBy('fio')),
+            'classes' => ClassesSearchResource::collection(Classes::select('name', 'id')->get()->sortBy('name')),
+        ]);
+    }
+
+    private function clientInfo(int $id) {
+        return DB::table('clients')->where('id', $id)->first();
+    }
+
+    private function clientWishes(int $id) {
+        return WishResource::collection(Wish::where('client_id', $id)->get());
+    }
+
     public function getClientInfo(Request $request) {
         $client_id = $request->get('client_id');
-        $client_info = DB::table('clients')->where('id', $client_id)->first();
-        $wishes = WishResource::collection(Wish::where('client_id', $client_id)->get());
         return response()->json([
-            'client_info' => $client_info,
-            'wishes' => $wishes
+            'client_info' => $this->clientInfo($client_id),
+            'wishes' => $this->clientWishes($client_id)
         ], 200);
     }
 
@@ -108,6 +126,7 @@ class RecordController extends Controller
             SELECT room_id FROM record WHERE ("' . $start_time . '" > start_time AND "' . $start_time . '" < end_time)' .
             ' OR ("' . $end_time . '" > start_time AND "' . $end_time . '" < end_time)' .
             ' OR (start_time > "' . $start_time . '" AND start_time < "' . $end_time . '")' .
+            ' OR (start_time = "' . $start_time . '" AND end_time = "' . $end_time . '")' .
             ' AND educationDate="' . $educationDate .'") order by name'));
         return response()->json([
             'free_rooms' => $free_rooms
@@ -137,6 +156,30 @@ class RecordController extends Controller
             'room_id' => $request->get('room_id'),
             'class_id' => $request->get('class_id'),
         ]);
+        return to_route('records.index', ['user_id' => $record->user_id]);
+    }
+
+    public function update(Request $request, Record $record) {
+        $request->validate([
+            'client_id' => 'required|integer',
+            'educationDate' => 'required|date',
+            'user_id' => 'required|integer',
+            'startTimeStamp' => 'required',
+            'endTimeStamp' => 'required',
+            'room_id' => 'required|integer',
+            'class_id' => 'required|integer',
+        ]);
+
+        $record->update([
+            'client_id' => $request->get('client_id'),
+            'educationDate' => $request->get('educationDate'),
+            'user_id' => $request->get('user_id'),
+            'start_time' => $request->get('startTimeStamp'),
+            'end_time' => $request->get('endTimeStamp'),
+            'room_id' => $request->get('room_id'),
+            'class_id' => $request->get('class_id'),
+        ]);
+
         return to_route('records.index', ['user_id' => $record->user_id]);
     }
 
