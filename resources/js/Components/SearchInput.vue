@@ -37,7 +37,7 @@ const searchBy = () => {
 </script>
 <template>
     <div class="relative text-gray-700">
-        <input class=" w-80 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" 
+        <input class="md:w-60 lg:w-80 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" 
         type="text" 
         :placeholder="props.pholder"
         v-model="searchForm.search"                       

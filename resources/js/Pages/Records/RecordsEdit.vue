@@ -121,7 +121,10 @@ function checkEndTime() {
 
 async function getClientInfo() {
     showSpinner.value = true;
-    (hasRole('user'))?form.user_id=currentUser.id:null
+    if (hasRole('user')) {
+        form.user.id = currentUser.id
+        form.user.name = currentUser.name
+    }
     await axios.post('/api/get_client_info', {'client_id':form.client.id})
     .then((response) => {
         showSpinner.value=false;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ClientsExport;
 use App\Http\Resources\ClassesResource;
 use App\Http\Resources\ClientResource;
 use App\Http\Resources\TimeRangeResource;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ClientController extends Controller
 {
@@ -205,5 +207,10 @@ class ClientController extends Controller
             return redirect(\Session('back_url'));
           }
         return to_route('clients.trashed');
+    }
+
+    public function exportExcel()
+    {
+        return Excel::download(new ClientsExport, 'clients.xlsx');
     }
 }

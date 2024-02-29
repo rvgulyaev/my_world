@@ -114,10 +114,13 @@ async function getClientInfo(client_id) {
                             клиентов.</span
                         >
                     </div>
-                    <div class="flex-shrink-0">
+                    <div class="mb-4 flex items-center justify-between">
                         <PrimaryLink :href="route('clients.create')">
                             Добавить клиента
                         </PrimaryLink>
+                        <a v-bind:href="route('clients.export')" class="whitespace-nowrap ml-4 inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">
+                            В Excel
+                        </a>
                     </div>
                 </div>
                 <div class="mb-4 flex items-center justify-between">

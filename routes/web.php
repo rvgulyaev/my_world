@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/clients/trashed', [ClientController::class, 'trashed'])->name('clients.trashed');
     Route::post('/clients/terminate', [ClientController::class, 'terminate'])->name('clients.terminate');
     Route::post('/clients/restore', [ClientController::class, 'restore'])->name('clients.restore');
+    Route::get('export-clients', [ClientController::class, 'exportExcel'])->name('clients.export');
     Route::resource('/clients', ClientController::class);
 
     Route::get('/tasks/trashed', [TaskController::class, 'trashed'])->name('tasks.trashed');
