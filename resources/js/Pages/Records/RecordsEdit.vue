@@ -379,35 +379,39 @@ watch(client_info, (client_info, old_client_info) => {
                                 <div>{{ client_info.diagnos }}</div>
                                 <div class="font-semibold">Противопоказания:</div>
                                 <div>{{ client_info.contras }}</div>
-                                <div class="font-semibold">Мама:</div>
-                                <div>{{ (client_info.mother !== '') ? client_info.mother : '-' }} / {{ (client_info.mother_phone !== '+7(') ? client_info.mother_phone : '-' }}</div>
-                                <div class="font-semibold">Папа:</div>
-                                <div>{{ (client_info.father !== '') ? client_info.father : '-' }} / {{ (client_info.father_phone !== '+7(') ? client_info.father_phone : '-' }}</div>
-                                <div class="font-semibold">Адрес</div>
-                                <div>{{ (client_info.adress !== '') ? client_info.adress : '-' }}</div>
+                                <template v-if="hasRole('admin') || hasRole('moderator')">
+                                    <div class="font-semibold">Мама:</div>
+                                    <div>{{ (client_info.mother !== '') ? client_info.mother : '-' }} / {{ (client_info.mother_phone !== '+7(') ? client_info.mother_phone : '-' }}</div>
+                                    <div class="font-semibold">Папа:</div>
+                                    <div>{{ (client_info.father !== '') ? client_info.father : '-' }} / {{ (client_info.father_phone !== '+7(') ? client_info.father_phone : '-' }}</div>
+                                    <div class="font-semibold">Адрес</div>
+                                    <div>{{ (client_info.adress !== '') ? client_info.adress : '-' }}</div>
+                                </template>
                             </div>
-                            <h3 class="mt-7 text-lg text-gray-900 dark:text-gray-300 mb-2">
-                                Пожелания родителей по занятиям
-                            </h3>
-                            <Table v-if="wishes.length > 0">
-                                <template #header>
-                                    <TableRow>
-                                        <TableHeaderCell>Занятие</TableHeaderCell>
-                                        <TableHeaderCell>Желаемое кол-во</TableHeaderCell>
-                                        <TableHeaderCell>Желаемые дни недели</TableHeaderCell>
-                                        <TableHeaderCell>Желаемое время</TableHeaderCell>
-                                    </TableRow>
-                                </template>
-                                <template #default>
-                                    <TableRow v-for="wish in wishes" :key="wish.id" >
-                                        <TableDataCell>{{ wish.class }}</TableDataCell>
-                                        <TableDataCell>{{ wish.prefer_amount_of_classes }}</TableDataCell>
-                                        <TableDataCell>{{ wish.prefer_day }}</TableDataCell>
-                                        <TableDataCell>{{ wish.prefer_time }}</TableDataCell>
-                                    </TableRow>
-                                </template>
-                            </Table>
-                            <span class="text-sm text-gray-500" v-else>Пожелания родителей не указаны!</span>
+                            <template v-if="hasRole('admin') || hasRole('moderator')">
+                                <h3 class="mt-7 text-lg text-gray-900 dark:text-gray-300 mb-2">
+                                    Пожелания родителей по занятиям
+                                </h3>
+                                <Table v-if="wishes.length > 0">
+                                    <template #header>
+                                        <TableRow>
+                                            <TableHeaderCell>Занятие</TableHeaderCell>
+                                            <TableHeaderCell>Желаемое кол-во</TableHeaderCell>
+                                            <TableHeaderCell>Желаемые дни недели</TableHeaderCell>
+                                            <TableHeaderCell>Желаемое время</TableHeaderCell>
+                                        </TableRow>
+                                    </template>
+                                    <template #default>
+                                        <TableRow v-for="wish in wishes" :key="wish.id" >
+                                            <TableDataCell>{{ wish.class }}</TableDataCell>
+                                            <TableDataCell>{{ wish.prefer_amount_of_classes }}</TableDataCell>
+                                            <TableDataCell>{{ wish.prefer_day }}</TableDataCell>
+                                            <TableDataCell>{{ wish.prefer_time }}</TableDataCell>
+                                        </TableRow>
+                                    </template>
+                                </Table>
+                                <span class="text-sm text-gray-500" v-else>Пожелания родителей не указаны!</span>
+                            </template>                            
                         </div>
                     </div>
                     <div class="mt-6 pt-6 space-x-4 border-t border-gray-500">
