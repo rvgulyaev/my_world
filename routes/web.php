@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\TaskController;
@@ -25,7 +26,7 @@ use Inertia\Inertia;
 */
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', function () { return Inertia::render('Dashboard'); })->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/clients/trashed', [ClientController::class, 'trashed'])->name('clients.trashed');
     Route::post('/clients/terminate', [ClientController::class, 'terminate'])->name('clients.terminate');

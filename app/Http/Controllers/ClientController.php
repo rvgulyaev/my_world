@@ -25,13 +25,18 @@ class ClientController extends Controller
     public function index(Request $request): Response
     {
         $search = $request->has('search_client_fio') ? $request->input('search_client_fio') : '';
+        $burndate = $request->boolean('search_near_burndate');
         $clients = ClientResource::collection(Client::when($search, function ($query) use ($search){
             return $query->where('fio', 'LIKE', '%'.$search.'%');
+        })
+        ->when($burndate, function($query) {
+            return $query->whereRaw("DATE_FORMAT(`burndate`, '%m-%d') = DATE_FORMAT(NOW(), '%m-%d')");
         })->paginate(7));
         \Session::put('back_url',request()->fullUrl());
         return Inertia::render('Clients/ClientsIndex', [
             'clients' => $clients,
             'search_client' => $search,
+            'search_near_burndate' => $burndate,
             'classes' => ClassesResource::collection(Classes::all())
         ]);
     }
@@ -122,9 +127,10 @@ class ClientController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Client $client)
+    public function edit(int $id)
     {
-        $client->load('wishes');
+        $client = Client::where('id', $id)->first();
+        $client['wishes'] = Wish::where('client_id', $client->id)->get();
         return Inertia::render('Clients/ClientsEdit', [
             'client' => $client,
             'classes' => ClassesResource::collection(Classes::all()),

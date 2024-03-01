@@ -11,15 +11,20 @@ import DangerButton from "@/Components/DangerButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryLink from "@/Components/PrimaryLink.vue";
 import PinkButton from "@/Components/PinkButton.vue";
-import SearchInput from "@/Components/SearchInput.vue";
 import Pagination from "@/Components/Pagination.vue";
 import { useToast } from "vue-toastification";
 import axios from "axios";
 import Spinner from '@/Components/Spinner.vue';
 import EmeraldButton from "@/Components/EmeraldButton.vue";
 import { usePermissions } from "@/Composables/permissions";
+import InputLabel from "@/Components/InputLabel.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import moment from 'moment/min/moment-with-locales';
+import DropdownMenu from 'v-dropdown';
 
+moment.locale('ru');
 const { hasRole } = usePermissions();
+const currentDate = moment().format('MM-DD')
 const toast = useToast();
 const showSpinner = ref(false);
 const props = defineProps({
@@ -31,11 +36,20 @@ const props = defineProps({
         type: String,
         default: ''
     },
+    search_near_burndate: {
+        type: Boolean,
+        default: false
+    },
     classes: {
         type: Object,
         required: true
     }
 });
+
+const searchForm = useForm({
+    search_client_fio: props.search_client,
+    search_near_burndate: props.search_near_burndate
+})
 
 const clientInfo = ref([]);
 let showInfoModal = ref(false);
@@ -88,6 +102,21 @@ async function getClientInfo(client_id) {
     })
 }
 
+function filterList() {
+    showSpinner.value = true;
+    searchForm.get(route('clients.index'), {
+        onSuccess: () => {
+            showSpinner.value=false;
+        }
+    })
+}
+
+function clearFilter() {
+    searchForm.search_client_fio = ''
+    searchForm.search_near_burndate = false
+    filterList()
+}
+
 </script>
 
 <template>
@@ -124,7 +153,41 @@ async function getClientInfo(client_id) {
                     </div>
                 </div>
                 <div class="mb-4 flex items-center justify-between">
-                       <SearchInput :search_field="'search_client_fio'" :search="props.search_client" :route_link="'clients.index'" :pholder="'Поиск по ФИО...'"/> 
+                    <DropdownMenu class="ml-0 px-2 cursor-pointer flex items-center dark:text-gray-100" ref="dropdown">
+                        <template #trigger>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+                        </svg>
+
+                        ФИЛЬТРЫ
+                        </template>                                                        
+                        <ul class="dark:bg-gray-700 dark:border-gray-700 p-3">
+                            <li>
+                                <input class="mb-3 md:w-60 lg:w-80 border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" 
+                                type="text" 
+                                placeholder="Поиск по ФИО..."
+                                v-model="searchForm.search_client_fio"                       
+                                autocomplete="props.search_client"
+                                />
+                            </li>
+                            <li class="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    v-model="searchForm.search_near_burndate"
+                                    class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800"
+                                />
+                                <InputLabel class="ml-1 dark:text-gray-400"> - Кого сегодня поздравить с ДР</InputLabel>
+                            </li>
+                            <li class="flex justify-between items-center mt-3 pt-3 border-t border-gray-500">
+                                <PrimaryButton @click="filterList">
+                                    Применить
+                                </PrimaryButton>
+                                <SecondaryButton @click="clearFilter">
+                                    Сброс
+                                </SecondaryButton>
+                            </li>
+                        </ul>
+                    </DropdownMenu>                       
                        <div class="flex-shrink-0">
                             <Link :href="route('clients.trashed')" class="uppercase hover:underline hover:decoration-solid hover:decoration-slate-500 dark:text-slate-300" v-if="hasRole('admin')">Перейти в корзину</Link>
                         </div>
@@ -149,17 +212,17 @@ async function getClientInfo(client_id) {
                                         <TableRow v-for="client in clients.data" :key="client.id">
                                             <TableDataCell>{{ client.id }}</TableDataCell>
                                             <TableDataCell>
-                                                <Link :href="route('clients.edit',client.id)"
+                                                <Link :href="route('clients.edit',client)"
                                                     class="ml-3 text-xm leading-5 font-bold text-indigo-600 dark:text-indigo-500 hover:text-indigo-300"
                                                 >{{ client.fio }}
                                                 </Link>
                                             </TableDataCell>
-                                            <TableDataCell>{{ client.burndate }}</TableDataCell>
+                                            <TableDataCell><div class="flex items-center justify-between"><img class="mr-2" src="/images/balloons.png" v-if="moment(client.burndate).format('MM-DD') == currentDate" />{{ moment(client.burndate).format("DD.MM.YYYY") }}</div></TableDataCell>
                                             <TableDataCell style="white-space:normal">{{ client.contras }}</TableDataCell>
                                             <TableDataCell>
                                                 <template class="flex flex-wrap w-80">
                                                     <span v-for="wish in client.wishes" :key="wish.id"
-                                                    class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded  whitespace-normal dark:bg-indigo-500 dark:text-indigo-900 mt-2"
+                                                    class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded  whitespace-normal dark:bg-indigo-300 dark:text-indigo-700 mt-2"
                                                     >
                                                     <strong>Направление:</strong> {{ wish.class }} &bull; <strong>Кол-во:</strong> {{ wish.prefer_amount_of_classes }} &bull; <strong>Дни:</strong> {{ wish.prefer_day }} &bull; <strong>Время:</strong> {{ wish.prefer_time }}
                                                     </span>

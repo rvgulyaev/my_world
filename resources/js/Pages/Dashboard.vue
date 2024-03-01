@@ -2,8 +2,27 @@
 import { Link, Head } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { usePermissions } from '@/Composables/permissions';
+import { useToast } from "vue-toastification";
+import { onMounted } from 'vue';
+import moment from 'moment/min/moment-with-locales';
 
+moment.locale('ru');
 const { hasRole } = usePermissions();
+const toast = useToast();
+
+const props = defineProps({
+    clients: {
+        type: Object,
+        required: true,
+    },
+});
+
+onMounted(() => {
+   if(props.clients.length > 0) {
+      toast.success('Сегодня день рождения у одного или нескольких клиентов - не забудьте их поздравить!!!')
+   }
+})
+
 </script>
 
 <template>
@@ -19,6 +38,17 @@ const { hasRole } = usePermissions();
                         <div>
                            <h3 class="text-xl font-bold text-gray-900 dark:text-gray-300 mb-2">Главная страница</h3>
                         </div>
+                     </div>
+
+                     <div class="mb-4" v-if="props.clients.length > 0">
+                        <a :href="route('clients.index', {'search_near_burndate':true})" class="text-md font-bold text-gray-900 dark:text-gray-300 cursor-pointer hover:underline underline-offset-4">Сегодня день рождения у следующих клиентов:</a>
+                        <div class="mt-4">
+                           <span v-for="client in props.clients" :key="client.id"
+                           class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded  whitespace-normal dark:bg-indigo-300 dark:text-indigo-700 mt-2"
+                           >
+                           {{ client.fio }} &bull; <strong>День рождения:</strong> {{ moment(client.burndate).format('DD.MM.YYYY') }} &bull; <strong>Полных лет:</strong> {{ String((new Date()).getFullYear() - (new Date(client.burndate).getFullYear())) }}
+                           </span>
+                        </div> 
                      </div>
 
                      <div class="container flex flex-col mx-auto h-screen">
