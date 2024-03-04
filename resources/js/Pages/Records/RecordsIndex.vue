@@ -37,7 +37,7 @@ const comment = ref({
 
 moment.locale('ru')
 
-let education_date = ref()
+let education_date = ref('')
 let user_id = ref()
 let users = ref({})
 let records = ref([])

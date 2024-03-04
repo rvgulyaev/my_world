@@ -166,11 +166,7 @@ class ClientController extends Controller
             'father_phone' => $request->father_phone,
             'adress' => $request->adress,
         ]);
-        if (isset($client->wishes) && count($client->wishes)>0) {
-            foreach ($client->wishes as $wish) {
-                Wish::find($wish->id)->delete();
-            }
-        }
+        Wish::where('client_id', $client->id)->delete();
         if (isset($request->wishes) && count($request->wishes)>0) {
             foreach ($request->wishes as $wish) {
                 Wish::create([

@@ -372,22 +372,36 @@ watch(client_info, (client_info, old_client_info) => {
                             <h3 class="text-lg text-gray-900 dark:text-gray-300 mb-2">
                                 Справочная информация о клиенте <strong class="text-indigo-500">{{ client_info.fio }}</strong>
                             </h3>
-                            <div class="grid grid-cols-2 gap-4 text-gray-400">
-                                <div class="font-semibold">Дата рождения:</div>
-                                <div>{{ formatter.format(new Date(client_info.burndate)) }} ( Возраст - {{ client_age }} {{ age_suffix }} )</div>
-                                <div class="font-semibold">Диагноз:</div>
-                                <div>{{ client_info.diagnos }}</div>
-                                <div class="font-semibold">Противопоказания:</div>
-                                <div>{{ client_info.contras }}</div>
-                                <template v-if="hasRole('admin') || hasRole('moderator')">
-                                    <div class="font-semibold">Мама:</div>
-                                    <div>{{ (client_info.mother !== '') ? client_info.mother : '-' }} / {{ (client_info.mother_phone !== '+7(') ? client_info.mother_phone : '-' }}</div>
-                                    <div class="font-semibold">Папа:</div>
-                                    <div>{{ (client_info.father !== '') ? client_info.father : '-' }} / {{ (client_info.father_phone !== '+7(') ? client_info.father_phone : '-' }}</div>
-                                    <div class="font-semibold">Адрес</div>
-                                    <div>{{ (client_info.adress !== '') ? client_info.adress : '-' }}</div>
+                            <Table>
+                                <template #default>
+                                <TableRow>
+                                    <TableDataCell class="font-semibold">Дата рождения:</TableDataCell>
+                                    <TableDataCell>{{ formatter.format(new Date(client_info.burndate)) }} ( Возраст - {{ client_age }} {{ age_suffix }} )</TableDataCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableDataCell class="font-semibold">Диагноз:</TableDataCell>
+                                    <TableDataCell>{{ client_info.diagnos }}</TableDataCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableDataCell class="font-semibold w-80">Противопоказания:</TableDataCell>
+                                    <TableDataCell>{{ client_info.contras }}</TableDataCell>
+                                </TableRow>
+                                    <template v-if="hasRole('admin') || hasRole('moderator')">
+                                    <TableRow>
+                                        <TableDataCell class="font-semibold">Мама:</TableDataCell>
+                                        <TableDataCell>{{ (client_info.mother !== '') ?  client_info.mother : '-' }} / {{ (client_info.mother_phone !== '+7(') ? client_info.mother_phone : '-' }}</TableDataCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableDataCell class="font-semibold">Папа:</TableDataCell>
+                                        <TableDataCell>{{ (client_info.father !== '') ? client_info.father : '-' }} / {{ (client_info.father_phone !== '+7(') ? client_info.father_phone : '-' }}</TableDataCell>
+                                    </TableRow>
+                                    <TableRow>
+                                        <TableDataCell class="font-semibold">Адрес:</TableDataCell>
+                                        <TableDataCell>{{ (client_info.adress !== '') ? client_info.adress : '-' }}</TableDataCell>
+                                    </TableRow>
+                                    </template> 
                                 </template>
-                            </div>
+                            </Table>
                             <template v-if="hasRole('admin') || hasRole('moderator')">
                                 <h3 class="mt-7 text-lg text-gray-900 dark:text-gray-300 mb-2">
                                     Пожелания родителей по занятиям
