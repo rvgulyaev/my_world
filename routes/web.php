@@ -46,15 +46,17 @@ Route::middleware('auth')->group(function () {
 Route::name('reports.')->prefix('/reports')->middleware(['auth'])->group(function () {
     Route::get('/clients/index', [ReportController::class, 'clients_index'])->name('clients.index');
     Route::get('/specialists/index', [ReportController::class, 'specialists_index'])->name('specialist.index');
+    Route::get('/weekreport/index', [ReportController::class, 'weekreport_index'])->name('weekreport.index');
+    Route::get('/weekreport/export', [ReportController::class, 'exportExcel'])->name('weekreport.export');
 });
 
 Route::prefix('api')->group(function(){
     Route::get('/zeroRequest', function () {
         return response('zero', 200);
-    })->name('zero');  
+    })->name('zero');
     Route::get('/getSessionTimeOut', function () {
         return response(['session_time_out' => config('session.lifetime', 120) * 60 * 1000]);
-    })->name('timeout');  
+    })->name('timeout');
     Route::post('/get_busy_time', [RecordController::class, 'getBusyTime'])->name('get_busy_time');
     Route::post('/get_free_rooms', [RecordController::class, 'getFreeRooms'])->name('get_free_rooms');
     Route::post('/get_client_info', [RecordController::class, 'getClientInfo'])->name('get_client_info');
