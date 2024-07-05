@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClassesController;
+use App\Http\Controllers\ClassesGroupController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReportController;
@@ -91,6 +92,11 @@ Route::name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/classes/terminate', [ClassesController::class, 'terminate'])->name('classes.terminate');
     Route::post('/classes/restore', [ClassesController::class, 'restore'])->name('classes.restore');
     Route::resource('/classes', ClassesController::class);
+
+    Route::get('/classes_groups/trashed', [ClassesGroupController::class, 'trashed'])->name('classes_groups.trashed');
+    Route::post('/classes_groups/terminate', [ClassesGroupController::class, 'terminate'])->name('classes_groups.terminate');
+    Route::post('/classes_groups/restore', [ClassesGroupController::class, 'restore'])->name('classes_groups.restore');
+    Route::resource('/classes_groups', ClassesGroupController::class);
 
     Route::get('/time-ranges/trashed', [TimeRangeController::class, 'trashed'])->name('time-ranges.trashed');
     Route::post('/time-ranges/terminate', [TimeRangeController::class, 'terminate'])->name('time-ranges.terminate');

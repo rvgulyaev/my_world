@@ -56,7 +56,7 @@ onBeforeMount(() => {
                     </h3>
                     <span class="text-base font-normal text-gray-500"
                         >Отчет о песещении занятий за предыдущую неделю по всем направлениям. <br/>
-                        (Примечание: Jотчетный период - предыдущая календарная неделя. Значение поля `Остаток` вычиляемое на основе двух других полей.)</span
+                        (Примечание: Отчетный период - предыдущая календарная неделя.)</span
                     >
                 </div>
                 <div class="flex items-center justify-between mb-4">
@@ -69,16 +69,9 @@ onBeforeMount(() => {
                 <table class="min-w-full text-sm font-light text-start text-surface dark:text-white">
                     <thead class="font-medium border-b border-neutral-200 dark:border-white/10">
                         <tr class="bg-gray-100 border border-gray-200">
-                            <th scope="col" class="px-6 py-4 border border-gray-200" rowspan="2">Id</th>
-                            <th scope="col" class="px-6 py-4 border border-gray-200" rowspan="2">ФИО</th>
-                            <th scope="col" class="px-6 py-4 border border-gray-200" colspan="3" v-for="classitem in classes" :key="classitem.id">{{ classitem.class_name }}</th>
-                        </tr>
-                        <tr class="bg-gray-100 border border-gray-200">
-                            <template v-for="classitem in classes">
-                                <th scope="col" class="px-6 py-4 border border-gray-200">Пожелания родителей</th>
-                                <th scope="col" class="px-6 py-4 border border-gray-200">Факт</th>
-                                <th scope="col" class="px-6 py-4 border border-gray-200">Остаток</th>
-                            </template>
+                            <th scope="col" class="px-6 py-4 border border-gray-200">Id</th>
+                            <th scope="col" class="px-6 py-4 border border-gray-200">ФИО</th>
+                            <th scope="col" class="px-6 py-4 border border-gray-200" v-for="classitem in classes" :key="classitem.id">{{ classitem.class_name }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -86,9 +79,7 @@ onBeforeMount(() => {
                             <td class="px-2 py-1 text-center border border-gray-100">{{ client.id }}</td>
                             <td class="px-2 py-1 border border-gray-100 whitespace-nowrap">{{ client.fio }}</td>
                             <template v-for="clientdata in client.clientdata" :key="clientdata">
-                                <td class="px-2 py-1 text-center border border-gray-100" :class="[clientdata[0]<1?'bg-red-100':'']">{{ clientdata[0] }}</td>
-                                <td class="px-2 py-1 text-center border border-gray-100">{{ clientdata[1] }}</td>
-                                <td class="px-2 py-1 text-center border border-gray-100" :class="[clientdata[2]>0?'bg-red-100':'']">{{ clientdata[2] }}</td>
+                                <td class="px-2 py-1 text-center border border-gray-100">{{ clientdata }}</td>
                             </template>                             
                         </tr>
                     </tbody>

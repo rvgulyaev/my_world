@@ -27,24 +27,44 @@ class ReportController extends Controller
         $startDate = date('Y-m-d', strtotime("last sunday midnight", strtotime("-1 week +1 day")));
         $endDate = date("Y-m-d", strtotime('next saturday', strtotime("-1 week +1 day")));
         $clients = DB::table('clients')->select(['clients.id', 'clients.fio'])->get();
-        $classes = DB::table('classes')->select(['id as class_id', 'name as class_name'])->get();
+        $classes = DB::table('classes')->select(['classes.id as class_id', 'classes.name as class_name', 'classes.class_group_id', 'classes_groups.name as group_name'])->leftJoin('classes_groups', 'classes_groups.id', '=', 'classes.class_group_id')->get()->sortBy('class_group_id');
+        
+        $records = 0;
         $clientdata = [];
+        $headclasses = [];
         $weekdata = collect();
-        foreach($clients as $client) {
-            foreach($classes as $class) {
-                $wish = DB::table('wishes')->select(['prefer_amount_of_classes'])->where('class_id', '=', $class->class_id)->where('client_id', '=', $client->id)->first();
-                $record = DB::table('record')->whereBetween('educationDate', [$startDate, $endDate])->where('client_id', '=', $client->id)->where('class_id', '=', $class->class_id)->where('is_present', '=', 1)->count();
-                if (!is_null($wish)) {
-                    array_push($clientdata, [$wish->prefer_amount_of_classes, $record, $wish->prefer_amount_of_classes - $record]);
-                } else {
-                    array_push($clientdata, [0,0,0]);
+        
+        $lastgroup = 0;
+        foreach($classes as $class) {
+            if($class->class_group_id === 0) {
+                array_push($headclasses, ['class_id' => $class->class_id, 'class_name' => $class->class_name, 'group_id' => $class->class_group_id]);
+            } else {
+                if($lastgroup !== $class->class_group_id) {
+                    array_push($headclasses, ['class_id' => $class->class_group_id, 'class_name' => $class->group_name, 'group_id' => $class->class_group_id]);
+                    $lastgroup = $class->class_group_id;
                 }
-                
+            }
+        }
+
+        $lastgroup = 0;
+        foreach($clients as $client) {
+            foreach($headclasses as $class) { 
+                    $record = DB::table('record')->whereBetween('educationDate', [$startDate, $endDate])
+                    ->leftJoin('classes', 'classes.id', '=', 'record.class_id')->where('client_id', '=', $client->id)->where('classes.class_group_id', '=', $class['group_id'])->where('is_present', '=', 1)->count();
+                         
+                if ($lastgroup === $class['group_id'] && $class['group_id'] !== 0) {
+                    $records = $records + $record;
+                } else {
+                    array_push($clientdata, $records);
+                    $lastgroup = $class['group_id'];
+                    $records = $record;
+                }
+                              
             }
             $weekdata->push(['id' => $client->id, 'fio' => $client->fio, 'clientdata' => $clientdata]);
             $clientdata = [];
         }
-        return Inertia::render('Reports/WeekReport', ['classes' => $classes, 'weekdata' => $weekdata]);
+        return Inertia::render('Reports/WeekReport', ['classes' => $headclasses, 'weekdata' => $weekdata]);
     }
     public function get_clients_report(Request $request) {
         $clients = ClientSearchResource::collection(Client::all());

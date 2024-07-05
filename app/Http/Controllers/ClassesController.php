@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ClassesGroupResource;
 use App\Http\Resources\ClassesResource;
 use App\Models\Classes;
+use App\Models\ClassesGroups;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -40,7 +43,8 @@ class ClassesController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Classes/ClassesAdd');
+        $classes_groups = ClassesGroupResource::collection(ClassesGroups::all());
+        return Inertia::render('Classes/ClassesAdd', ['classes_groups' => $classes_groups]);
     }
 
     /**
@@ -49,10 +53,12 @@ class ClassesController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'string|required|max:255|' . Rule::unique('classes', 'name')
+            'name' => 'string|required|max:255|' . Rule::unique('classes', 'name'),
         ]);
         Classes::create([
-            'name' => $request->name
+            'name' => $request->name,
+            'has_group' => $request->has_group,
+            'class_group_id' => $request->class_group_id['id']
         ]);
         return to_route('admin.classes.index');
     }
@@ -70,8 +76,12 @@ class ClassesController extends Controller
      */
     public function edit(int $class_item): Response
     {
+        $groups = collect(DB::table('classes_groups')->select('id', 'name')->get()->toArray());
+        $groups->push((object)['id' => 0, 'name' => 'Вне группы']);
+        $classes_groups = collect($groups);
         return Inertia::render('Classes/ClassesEdit', [
-            'class_item' => Classes::find($class_item)
+            'class_item' => Classes::find($class_item),
+            'classes_groups' => $classes_groups
         ]);
     }
 
@@ -85,7 +95,9 @@ class ClassesController extends Controller
             'name' => 'string|required|max:255|' . Rule::unique('classes')->ignore($class)
         ]);
         $class->update([
-            'name' => $request->name
+            'name' => $request->name,
+            'has_group' => $request->has_group,
+            'class_group_id' => $request->class_group_id['id']
         ]);
         return to_route('admin.classes.index');
     }

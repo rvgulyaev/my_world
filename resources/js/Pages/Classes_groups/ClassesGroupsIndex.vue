@@ -15,7 +15,7 @@ import { useToast } from "vue-toastification";
 
 const toast = useToast();
 const props = defineProps({
-    classes: {
+    classes_groups: {
         type: Object,
         required: true,
     },
@@ -23,31 +23,31 @@ const props = defineProps({
 
 // Delete User Modal
 const deleteForm = useForm({
-    class_id: {
+    class_group_id: {
         type: Number,
         required: true
     }
 });
 const showConfirmDeleteModal = ref(false);
 
-const confirmDelete = (class_id) => {
+const confirmDelete = (class_group_id) => {
     showConfirmDeleteModal.value = true;
-    deleteForm.class_id = class_id;
+    deleteForm.class_group_id = class_group_id;
 };
 const closeModal = () => {
     showConfirmDeleteModal.value = false;
 };
 const deleteTask = () => {
-    deleteForm.delete(route("admin.classes.destroy", deleteForm.class_id), {
+    deleteForm.delete(route("admin.classes_groups.destroy", deleteForm.class_group_id), {
         onSuccess: () => {
             closeModal();
-            toast.success("Тип занятий успешно удален!", {
+            toast.success("Группа направлений успешно удалена!", {
                 timeout: 2000
             });
         },
         onError: (e) => {
             closeModal();
-            toast.error("Ошибка при удалении типа занятий!", {
+            toast.error("Ошибка при удалении группы направлений!", {
                 timeout: 2000
             });
         },
@@ -57,12 +57,12 @@ const deleteTask = () => {
 </script>
 
 <template>
-    <Head title="Справочник типов занятий" />
+    <Head title="Справочник групп направлений" />
 
     <AuthenticatedLayout>
         <template #header>
             <h2 class="leading-tight text-gray-800">
-                Справочник направлений
+                Справочник групп направлений
             </h2>
         </template>
 
@@ -73,22 +73,22 @@ const deleteTask = () => {
                 <div class="flex items-center justify-between mb-4">
                     <div>
                         <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-indigo-500">
-                            Справочник направлений
+                            Справочник групп направлений
                         </h3>
                         <span class="text-base font-normal text-gray-500"
-                            >Раздел предназначен для ведения справочника направлений.</span
+                            >Раздел предназначен для ведения справочника групп направлений.</span
                         >
                     </div>
                     <div class="flex-shrink-0">
-                        <PrimaryLink :href="route('admin.classes.create')">
-                            Добавить направление
+                        <PrimaryLink :href="route('admin.classes_groups.create')">
+                            Добавить группу направлений
                         </PrimaryLink>
                     </div>
                 </div>
                 <div class="flex items-center justify-between mb-4">
                         <div></div>
                        <div class="flex-shrink-0">
-                            <Link :href="route('admin.classes.trashed')" class="uppercase hover:underline hover:decoration-solid hover:decoration-slate-500 dark:text-slate-300">Перейти в корзину</Link>
+                            <Link :href="route('admin.classes_groups.trashed')" class="uppercase hover:underline hover:decoration-solid hover:decoration-slate-500 dark:text-slate-300">Перейти в корзину</Link>
                         </div>
                 </div>
                 <div class="flex flex-col mt-8">
@@ -100,22 +100,20 @@ const deleteTask = () => {
                                         <TableRow>
                                             <TableHeaderCell>Id</TableHeaderCell>
                                             <TableHeaderCell>Имя</TableHeaderCell>
-                                            <TableHeaderCell>Группа</TableHeaderCell>
                                             <TableHeaderCell class="text-right">Действия</TableHeaderCell>
                                         </TableRow>
                                     </template>
                                     <template #default>
-                                        <template v-for="classe in classes" :key="classe.id">
+                                        <template v-for="class_group in classes_groups" :key="class_group.id">
                                             <TableRow>
-                                                <TableDataCell>{{ classe.id }}</TableDataCell>
+                                                <TableDataCell>{{ class_group.id }}</TableDataCell>
                                                 <TableDataCell>
-                                                <Link :href="route('admin.classes.edit', classe.id)" class="ml-3 font-bold leading-5 text-indigo-600 text-xm dark:text-indigo-500 hover:text-indigo-300">
-                                                {{ classe.name }}
+                                                <Link :href="route('admin.classes_groups.edit', class_group.id)" class="ml-3 font-bold leading-5 text-indigo-600 text-xm dark:text-indigo-500 hover:text-indigo-300">
+                                                {{ class_group.name }}
                                                 </Link>
                                                 </TableDataCell>
-                                                <TableDataCell>{{ classe.class_group }}</TableDataCell>
                                                 <TableDataCell class="text-right">
-                                                    <PinkButton @click="confirmDelete(classe.id)">
+                                                    <PinkButton @click="confirmDelete(class_group.id)">
                                                         Удалить
                                                     </PinkButton>
                                                 </TableDataCell>
@@ -134,7 +132,7 @@ const deleteTask = () => {
             <div class="p-6 dark:bg-gray-600">
                 <div class="flex items-center justify-center">
                     <h2 class="text-lg font-semibold text-slate-800 dark:text-gray-300">
-                        Подтвердите удаление направления!
+                        Подтвердите удаление группы направлений!
                     </h2>
                 </div>
                 <div class="flex items-center justify-center pt-5 mt-6 space-x-2 border-t border-gray-500">
