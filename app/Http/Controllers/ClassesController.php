@@ -20,7 +20,7 @@ class ClassesController extends Controller
     public function index(): Response
     {
         return Inertia::render('Classes/ClassesIndex', [
-            'classes' => ClassesResource::collection(Classes::all())
+            'classes' => ClassesResource::collection(Classes::all()->sortBy('order'))
         ]);
     }
 
@@ -58,7 +58,8 @@ class ClassesController extends Controller
         Classes::create([
             'name' => $request->name,
             'has_group' => $request->has_group,
-            'class_group_id' => $request->class_group_id['id']
+            'class_group_id' => $request->class_group_id['id'],
+            'order' => $request->order
         ]);
         return to_route('admin.classes.index');
     }
@@ -97,7 +98,8 @@ class ClassesController extends Controller
         $class->update([
             'name' => $request->name,
             'has_group' => $request->has_group,
-            'class_group_id' => $request->class_group_id['id']
+            'class_group_id' => $request->class_group_id['id'],
+            'order' => $request->order
         ]);
         return to_route('admin.classes.index');
     }

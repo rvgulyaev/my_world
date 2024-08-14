@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Calculation\TextData\Format;
 
 class ReportController extends Controller
 {
@@ -24,10 +25,13 @@ class ReportController extends Controller
         return Inertia::render('Reports/SpecialistsReport');
     }
     public function weekreport_index() {
-        $startDate = date('Y-m-d', strtotime("last monday midnight", strtotime("-1 week")));
-        $endDate = date("Y-m-d", strtotime('next sunday', strtotime("-1 week")));
+        $startDate = new \DateTime('Monday last week');
+        $endDate = new \DateTime('Sunday last week');
+        $startDate = $startDate->format('Y-m-d');
+        $endDate = $endDate->format('Y-m-d');
         $clients = DB::table('clients')->select(['clients.id', 'clients.fio'])->whereNull('clients.deleted_at')->get()->sortBy('clients.fio');
-        $classes = DB::table('classes')->select(['classes.id as class_id', 'classes.name as class_name', 'classes.class_group_id', 'classes_groups.name as group_name'])->leftJoin('classes_groups', 'classes_groups.id', '=', 'classes.class_group_id')->whereNull('classes.deleted_at')->get()->sortBy('class_group_id');
+        $classes = DB::table('classes')->select(['classes.id as class_id', 'classes.name as class_name', 'classes.class_group_id', 'classes_groups.name as group_name'])
+        ->leftJoin('classes_groups', 'classes_groups.id', '=', 'classes.class_group_id')->whereNull('classes.deleted_at')->orderBy('classes.order')->get();
         
         $clientdata = [];
         $headclasses = [];
@@ -63,7 +67,7 @@ class ReportController extends Controller
             $weekdata->push(['id' => $client->id, 'fio' => $client->fio, 'clientdata' => $clientdata]);
             $clientdata = [];
         }
-        return Inertia::render('Reports/WeekReport', ['classes' => $headclasses, 'weekdata' => $weekdata]);
+        return Inertia::render('Reports/WeekReport', ['startDate' => date('d.m.Y', strtotime($startDate)), 'endDate' => date('d.m.Y', strtotime($endDate)), 'classes' => $headclasses, 'weekdata' => $weekdata]);
     }
     public function get_clients_report(Request $request) {
         $clients = ClientSearchResource::collection(Client::all());

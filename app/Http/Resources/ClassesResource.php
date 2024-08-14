@@ -21,6 +21,7 @@ class ClassesResource extends JsonResource
             'has_group' => $this->has_group,
             'class_group_id' => $this->class_group_id,
             'class_group' => ($this->class_group_id > 0) ? ClassesGroups::where('id', $this->class_group_id)->select('name')->first()->name : 'Вне группы',
+            'order' => $this->order,
         ];
     }
 }

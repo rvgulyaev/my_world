@@ -26,7 +26,8 @@ const props  = defineProps({
 const form = useForm({
     name: props.class_item?.name,
     has_group: props.class_item?.has_group,
-    class_group_id: props.classes_groups.find((e) => e.id == props.class_item?.class_group_id)
+    class_group_id: props.classes_groups.find((e) => e.id == props.class_item?.class_group_id),
+    order: props.class_item?.order
 });
 const submit = async () => {
     form.put(route('admin.classes.update', props.class_item), {
@@ -104,7 +105,25 @@ watch(
                                     track-by="id"
                                     />
                                 <InputError class="mt-2" :message="form.errors.class_group_id" />
-                            </div> 
+                            </div>  
+                        <div class="mb-4">
+                            <InputLabel for="order" value="* Номер по порядку (по-умолчанию 9999 - конец списка)" />
+
+                            <TextInput
+                                    id="order"
+                                    type="text"
+                                    class="block w-full mt-1"
+                                    v-model="form.order"
+                                    required
+                                    autofocus
+                                    placeholder="9999"
+                                />
+
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.order"
+                            />
+                        </div>
                         </div>
                 </div>                
                 <div class="pt-6 mt-6 space-x-4 border-t border-gray-500">

@@ -2,18 +2,11 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue'
 import { Head } from "@inertiajs/vue3";
 import { onBeforeMount, ref } from 'vue';
-import { usePermissions } from "@/Composables/permissions";
 import Table from '@/Components/Table.vue';
-import TableDataCell from '@/Components/TableDataCell.vue';
-import TableHeaderCell from '@/Components/TableHeaderCell.vue';
-import TableRow from '@/Components/TableRow.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import Spinner from '@/Components/Spinner.vue';
 import moment from 'moment/min/moment-with-locales';
 
 moment.locale('ru')
-
-const { hasRole } = usePermissions();
 const props = defineProps({
     classes: {
         type: Object,
@@ -22,18 +15,16 @@ const props = defineProps({
     weekdata: {
         type: Object,
         required: true
-    }
+    },
+    startDate: '',
+    endDate: ''
 })
 const showSpinner = ref(false);
 
 const dateValue = ref();
-const startDate = ref();
-const endDate = ref();
 
 onBeforeMount(() => {
-    startDate.value = moment().subtract(1, 'weeks').startOf('isoWeek').format('YYYY-MM-DD');
-    endDate.value =  moment().subtract(1, 'weeks').endOf('isoWeek').format('YYYY-MM-DD');
-    dateValue.value = [startDate.value, endDate.value];
+    dateValue.value = [props.startDate, props.endDate];
 })
 </script>
 
@@ -52,7 +43,7 @@ onBeforeMount(() => {
             <div class="flex items-center justify-between mb-4">
                 <div>
                     <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-indigo-500">
-                        Недельный отчет {{ moment(new Date(startDate)).format('DD.MM.YYYY') }} - {{ moment(new Date(endDate)).format('DD.MM.YYYY') }}
+                        Недельный отчет {{ props.startDate }} - {{ props.endDate }}
                     </h3>
                     <span class="text-base font-normal text-gray-500"
                         >Отчет о песещении занятий за предыдущую неделю по всем направлениям. <br/>

@@ -27,6 +27,7 @@ const form = useForm({
         'id': 0,
         'name': 'Вне группы'
     },
+    order: 9999
 });
 
 const submit = () => {
@@ -110,6 +111,23 @@ watch(
                                 />
                             <InputError class="mt-2" :message="form.errors.class_group_id" />
                         </div> 
+                        <div class="mb-4">
+                            <InputLabel for="order" value="* Номер по порядку (по-умолчанию 9999 - конец списка)" />
+
+                            <TextInput
+                                    id="order"
+                                    type="text"
+                                    class="block w-full mt-1"
+                                    v-model="form.order"
+                                    placeholder="9999"
+                                />
+
+                            <InputError
+                                class="mt-2"
+                                :message="form.errors.order"
+                            />
+                        </div>
+
                     </div>
                 </div>
                 <div class="pt-6 mt-6 space-x-4 border-t border-gray-500">

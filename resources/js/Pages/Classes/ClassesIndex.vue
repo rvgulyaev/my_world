@@ -12,6 +12,7 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import PrimaryLink from "@/Components/PrimaryLink.vue";
 import PinkButton from "@/Components/PinkButton.vue";
 import { useToast } from "vue-toastification";
+import TextInput from '@/Components/TextInput.vue';
 
 const toast = useToast();
 const props = defineProps({
@@ -101,6 +102,7 @@ const deleteTask = () => {
                                             <TableHeaderCell>Id</TableHeaderCell>
                                             <TableHeaderCell>Имя</TableHeaderCell>
                                             <TableHeaderCell>Группа</TableHeaderCell>
+                                            <TableHeaderCell>Сортировка</TableHeaderCell>
                                             <TableHeaderCell class="text-right">Действия</TableHeaderCell>
                                         </TableRow>
                                     </template>
@@ -114,6 +116,7 @@ const deleteTask = () => {
                                                 </Link>
                                                 </TableDataCell>
                                                 <TableDataCell>{{ classe.class_group }}</TableDataCell>
+                                                <TableDataCell>{{ classe.order }}</TableDataCell>
                                                 <TableDataCell class="text-right">
                                                     <PinkButton @click="confirmDelete(classe.id)">
                                                         Удалить
