@@ -72,16 +72,16 @@ onBeforeMount(() => {
 
 <AuthenticatedLayout>
     <template #header>
-        <h2 class="text-gray-800 leading-tight">
+        <h2 class="leading-tight text-gray-800">
             Отчет по специалистам
         </h2>
     </template>
 
     <div class="mb-4">
-        <div class="bg-white dark:bg-gray-700 shadow rounded-lg p-4 sm:p-6 xl:p-8 h-screen">
-            <div class="mb-4 flex items-center justify-between">
+        <div class="h-screen p-4 bg-white rounded-lg shadow dark:bg-gray-700 sm:p-6 xl:p-8">
+            <div class="flex items-center justify-between mb-4">
                 <div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-indigo-500 mb-2">
+                    <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-indigo-500">
                         Отчет по специалистам
                     </h3>
                     <span class="text-base font-normal text-gray-500" v-if="hasRole('user')">Отчет по проведенным занятиям специалиста <span class="underline">{{ user.name }}</span> за определенный период - по умолчанию период за последнюю(не календарную) неделю. <br/>
@@ -91,14 +91,14 @@ onBeforeMount(() => {
                 </div>
             </div>
             <div>
-                <h3 class="text-gray-900 dark:text-gray-300 mb-2" v-if="hasRole('user')">
+                <h3 class="mb-2 text-gray-900 dark:text-gray-300" v-if="hasRole('user')">
                     Выберите период для отображения отчета
                 </h3>
-                <h3 class="text-gray-900 dark:text-gray-300 mb-2" v-else>
+                <h3 class="mb-2 text-gray-900 dark:text-gray-300" v-else>
                     Выберите специалиста и период для отображения отчета
                 </h3>
             </div>
-            <div class="mb-4 flex items-center space-x-2">
+            <div class="flex items-center mb-4 space-x-2">
                     <div class="w-72" v-if="hasRole('admin')||hasRole('moderator')">  
                         <VueMultiselect
                             v-model="specialist_id"
@@ -123,8 +123,8 @@ onBeforeMount(() => {
             </div>
             <div class="flex flex-col mt-8" v-if="records.length > 0">
                 <div class="overflow-x-auto rounded-lg">
-                    <div class="align-middle inline-block min-w-full">
-                        <div class="shadow overflow-hidden sm:rounded-lg">
+                    <div class="inline-block min-w-full align-middle">
+                        <div class="overflow-hidden shadow sm:rounded-lg">
                             <Table>
                                 <template #header>
                                     <TableRow>
@@ -147,7 +147,7 @@ onBeforeMount(() => {
                     </div>
                 </div>
             </div>
-            <div class="border-l-8 p-4 border-red-300" v-else>Данные на указанный период и специалисту отсутствуют в расписании. Попробуйте изменить специалиста или период.</div>
+            <div class="p-4 border-l-8 border-red-300" v-else>Данные на указанный период и специалисту отсутствуют в расписании. Попробуйте изменить специалиста или период.</div>
         </div>
     </div>
     <Spinner :showSpinner="showSpinner" />    

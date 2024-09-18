@@ -10,6 +10,8 @@ use App\Models\Client;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Maatwebsite\Excel\Facades\Excel;
@@ -24,50 +26,8 @@ class ReportController extends Controller
     public function specialists_index() {
         return Inertia::render('Reports/SpecialistsReport');
     }
-    public function weekreport_index() {
-        $startDate = new \DateTime('Monday last week');
-        $endDate = new \DateTime('Sunday last week');
-        $startDate = $startDate->format('Y-m-d');
-        $endDate = $endDate->format('Y-m-d');
-        $clients = DB::table('clients')->select(['clients.id', 'clients.fio'])->whereNull('clients.deleted_at')->get()->sortBy('clients.fio');
-        $classes = DB::table('classes')->select(['classes.id as class_id', 'classes.name as class_name', 'classes.class_group_id', 'classes_groups.name as group_name'])
-        ->leftJoin('classes_groups', 'classes_groups.id', '=', 'classes.class_group_id')->whereNull('classes.deleted_at')->orderBy('classes.order')->get();
-        
-        $clientdata = [];
-        $headclasses = [];
-        $weekdata = collect();
-        
-        $lastgroup = 0;
-        foreach($classes as $class) {
-            if($class->class_group_id === 0) {
-                array_push($headclasses, ['class_id' => $class->class_id, 'class_name' => $class->class_name, 'group_id' => $class->class_group_id]);
-            } else {
-                if($lastgroup !== $class->class_group_id) {
-                    array_push($headclasses, ['class_id' => $class->class_id, 'class_name' => $class->group_name, 'group_id' => $class->class_group_id]);
-                    $lastgroup = $class->class_group_id;
-                }
-            }
-        }
-
-        $lastgroup = 0;
-        foreach($clients as $client) {
-            foreach($headclasses as $class) {                    
-                         
-                if ($class['group_id'] !== 0) {
-                    $record = DB::table('record')->leftJoin('classes', 'classes.id', '=', 'record.class_id')->leftJoin('classes_groups', 'classes_groups.id', '=', 'classes.class_group_id')->where('client_id', '=', $client->id)->whereBetween('educationDate', [$startDate, $endDate])
-                    ->where('classes.class_group_id', '=', $class['group_id'])->where('is_present', '=', 1)->count();
-                    array_push($clientdata, $record);
-                } else {
-                    $record = DB::table('record')->leftJoin('classes', 'classes.id', '=', 'record.class_id')->where('client_id', '=', $client->id)->whereBetween('educationDate', [$startDate, $endDate])
-                    ->where('record.class_id', '=', $class['class_id'])->where('is_present', '=', 1)->count();
-                    array_push($clientdata, $record);
-                }
-                              
-            }
-            $weekdata->push(['id' => $client->id, 'fio' => $client->fio, 'clientdata' => $clientdata]);
-            $clientdata = [];
-        }
-        return Inertia::render('Reports/WeekReport', ['startDate' => date('d.m.Y', strtotime($startDate)), 'endDate' => date('d.m.Y', strtotime($endDate)), 'classes' => $headclasses, 'weekdata' => $weekdata]);
+    public function weekreport_index() {        
+        return Inertia::render('Reports/WeekReport');
     }
     public function get_clients_report(Request $request) {
         $clients = ClientSearchResource::collection(Client::all());
@@ -147,6 +107,57 @@ class ReportController extends Controller
         ]);
     }
 
+    public function get_week_report(Request $request) {
+        $s = new \DateTime('Monday last week');
+        $e = new \DateTime('Sunday last week');
+        $startDate = $request->has('start_date') ? $request->get('start_date') : $s->format('Y-m-d');
+        $endDate = $request->has('end_date') ? $request->get('end_date') : $e->format('Y-m-d');
+        $clients = DB::table('clients')->select(['clients.id', 'clients.fio'])->whereNull('clients.deleted_at')->get()->sortBy('clients.fio');
+        $classes = DB::table('classes')->select(['classes.id as class_id', 'classes.name as class_name', 'classes.class_group_id', 'classes_groups.name as group_name'])
+        ->leftJoin('classes_groups', 'classes_groups.id', '=', 'classes.class_group_id')->whereNull('classes.deleted_at')->orderBy('classes.order')->get();
+        
+        $clientdata = [];
+        $headclasses = [];
+        $weekdata = collect();
+        
+        $lastgroup = 0;
+        foreach($classes as $class) {
+            if($class->class_group_id === 0) {
+                array_push($headclasses, ['class_id' => $class->class_id, 'class_name' => $class->class_name, 'group_id' => $class->class_group_id]);
+            } else {
+                if($lastgroup !== $class->class_group_id) {
+                    array_push($headclasses, ['class_id' => $class->class_id, 'class_name' => $class->group_name, 'group_id' => $class->class_group_id]);
+                    $lastgroup = $class->class_group_id;
+                }
+            }
+        }
+
+        $lastgroup = 0;
+        foreach($clients as $client) {
+            foreach($headclasses as $class) {                    
+                         
+                if ($class['group_id'] !== 0) {
+                    $record = DB::table('record')->leftJoin('classes', 'classes.id', '=', 'record.class_id')->leftJoin('classes_groups', 'classes_groups.id', '=', 'classes.class_group_id')->where('client_id', '=', $client->id)->whereBetween('educationDate', [$startDate, $endDate])
+                    ->where('classes.class_group_id', '=', $class['group_id'])->where('is_present', '=', 1)->count();
+                    array_push($clientdata, $record);
+                } else {
+                    $record = DB::table('record')->leftJoin('classes', 'classes.id', '=', 'record.class_id')->where('client_id', '=', $client->id)->whereBetween('educationDate', [$startDate, $endDate])
+                    ->where('record.class_id', '=', $class['class_id'])->where('is_present', '=', 1)->count();
+                    array_push($clientdata, $record);
+                }
+                              
+            }
+            $weekdata->push(['id' => $client->id, 'fio' => $client->fio, 'clientdata' => $clientdata]);
+            $clientdata = [];
+        }
+        $data = ['startDate' => $startDate, 'endDate' => $endDate, 'headclasses' => $headclasses, 'weekdata' => $weekdata];
+        Storage::disk('public')->put('reports/weekreportdata.json', json_encode($data));
+        return response()->json([
+            'weekdata' => $weekdata,
+            'classes' => $headclasses
+        ]);
+    }
+
     public function get_clients() {
         $clients = DB::table('clients')->select(['id', 'fio as name'])->orderBy('fio')->get();
         return response()->json([
@@ -162,9 +173,8 @@ class ReportController extends Controller
 
     public function exportExcel()
     {
-        $startDate = date('d.m.Y', strtotime("last monday midnight", strtotime("-1 week")));
-        $endDate = date("d.m.Y", strtotime('next sunday', strtotime("-1 week")));
-        return Excel::download(new WeekReportExport, 'WeekReport - ' . $startDate . ' - ' . $endDate . '.xlsx');
+        $data = Storage::json('public/reports/weekreportdata.json');
+        return Excel::download(new WeekReportExport, 'WeekReport - ' . $data['startDate'] . ' - ' . $data['endDate'] . '.xlsx');
     }
 
 }

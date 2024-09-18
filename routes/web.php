@@ -73,6 +73,8 @@ Route::prefix('api')->group(function(){
 
     Route::post('/get_specialists_report', [ReportController::class, 'get_specialists_report'])->name('get_specialists_report');
     Route::get('/get_specialists_list', [ReportController::class, 'get_specialists'])->name('get_specialists_list');
+
+    Route::post('/get_week_report', [ReportController::class, 'get_week_report'])->name('get_week_report');
 })->middleware('auth');
 
 Route::name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
