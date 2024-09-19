@@ -195,14 +195,14 @@ watch(client_info, (client_info, old_client_info) => {
 
     <AuthenticatedLayout>
         <template #header>
-                <h2 class="text-gray-800 dark:text-gray-200 leading-tight">
+                <h2 class="leading-tight text-gray-800 dark:text-gray-200">
                     Форма редактирования записи в расписание
                 </h2>
         </template>
 
         <div class="ml-3 mt-3 p-6 bg-white dark:bg-gray-700 rounded-md shadow-md min-h-[85vh]">
-            <div class="mb-5 pb-5 border-b border-gray-500">
-                <h3 class="text-xl font-bold text-gray-900 dark:text-indigo-500 mb-2">
+            <div class="pb-5 mb-5 border-b border-gray-500">
+                <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-indigo-500">
                     Форма редактирования записи в расписание
                 </h3>
                 <span class="text-base font-normal text-gray-500">Поля помеченные * обязательны для заполнения.</span>
@@ -220,7 +220,7 @@ watch(client_info, (client_info, old_client_info) => {
                                 <TextInput
                                     id="educationDate"
                                     type="date"
-                                    class="mt-1 block w-full disabled:dark:bg-slate-800"
+                                    class="block w-full mt-1 disabled:dark:bg-slate-800"
                                     v-model="form.educationDate"
                                     @change="clearData"
                                     required
@@ -243,7 +243,6 @@ watch(client_info, (client_info, old_client_info) => {
                                 placeholder="Выберите клиента"
                                 label="name"
                                 track-by="id"
-                                required
                                 @select="getClientInfo()"
                                 :preselect-first="true"
                                 :max-height="300"
@@ -251,7 +250,7 @@ watch(client_info, (client_info, old_client_info) => {
 
                                 <InputError
                                     class="mt-2"
-                                    :message="form.errors.client"
+                                    :message="form.errors.client_id"
                                 />
                             </div>                        
                             <div class="mb-4">
@@ -265,7 +264,6 @@ watch(client_info, (client_info, old_client_info) => {
                                 placeholder="Выберите специалиста"
                                 label="name"
                                 track-by="id"
-                                required
                                 @select="getBusyTime()"
                                 :disabled="hasRole('user')"
                                 :preselect-first="true"
@@ -274,12 +272,12 @@ watch(client_info, (client_info, old_client_info) => {
 
                                 <InputError
                                     class="mt-2"
-                                    :message="form.errors.user"
+                                    :message="form.errors.user_id"
                                 />
                             </div>
                             <div class="mb-4">
                                 <InputLabel for="time_range" value="* Время занятий (укажите время начала и окончания занятий)" />
-                                <div v-if="form.user.id > 0 && busy_time.length > 0" class="mb-3 w-full">
+                                <div v-if="form.user.id > 0 && busy_time.length > 0" class="w-full mb-3">
                                     <div class="text-xs"><span class="bg-rose-100 text-rose-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded">ВНИМАНИЕ:</span> Найдены занятия у <span class="underline">{{ users.find(user => user.id === form.user.id).name }}</span> на {{ moment(form.educationDate).format('DD.MM.YYYY') }} в </div>
                                     <div class="flex flex-wrap">
                                         <div v-for="(busy, index) in busy_time" :key="index" 
@@ -296,7 +294,7 @@ watch(client_info, (client_info, old_client_info) => {
                                         <TextInput
                                         name="startTime"
                                         type="time"
-                                        class="mt-1 block w-full disabled:dark:bg-slate-800"
+                                        class="block w-full mt-1 disabled:dark:bg-slate-800"
                                         v-model="startTime"                                        
                                         @change="endTime=''"
                                         required
@@ -312,7 +310,7 @@ watch(client_info, (client_info, old_client_info) => {
                                         <TextInput
                                         name="endTime"
                                         type="time"
-                                        class="mt-1 block w-full disabled:dark:bg-slate-800"
+                                        class="block w-full mt-1 disabled:dark:bg-slate-800"
                                         v-model="endTime"
                                         @change="checkEndTime"
                                         required
@@ -336,14 +334,13 @@ watch(client_info, (client_info, old_client_info) => {
                                 placeholder="Выберите кабинет для занятий"
                                 label="name"
                                 track-by="id"
-                                required
                                 :preselect-first="true"
                                 :max-height="300"
                                 />
 
                                 <InputError
                                     class="mt-2"
-                                    :message="form.errors.room"
+                                    :message="form.errors.room_id"
                                 />
                             </div>
                             <div class="mb-4">
@@ -357,19 +354,18 @@ watch(client_info, (client_info, old_client_info) => {
                                 placeholder="Выберите направление занятий"
                                 label="name"
                                 track-by="id"
-                                required
                                 :preselect-first="true"
                                 :max-height="300"
                                 />
 
                                 <InputError
                                     class="mt-2"
-                                    :message="form.errors.class"
+                                    :message="form.errors.class_id"
                                 />
                             </div>
                         </div>
                         <div v-if="typeof client_info !== 'undefined'" class="overflow-x-auto">
-                            <h3 class="text-lg text-gray-900 dark:text-gray-300 mb-2">
+                            <h3 class="mb-2 text-lg text-gray-900 dark:text-gray-300">
                                 Справочная информация о клиенте <strong class="text-indigo-500">{{ client_info.fio }}</strong>
                             </h3>
                             <Table>
@@ -403,7 +399,7 @@ watch(client_info, (client_info, old_client_info) => {
                                 </template>
                             </Table>
                             <template v-if="hasRole('admin') || hasRole('moderator')">
-                                <h3 class="mt-7 text-lg text-gray-900 dark:text-gray-300 mb-2">
+                                <h3 class="mb-2 text-lg text-gray-900 mt-7 dark:text-gray-300">
                                     Пожелания родителей по занятиям
                                 </h3>
                                 <Table v-if="wishes.length > 0">
@@ -428,7 +424,7 @@ watch(client_info, (client_info, old_client_info) => {
                             </template>                            
                         </div>
                     </div>
-                    <div class="mt-6 pt-6 space-x-4 border-t border-gray-500">
+                    <div class="pt-6 mt-6 space-x-4 border-t border-gray-500">
                         <PrimaryButton
                             class="ms-4"
                             :class="{ 'opacity-25': form.processing }"
@@ -438,7 +434,7 @@ watch(client_info, (client_info, old_client_info) => {
                         </PrimaryButton>
                         <Link
                             :href="route('records.index')"
-                            class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150"
+                            class="inline-flex items-center px-4 py-2 text-xs font-semibold tracking-widest text-gray-700 uppercase transition duration-150 ease-in-out bg-white border border-gray-300 rounded-md shadow-sm dark:bg-gray-800 dark:border-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25"
                         >
                             Отмена
                         </Link>

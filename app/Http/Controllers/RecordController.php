@@ -139,13 +139,18 @@ class RecordController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'client_id' => 'required|integer',
+            'client_id' => 'required|numeric|min:1',
             'educationDate' => 'required|date',
-            'user_id' => 'required|integer',
+            'user_id' => 'required|numeric|min:1',
             'startTimeStamp' => 'required',
             'endTimeStamp' => 'required',
-            'room_id' => 'required|integer',
-            'class_id' => 'required|integer',
+            'room_id' => 'required|numeric|min:1',
+            'class_id' => 'required|numeric|min:1',
+        ], [
+            'client_id.min' => 'Поле не может быть пустым.',
+            'user_id.min' => 'Поле не может быть пустым.',
+            'room_id.min' => 'Поле не может быть пустым.',
+            'class_id.min' => 'Поле не может быть пустым.',
         ]);
         $record = Record::create([
             'client_id' => $request->get('client_id'),
@@ -161,13 +166,18 @@ class RecordController extends Controller
 
     public function update(Request $request, Record $record) {
         $request->validate([
-            'client_id' => 'required|integer',
+            'client_id' => 'required|numeric|min:1',
             'educationDate' => 'required|date',
-            'user_id' => 'required|integer',
+            'user_id' => 'required|numeric|min:1',
             'startTimeStamp' => 'required',
             'endTimeStamp' => 'required',
-            'room_id' => 'required|integer',
-            'class_id' => 'required|integer',
+            'room_id' => 'required|numeric|min:1',
+            'class_id' => 'required|numeric|min:1',
+        ], [
+            'client_id.min' => 'Поле не может быть пустым.',
+            'user_id.min' => 'Поле не может быть пустым.',
+            'room_id.min' => 'Поле не может быть пустым.',
+            'class_id.min' => 'Поле не может быть пустым.',
         ]);
 
         $record->update([

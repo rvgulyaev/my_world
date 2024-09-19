@@ -37,13 +37,13 @@ const submit = () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-gray-800 dark:text-gray-200 leading-tight">Форма добавления пользователя</h2>
+            <h2 class="leading-tight text-gray-800 dark:text-gray-200">Форма добавления пользователя</h2>
         </template>
         <div class="flex">
 
-            <div class="max-w-lg ml-6 mt-6 p-6 bg-white dark:bg-gray-700 rounded-md shadow-md">
+            <div class="max-w-lg p-6 mt-6 ml-6 bg-white rounded-md shadow-md dark:bg-gray-700">
             <div>
-                <h3 class="text-xl font-bold text-gray-900 dark:text-indigo-500 mb-2">Форма добавления пользователя</h3>
+                <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-indigo-500">Форма добавления пользователя</h3>
                 <span class="text-base font-normal text-gray-500">Заполните все поля и нажмите кнопку "Добавить" для сохранения данных.</span>
             </div>
             <div class="mt-6">
@@ -54,7 +54,7 @@ const submit = () => {
                         <TextInput
                             id="name"
                             type="text"
-                            class="mt-1 block w-full"
+                            class="block w-full mt-1"
                             v-model="form.name"
                             required
                             autofocus
@@ -70,7 +70,7 @@ const submit = () => {
                         <TextInput
                             id="username"
                             type="text"
-                            class="mt-1 block w-full"
+                            class="block w-full mt-1"
                             v-model="form.username"
                             required
                             autocomplete="username"
@@ -86,7 +86,7 @@ const submit = () => {
                             id="phone"
                             type="tel"
                             v-mask="'+7(###)-###-##-##'"
-                            class="mt-1 block w-full"
+                            class="block w-full mt-1"
                             v-model="form.phone"
                             required
                             autocomplete="phone"
@@ -101,7 +101,7 @@ const submit = () => {
                         <TextInput
                             id="password"
                             type="password"
-                            class="mt-1 block w-full"
+                            class="block w-full mt-1"
                             v-model="form.password"
                             required
                             autocomplete="new-password"
@@ -116,7 +116,7 @@ const submit = () => {
                         <TextInput
                             id="password_confirmation"
                             type="password"
-                            class="mt-1 block w-full"
+                            class="block w-full mt-1"
                             v-model="form.password_confirmation"
                             required
                             autocomplete="new-password"
@@ -146,33 +146,33 @@ const submit = () => {
 
                         <InputError class="mt-2" :message="form.errors.specialist" />
                     </div>
-                <div class="mt-6 flex space-x-4">
+                <div class="flex mt-6 space-x-4">
                     <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                         Добавить
                     </PrimaryButton>
                     <Link :href="route('admin.users.index')" 
-                        class="inline-flex items-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-500 rounded-md font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25 transition ease-in-out duration-150">
+                        class="inline-flex items-center px-4 py-2 text-xs font-semibold tracking-widest text-gray-700 uppercase transition duration-150 ease-in-out bg-white border border-gray-300 rounded-md shadow-sm dark:bg-gray-800 dark:border-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-25">
                         Отмена
                     </Link>
                 </div>
                 </form>
             </div>
         </div>
-        <div class="max-w-lg ml-6 mt-6 p-6 bg-white dark:bg-gray-700 rounded-md shadow-md">
+        <div class="max-w-lg p-6 mt-6 ml-6 bg-white rounded-md shadow-md dark:bg-gray-700">
             <div>
-                <h3 class="text-xl font-bold text-gray-900 dark:text-indigo-500 mb-2">Справочно</h3>
+                <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-indigo-500">Справочно</h3>
                 <span class="text-base font-normal text-gray-500">Описание прав пользователей.</span>
             </div>
             <div class="mt-6">
-                <span class="font-bold text-lg">admin</span> - администратор сайта
+                <span class="text-lg font-bold">admin</span> - администратор сайта
                 <div>Имеет полный доступ ко всем разделам сайта, разрешены все действия.</div>
-                <span class="font-bold text-lg">moderator</span> - администратор центра (управляющий)
+                <span class="text-lg font-bold">moderator</span> - администратор центра (управляющий)
                 <div>Имеет доступ к разделам сайта - Расписание занятий, Клиенты, Задачи, Отчеты</div>
                 <div>Раздел Расписание занятий - разрешено добавлять/удалять записи в расписании, добавлять примечание, устанавливать отметку о посещении, запрещено - переход в корзину</div>
                 <div>Раздел Клиенты - разрешено добавлять/удалять клиентов (включая пожелания родителей), запрещено - переход в корзину</div>
                 <div>Раздел Задачи - разрешено просмотр задач, простановка отметки о выполнении (включая добавление комментария), запрещено - добавление/удаление задач, переход в корзину</div>
                 <div>Раздел Отчеты - разрешен полный доступ</div>
-                <span class="font-bold text-lg">user</span> - пользователь сайта (специалист)
+                <span class="text-lg font-bold">user</span> - пользователь сайта (специалист)
                 <div>Имеет доступ к разделам сайта - Расписание занятий, Задачи, Отчеты</div>
                 <div>Раздел Расписание занятий - разрешен просмотр, добавление/удаление записей, добавление примечания, установка отметки о посещении, но только личного расписания пользователя, запрещено - переход в корзину</div>
                 <div>Раздел Задачи - разрешено просмотр задач, добавление задача, удаление созданных пользователем задач, запрещено - простановка отметки по выполнении, переход в корзину</div>
